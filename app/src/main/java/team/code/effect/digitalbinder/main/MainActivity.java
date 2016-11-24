@@ -1,9 +1,11 @@
-package team.code.effect.digitalbinder;
+package team.code.effect.digitalbinder.main;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.Toast;
+
+import team.code.effect.digitalbinder.R;
 
 public class MainActivity extends AppCompatActivity {
     static final int EVENT_MIN_DELTA_X = 150;
