@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                 float deltaX = newEventX - oldEventX;
                 if (deltaX > EVENT_MIN_DELTA_X)
                 {
-                    Toast.makeText(this, "left2right swipe", Toast.LENGTH_SHORT).show ();
+                    Toast.makeText(this, "swipe", Toast.LENGTH_SHORT).show ();
                 }
                 break;
         }
