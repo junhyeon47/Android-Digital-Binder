@@ -15,12 +15,14 @@ import java.util.ArrayList;
 
 public class PhotoItemListAdapter extends BaseAdapter {
     ArrayList<Bitmap> list;
-    Context context;
+    BinderActivity context;
     String TAG;
-    public PhotoItemListAdapter(Context context, ArrayList list) {
+    ArrayList<View> viewList;
+    public PhotoItemListAdapter(BinderActivity context, ArrayList list) {
         this.context=context;
         this.list = list;
         TAG = getClass().getName();
+        viewList=new ArrayList<View>();
         Log.d(TAG,"압축 파일 갯수는"+list.size());
     }
 
@@ -49,6 +51,9 @@ public class PhotoItemListAdapter extends BaseAdapter {
             PhotoItem item=(PhotoItem)view;
             item.init(list.get(i));
         }
+        view.setSelected(false);
+        if(context.selectedIndex==i)view.setSelected(true);
+        viewList.add(view);
         return view;
     }
 }

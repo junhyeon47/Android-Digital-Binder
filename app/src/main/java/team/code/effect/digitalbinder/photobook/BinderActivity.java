@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import team.code.effect.digitalbinder.R;
 
 /**
- * Created by huho on 2016-11-26.
+ * Photobook Item 1개를 확인할 화면
  */
 
 public class BinderActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
@@ -29,6 +28,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
     ZipCode zipCode;
     Photobook photobook;
     String TAG;
+    int selectedIndex; // 선택한 이미지
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +40,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
         TAG=getClass().getName();
         init(photobook);
     }
-
+    /**/
     public void init(Photobook photobook){
         Log.d(TAG,"압축해제 시작");
         zipCode=new ZipCode();
@@ -48,7 +48,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
         File file = new File(dir+"/"+photobook.getFilename());
         Log.d(TAG,"압축파일 선택"+file.getAbsolutePath());
         try {
-            ArrayList<File> fileList=(ArrayList<File>) zipCode.unzip(file.getAbsolutePath(),dir.getAbsolutePath(),true);
+            ArrayList fileList=(ArrayList) zipCode.unzip(file.getAbsolutePath(),dir.getAbsolutePath(),true);
             Log.d(TAG,"압축파일 목록 생성"+fileList.size());
             adapter = new PhotoItemListAdapter(this,fileList);
             listView.setAdapter(adapter);
@@ -65,7 +65,15 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Log.d(TAG,i+"번째 item을 누름");
+
         PhotoItem item = (PhotoItem)view;
+        /*선택한 Item 색칠하기!*/
+        selectedIndex=i;
+        for(int j=0; j<adapter.viewList.size();j++){
+            View view1=adapter.viewList.get(j);
+            view1.setSelected(false);
+        }
+        item.setSelected(true);
         chageImg(item.bitmap);
     }
 
