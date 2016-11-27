@@ -6,38 +6,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="team.code.effect.digitalbinder.camera.CameraActivity">
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-    </LinearLayout>
+        android:layout_weight="1">
+    </FrameLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:orientation="horizontal"
         android:background="#000000">
-        <Button
+        <ImageButton
+            android:id="@+id/btn_open_preview"
+            android:src="@drawable/ic_view_carousel_white_48dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="미리보기"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:onClick="btnClick"/>
         <ImageButton
+            android:id="@+id/btn_close_preview"
+            android:src="@drawable/ic_photo_camera_white_48dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:textColor="#FFFFFF"
+            android:onClick="btnClick"
+            android:visibility="gone"/>
+        <ImageButton
+            android:id="@+id/btn_shutter"
             android:src="@drawable/ic_panorama_fish_eye_white_48dp"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:background="@android:color/transparent"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"/>
-        <Button
+            android:scaleType="fitCenter"
+            android:onClick="btnClick"/>
+        <ImageButton
+            android:id="@+id/btn_save"
+            android:src="@drawable/ic_file_download_white_48dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:text="저장"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:onClick="btnClick"/>
     </LinearLayout>
 </LinearLayout>
