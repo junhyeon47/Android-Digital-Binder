@@ -8,9 +8,9 @@
     tools:context="team.code.effect.digitalbinder.explorer.ExplorerActivity">
 
     <ListView
+        android:padding="5dp"
         android:id="@+id/ex_titleList"
-        android:layout_weight="8"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
