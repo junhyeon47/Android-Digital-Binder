@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Photobook Item 1개를 확인할 화면
@@ -29,6 +30,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
     Photobook photobook;
     String TAG;
     int selectedIndex; // 선택한 이미지
+    PhotoViewAttacher photoViewAttacher;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +39,8 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
         photobook=intent.getParcelableExtra("photobook");
         listView = (HorizontalListView)findViewById(R.id.listView);
         img=(ImageView)findViewById(R.id.img);
+        photoViewAttacher = new PhotoViewAttacher(img);
+        photoViewAttacher.setMaximumScale(2048);
         TAG=getClass().getName();
         init(photobook);
     }
@@ -75,6 +79,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
         }
         item.setSelected(true);
         chageImg(item.bitmap);
+        photoViewAttacher.update();
     }
 
 }
