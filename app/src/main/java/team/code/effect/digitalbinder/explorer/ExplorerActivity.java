@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 
@@ -24,7 +25,7 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
     static final int REQUEST_STORAGE_PERMISSION=1;
     ListView listView;
     ExplorerTitleAdapter explorerTitleAdapter;
-    ArrayList<Explorer> cameraFileList;
+    ArrayList<Explorer> explorerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
         init();
         connectStorage();
 
-        explorerTitleAdapter=new ExplorerTitleAdapter(this, cameraFileList);
+        explorerTitleAdapter=new ExplorerTitleAdapter(this, explorerList);
         listView.setAdapter(explorerTitleAdapter);
         listView.setOnItemClickListener(this);
 
@@ -52,35 +53,60 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
     }
 
     //이미지 저장소 접근
-    public void connectStorage(){
+    public List connectStorage(){
+        File dcimFacebook=new File(Environment.DIRECTORY_DCIM, "Facebook");
+        File storageFacebook=new File(Environment.getExternalStorageDirectory(), dcimFacebook.getAbsolutePath());
+
         File dcimCamera=new File(Environment.DIRECTORY_DCIM, "Camera");
         File storageCamera=new File(Environment.getExternalStorageDirectory(), dcimCamera.getAbsolutePath());
+
         Log.d(TAG, "실경로 "+storageCamera);
+
         File[] cameraFiles=storageCamera.listFiles();
 
-        Explorer explorer=new Explorer();
 
+        String[] facebookTitle=storageFacebook.toString().split("/");
         String[] cameraTitle=storageCamera.toString().split("/");
 
-        explorer.setTitle(cameraTitle[cameraTitle.length-1]);
+        String[] titleList=new String[]{
+           facebookTitle[facebookTitle.length-1]
+                , cameraTitle[cameraTitle.length-1]
+        };
+
+        String[] filelist=new String[]{
+            storageFacebook.toString(), storageCamera.toString()
+        };
+
+        Log.d(TAG, "실경로는???"+filelist[0] );
+
+        explorerList=new ArrayList<Explorer>();
+
+        for (int i=0; i<titleList.length;i++){
+            Explorer explorer=new Explorer();
+            explorer.setTitle(titleList[i]);
+            explorer.setFilename(filelist[i]);
+            explorerList.add(explorer);
+        }
 
         //Bitmap bitmap= BitmapFactory.decodeFile(storageCamera+"/"+cameraFiles[0].getName());
         //img.setImageBitmap(bitmap);
 
         Log.d(TAG, "첫번째 파일"+cameraFiles[0].getName());
 
-        cameraFileList=new ArrayList<Explorer>();
-
-        cameraFileList.add(explorer);
-
+        return explorerList;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent=new Intent(this, ExplorerItemList.class);
+        ExplorerTitleItem explorerItem=(ExplorerTitleItem) view;
+        Explorer explorer=explorerItem.explorer;
+        Intent intent=new Intent(this, ExplorerItemListActivity.class);
         Toast.makeText(this, "작동하나요?", Toast.LENGTH_SHORT).show();
 
+        intent.putExtra("data", explorer);
 
+        //intent.putParcelableArrayListExtra("title", );
+        startActivity(intent);
     }
 
 }
