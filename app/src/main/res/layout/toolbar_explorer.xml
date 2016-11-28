@@ -1,8 +1,8 @@
 <android.support.v7.widget.Toolbar
-    android:id="@+id/toolbar"
+    android:id="@+id/ex_toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="#FF0000FF"
+    android:background="#F2E1AC"
     android:elevation="4dp"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
