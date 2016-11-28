@@ -1,6 +1,9 @@
 package team.code.effect.digitalbinder.camera;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,13 +16,12 @@ import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
+import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
@@ -27,18 +29,25 @@ import java.util.ArrayList;
 import team.code.effect.digitalbinder.R;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
-    static final int PERMISSION_CAMERA = 1;
-    String TAG;
+    final String TAG = getClass().getName();
+    final static int ORIENTATION_REVERSE_LANDSCAPE = 0;
+    final static int ORIENTATION_PORTRAIT = 1;
+    final static int ORIENTATION_LANDSCAPE = 2;
+    final static int ORIENTATION_REVERSE_PORTRAIT = 3;
+
+    //레이아웃 관련 멤버 변수 정의
     FrameLayout preview;
     ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter;
-    PreviousCamera previousCamera;
+    CustomCamera customCamera;
     View popupPreview;
     PopupWindow popupWindow;
     RecyclerView recyclerview;
-    ViewPager viewPager;
+    ViewPager viewPager; //not use
     PreviewRecyclerAdapter previewRecyclerAdapter;
     PreviewPagerAdapter previewPagerAdapter;
-    ArrayList<Preview> list = new ArrayList<Preview>();
+    static ArrayList<Preview> list = new ArrayList<Preview>();
+
+    //센서 관련 멤버 변수 정의
     SensorManager sensorManager;
     Sensor accelerometer, magnetometer;
     float[] lastAccelerometer = new float[3];
@@ -49,11 +58,12 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     float[] orientationData = new float[3];
     static int orientation;
 
+    static int previewWidth, previewHeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        TAG = getClass().getName();
         preview = (FrameLayout)findViewById(R.id.preview);
         btn_open_preview = (ImageButton)findViewById(R.id.btn_open_preview);
         btn_close_preview = (ImageButton)findViewById(R.id.btn_close_preview);
@@ -68,14 +78,15 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
         previewRecyclerAdapter = new PreviewRecyclerAdapter(getApplicationContext(), this);
         recyclerview.setAdapter(previewRecyclerAdapter);
+        //iv_selected = (ImageView)popupPreview.getRootView().findViewById(R.id.iv_selected);
+        //viewPager = (ViewPager)popupPreview.getRootView().findViewById(R.id.view_pager);
+        //previewPagerAdapter = new PreviewPagerAdapter(getApplicationContext(), this);
+        //viewPager.setAdapter(previewPagerAdapter);
+        //Log.d(TAG, "ViewPager - width: "+viewPager.getWidth()+", height: "+viewPager.getHeight());
 
-        viewPager = (ViewPager)popupPreview.getRootView().findViewById(R.id.view_pager);
-        previewPagerAdapter = new PreviewPagerAdapter(getApplicationContext(), this);
-        viewPager.setAdapter(previewPagerAdapter);
-        Log.d(TAG, "ViewPager - width: "+viewPager.getWidth()+", height: "+viewPager.getHeight());
         Log.d(TAG, "SDK Version: "+Build.VERSION.SDK_INT);
-        previousCamera = new PreviousCamera(getApplicationContext(), this);
-        preview.addView(previousCamera);
+        customCamera = new CustomCamera(getApplicationContext(), this);
+        preview.addView(customCamera);
         Log.d(TAG, "Previous Camera");
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -103,6 +114,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         btn_close_preview.setVisibility(View.VISIBLE);
         btn_save.setEnabled(false);
         btn_shutter.setEnabled(false);
+
         Log.d(TAG, "Popup Window Size - width: "+preview.getWidth()+", height: "+preview.getHeight());
         popupWindow = new PopupWindow(popupPreview, preview.getWidth(), preview.getHeight(), false);
         popupWindow.showAtLocation(preview, Gravity.NO_GRAVITY, 0, 0);
@@ -120,12 +132,13 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         switch (view.getId()){
             case R.id.btn_open_preview:
                 openPopupPreview();
+
                 break;
             case R.id.btn_close_preview:
                 closePopupPreview();
                 break;
             case R.id.btn_shutter:
-                previousCamera.takePicture();
+                customCamera.takePicture();
                 btn_shutter.setEnabled(false);
                 break;
             case R.id.btn_save:
@@ -178,7 +191,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 orientation = 2;
             else if (pitch >= 45 && roll >= -45 && roll < 45 )
                 orientation = 3;
-            Log.d(TAG, "[orientation]: "+orientation);
+            //Log.d(TAG, "[orientation]: "+orientation);
 
             changeButtonRoation(orientation);
         }
@@ -188,19 +201,46 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
-    //    public void checkCameraPermssion(){
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        switch (requestCode){
-//            case PERMISSION_CAMERA:
-//                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-//                    Toast.makeText(this, "카메라 권한 설정을 하지 않으면 사용하실 수 없습니다.", Toast.LENGTH_SHORT).show();
-//                }
-//        }
-//    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                if(popupWindow != null) {
+                    if (popupWindow.isShowing())
+                        popupWindow.dismiss();
+                }
+                list.removeAll(list);
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public static Bitmap byteToBitmap(byte[] bytes, int width, int height, int orientation){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inTempStorage = new byte[16 * 1024];
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        float rotateRatio = 0f;
+        int bitmapWidth = bitmap.getWidth();
+        int bitmapHeight = bitmap.getHeight();
+
+        switch (orientation){
+            case ORIENTATION_REVERSE_LANDSCAPE:
+                rotateRatio = 180f;
+                break;
+            case ORIENTATION_PORTRAIT:
+                rotateRatio = 90f;
+                break;
+            case ORIENTATION_LANDSCAPE:
+                rotateRatio = 0f;
+                break;
+            case ORIENTATION_REVERSE_PORTRAIT:
+                rotateRatio = -90f;
+                break;
+        }
+        Matrix matrix = new Matrix();
+        matrix.preRotate(rotateRatio);
+        matrix.setRectToRect(new RectF(0, 0, bitmapWidth, bitmapHeight), new RectF(0, 0, width, height), Matrix.ScaleToFit.CENTER);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
+    }
 }

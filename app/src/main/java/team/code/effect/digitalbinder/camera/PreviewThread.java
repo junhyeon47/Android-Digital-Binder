@@ -28,7 +28,7 @@ public class PreviewThread extends Thread {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                 int bitmapWidth = bitmap.getWidth();
                 int bitmapHeight = bitmap.getHeight();
-                Bitmap resize = Bitmap.createScaledBitmap(bitmap, 180, bitmapHeight/(bitmapWidth/180), false);
+                Bitmap resize = Bitmap.createScaledBitmap(bitmap, 1080, bitmapHeight/(bitmapWidth/1080), false);
                 Matrix matrix = new Matrix();
 
                 switch (orientation){
@@ -46,7 +46,7 @@ public class PreviewThread extends Thread {
                         break;
                 }
 
-                Bitmap rotate = Bitmap.createBitmap(resize, 0, 0, 180, bitmapHeight/(bitmapWidth/180), matrix,false);
+                Bitmap rotate = Bitmap.createBitmap(resize, 0, 0, 1080, bitmapHeight/(bitmapWidth/1080), matrix,false);
                 imageView.setImageBitmap(rotate);
             }
         };
