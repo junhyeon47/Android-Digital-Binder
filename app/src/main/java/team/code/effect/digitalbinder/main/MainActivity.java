@@ -1,8 +1,13 @@
 package team.code.effect.digitalbinder.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.PaintDrawable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -24,6 +29,7 @@ import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
 
 public class MainActivity extends AppCompatActivity{
+    static final int PERMISSION_CAMERA = 1;
     Intent intent;
 
     //메뉴가 표시되어 있음을 나타냄
@@ -58,8 +64,7 @@ public class MainActivity extends AppCompatActivity{
     public void btnClick(View view) {
         switch (view.getId()){
             case R.id.btn_camera:
-                intent = new Intent(MainActivity.this, CameraActivity.class);
-                startActivity(intent);
+                checkCameraPermssion();
                 break;
             case R.id.btn_explorer:
                 intent = new Intent(MainActivity.this, ExplorerActivity.class);
@@ -163,5 +168,22 @@ public class MainActivity extends AppCompatActivity{
 
     public void btnClick(){
         Toast.makeText(this, "클릭했어?", Toast.LENGTH_SHORT).show ();
+    }
+
+    public void checkCameraPermssion(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_CAMERA:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    intent = new Intent(MainActivity.this, CameraActivity.class);
+                    startActivity(intent);
+                }
+        }
     }
 }
