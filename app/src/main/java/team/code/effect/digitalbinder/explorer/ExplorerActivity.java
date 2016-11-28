@@ -24,7 +24,7 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
     static final int REQUEST_STORAGE_PERMISSION=1;
     ListView listView;
     ExplorerTitleAdapter explorerTitleAdapter;
-    ArrayList<String> cameraFileList;
+    ArrayList<Explorer> cameraFileList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +33,14 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
         setContentView(R.layout.activity_explorer);
 
         listView=(ListView)findViewById(R.id.ex_titleList);
-        explorerTitleAdapter=new ExplorerTitleAdapter(this);
-        listView.setAdapter(explorerTitleAdapter);
-        listView.setOnItemClickListener(this);
 
         init();
         connectStorage();
+
+        explorerTitleAdapter=new ExplorerTitleAdapter(this, cameraFileList);
+        listView.setAdapter(explorerTitleAdapter);
+        listView.setOnItemClickListener(this);
+
     }
 
     //저장소 접근권한
@@ -56,15 +58,20 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
         Log.d(TAG, "실경로 "+storageCamera);
         File[] cameraFiles=storageCamera.listFiles();
 
+        Explorer explorer=new Explorer();
+
+        String[] cameraTitle=storageCamera.toString().split("/");
+
+        explorer.setTitle(cameraTitle[cameraTitle.length-1]);
+
         //Bitmap bitmap= BitmapFactory.decodeFile(storageCamera+"/"+cameraFiles[0].getName());
         //img.setImageBitmap(bitmap);
 
         Log.d(TAG, "첫번째 파일"+cameraFiles[0].getName());
 
-        cameraFileList=new ArrayList<String>();
+        cameraFileList=new ArrayList<Explorer>();
 
-
-
+        cameraFileList.add(explorer);
 
     }
 
@@ -72,6 +79,8 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent=new Intent(this, ExplorerItemList.class);
         Toast.makeText(this, "작동하나요?", Toast.LENGTH_SHORT).show();
+
+
     }
 
 }

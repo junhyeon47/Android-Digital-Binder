@@ -17,11 +17,11 @@ public class ExplorerTitleAdapter extends BaseAdapter {
     ArrayList<Explorer> list=new ArrayList<Explorer>();
     Context context;
 
-    public ExplorerTitleAdapter(Context context) {
+    public ExplorerTitleAdapter(Context context, ArrayList list) {
+
         TAG=this.getClass().getName();
         this.context=context;
-
-
+        this.list=list;
     }
 
     @Override
