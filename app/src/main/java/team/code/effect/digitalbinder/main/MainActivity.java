@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.PaintDrawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -64,7 +65,12 @@ public class MainActivity extends AppCompatActivity{
     public void btnClick(View view) {
         switch (view.getId()){
             case R.id.btn_camera:
-                checkCameraPermssion();
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    checkCameraPermssion();
+                }else{
+                    intent = new Intent(MainActivity.this, CameraActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.btn_explorer:
                 intent = new Intent(MainActivity.this, ExplorerActivity.class);
