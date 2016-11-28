@@ -27,12 +27,20 @@ public class ExplorerItemListActivity extends AppCompatActivity {
         Intent intent=getIntent();
         explorer=intent.getParcelableExtra("data");
 
+        ArrayList<Explorer> list=new ArrayList<Explorer>();
+        File dir=new File(explorer.getFilename());
+        File[] photo=dir.listFiles();
+        for(int i=0; i<photo.length;i++){
+            File file=photo[i];
+            Explorer explorer=new Explorer();
+            explorer.setTitle(file.getName());
+            explorer.setFilename(file.getAbsolutePath());
+            list.add(explorer);
+        }
         //File ex_dir=new File(explorer.getFilename());
 
         ex_gridView=(GridView)findViewById(R.id.ex_gridView);
 
-        ArrayList<Explorer> list=new ArrayList<Explorer>();
-        list.add(explorer);
         ExplorerItemAdapter explorerItemAdapter=new ExplorerItemAdapter(this, list);
         ex_gridView.setAdapter(explorerItemAdapter);
     }

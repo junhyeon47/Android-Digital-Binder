@@ -41,15 +41,9 @@ public class ExplorerItem extends LinearLayout {
     }
 
     public void setImg(){
-        File dir=new File(explorer.getFilename());
-        File[] photo=dir.listFiles();
         //Bitmap bitmap= BitmapFactory.decodeFile(storageCamera+"/"+cameraFiles[0].getName());
-        for(int i=0; i<photo.length;i++) {
-
-            Bitmap bitmap = BitmapFactory.decodeFile(dir + "/" + photo[i].getName());
+            Bitmap bitmap = BitmapFactory.decodeFile(explorer.getFilename());
             ex_img.setImageBitmap(bitmap);
-        }
-        Log.d(TAG, "길이"+photo.length);
     }
 
 

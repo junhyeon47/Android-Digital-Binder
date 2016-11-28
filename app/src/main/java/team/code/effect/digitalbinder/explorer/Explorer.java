@@ -8,8 +8,8 @@ import android.os.Parcelable;
  */
 
 public class Explorer implements Parcelable{
-    private String title;
-    private String filename;
+    private String title; //폴더명
+    private String filename; //경로
 
     public String getTitle() {
         return title;
