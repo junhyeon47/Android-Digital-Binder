@@ -30,10 +30,6 @@ import team.code.effect.digitalbinder.R;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
     final String TAG = getClass().getName();
-    final static int ORIENTATION_REVERSE_LANDSCAPE = 0;
-    final static int ORIENTATION_PORTRAIT = 1;
-    final static int ORIENTATION_LANDSCAPE = 2;
-    final static int ORIENTATION_REVERSE_PORTRAIT = 3;
 
     //레이아웃 관련 멤버 변수 정의
     FrameLayout preview;
@@ -75,7 +71,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayout.HORIZONTAL);
         recyclerview.setLayoutManager(layoutManager);
-
+        recyclerview.setHasFixedSize(true);
         previewRecyclerAdapter = new PreviewRecyclerAdapter(getApplicationContext(), this);
         recyclerview.setAdapter(previewRecyclerAdapter);
         //iv_selected = (ImageView)popupPreview.getRootView().findViewById(R.id.iv_selected);
@@ -216,31 +212,4 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         return super.onKeyDown(keyCode, event);
     }
 
-    public static Bitmap byteToBitmap(byte[] bytes, int width, int height, int orientation){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inTempStorage = new byte[16 * 1024];
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-        float rotateRatio = 0f;
-        int bitmapWidth = bitmap.getWidth();
-        int bitmapHeight = bitmap.getHeight();
-
-        switch (orientation){
-            case ORIENTATION_REVERSE_LANDSCAPE:
-                rotateRatio = 180f;
-                break;
-            case ORIENTATION_PORTRAIT:
-                rotateRatio = 90f;
-                break;
-            case ORIENTATION_LANDSCAPE:
-                rotateRatio = 0f;
-                break;
-            case ORIENTATION_REVERSE_PORTRAIT:
-                rotateRatio = -90f;
-                break;
-        }
-        Matrix matrix = new Matrix();
-        matrix.preRotate(rotateRatio);
-        matrix.setRectToRect(new RectF(0, 0, bitmapWidth, bitmapHeight), new RectF(0, 0, width, height), Matrix.ScaleToFit.CENTER);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
-    }
 }
