@@ -15,10 +15,15 @@ import java.util.List;
 public class PhotobookListAdapter extends BaseAdapter{
     ArrayList<Photobook> list;
     Context context;
+    boolean flag=false;
 
     public PhotobookListAdapter(Context context,List list) {
         this.list=(ArrayList) list;
         this.context=context;
+    }
+
+    public void setList(List list) {
+        this.list = (ArrayList<Photobook>) list;
     }
 
     @Override
@@ -41,10 +46,11 @@ public class PhotobookListAdapter extends BaseAdapter{
         View view=null;
         Photobook photobook=list.get(i);
         if(convertView==null){
-            view = new PhotobookItem(context,photobook);
+            view = new PhotobookCheckboxItem(context,photobook,flag);
         }else{
             view=convertView;
-            PhotobookItem item=(PhotobookItem) view;
+            PhotobookCheckboxItem item=(PhotobookCheckboxItem) view;
+            item.flag=flag;
             item.init(photobook);
         }
         return view;

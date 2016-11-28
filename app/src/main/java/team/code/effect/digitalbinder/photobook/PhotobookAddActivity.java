@@ -1,12 +1,14 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -22,33 +24,50 @@ import team.code.effect.digitalbinder.R;
  */
 
 public class PhotobookAddActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+    private static String DB_PATH;
+    private static String DB_NAME="digitalBinder.sqlite";
+    PhotobookAddActivity activity;
     ListView listView;
     PhotobookListAdapter photobookListAdapter;
     ArrayList<Photobook> list;
     SQLiteDatabase db;
     PhotobookDAO photobookDAO;
-
+    String TAG;
+    File dir;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
-        db = SQLiteDatabase.openDatabase("digitalBinder.sqlite",null,1);
+        setContentView(R.layout.activity_add_photobook);
+        activity =this;
+        TAG=getClass().getName();
+        DB_PATH=getDBPath();
+        dir = new File(Environment.getExternalStorageDirectory(), "DigtalBinder");
+        db = SQLiteDatabase.openDatabase(DB_PATH+DB_NAME,null,SQLiteDatabase.OPEN_READWRITE);
         photobookDAO =new PhotobookDAO(db);
+        init();
+        Log.d(TAG,"추가할수있는 파일 길이는"+list.size());
         listView = (ListView) findViewById(R.id.listView);
         photobookListAdapter = new PhotobookListAdapter(this, list);
         listView.setAdapter(photobookListAdapter);
-
+        listView.setOnItemClickListener(this);
+    }
+    public String getDBPath(){
+        String pack=getClass().getPackage().toString();
+        Log.d(TAG,pack);
+        String path="/data/data/team.code.effect.digitalbinder/databases/";
+        return path;
     }
 
     public void init() {
-        File dir = new File(Environment.getExternalStorageDirectory(), "DigitalBinder");
         File[] files = dir.listFiles();
         /* zip 파일만 검색하기!!*/
         if (files.length > 0) {
             ArrayList<File> fileList = new ArrayList<File>();
             for (int i = 0; i < files.length; i++) {
-                String[] data = files[i].getName().split(".");
-                String ext = data[data.length - 1];
+                Log.d(TAG,"data 길이"+files[i].getName());
+               String[] data = files[i].getName().split("\\.");
+               Log.d(TAG,"data 길이"+data.length);
+                String ext = data[(data.length-1)];
                 if (ext.equals("zip")) {
                     fileList.add(files[i]);
                 }
@@ -57,6 +76,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
                 list = new ArrayList<Photobook>();
                 for (int a = 0; a < fileList.size(); a++) {
                     File file = fileList.get(a);
+                    Log.d(TAG,"파일 이름"+file.getName());
                     /*확장자를 뺀 파일명 구해오기*/
                     int lastIndex = file.getName().lastIndexOf(".");
                     String title = file.getName().substring(0, lastIndex - 1);
@@ -73,18 +93,19 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
 
     /*아이템 터치시 다이얼 로그 뜨고 DAO로 입력 요청하기*/
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        PhotobookItem item = (PhotobookItem) view;
+        PhotobookCheckboxItem item = (PhotobookCheckboxItem) view;
         Photobook photobook = item.photobook;
 
         /*Text 입력 가능한 다이얼 로그 생성*/
+        Log.d(TAG,"다이얼 띄우기!!");
         txtDialog(photobook);
     }
 
     public void txtDialog(final Photobook photobook) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        alert.setTitle("Title");
-        alert.setMessage("Message");
+        alert.setTitle("포토북 추가하기");
+        alert.setMessage("포토북 제목을 입력해주세요");
 
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
@@ -99,6 +120,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
                     photobook.setTitle(value);
                 }
                 photobookDAO.insert(photobook);
+                finish();
             }
         });
 
@@ -111,7 +133,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
                 });
 
         alert.show();
-
+        Log.d(TAG,"다이얼 보이니?");
     }
 
 }

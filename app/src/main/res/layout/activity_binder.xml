@@ -13,12 +13,12 @@
         android:layout_weight="4"
          />
 
-    <com.example.huho.testimageviewer.HorizontalListView
+    <team.code.effect.digitalbinder.photobook.HorizontalListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-    </com.example.huho.testimageviewer.HorizontalListView>
+    </team.code.effect.digitalbinder.photobook.HorizontalListView>
 
 </LinearLayout>

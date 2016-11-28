@@ -55,6 +55,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
             ArrayList fileList=(ArrayList) zipCode.unzip(file.getAbsolutePath(),dir.getAbsolutePath(),true);
             Log.d(TAG,"압축파일 목록 생성"+fileList.size());
             adapter = new PhotoItemListAdapter(this,fileList);
+            img.setImageBitmap(adapter.list.get(0));
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(this);
             Log.d(TAG,"어뎁터 연결");

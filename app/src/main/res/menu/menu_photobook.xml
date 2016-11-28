@@ -10,10 +10,10 @@
         android:id="@+id/delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="삭제 하기"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/share"
         android:icon="@android:drawable/ic_menu_share"
         android:title="공유 하기"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>
