@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.ZipCode;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**

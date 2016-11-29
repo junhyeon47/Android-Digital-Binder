@@ -5,15 +5,22 @@
         android:id="@+id/insert"
         android:icon="@android:drawable/ic_menu_add"
         android:title="추가 하기"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="삭제 하기"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/share"
         android:icon="@android:drawable/ic_menu_share"
         android:title="공유 하기"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/cancel"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="취소"
+        app:showAsAction="never"/>
+
+
 </menu>

@@ -1,6 +1,7 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.content.Context;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,14 +16,17 @@ import java.util.List;
 public class PhotobookListAdapter extends BaseAdapter{
     ArrayList<Photobook> list;
     Context context;
+    ArrayList<PhotobookCheckboxItem> itemList;
     boolean flag=false;
 
     public PhotobookListAdapter(Context context,List list) {
         this.list=(ArrayList) list;
         this.context=context;
+        itemList = new ArrayList<PhotobookCheckboxItem>();
     }
 
     public void setList(List list) {
+        itemList.removeAll(itemList);
         this.list = (ArrayList<Photobook>) list;
     }
 
@@ -53,6 +57,7 @@ public class PhotobookListAdapter extends BaseAdapter{
             item.flag=flag;
             item.init(photobook);
         }
+        itemList.add((PhotobookCheckboxItem)view);
         return view;
     }
 }

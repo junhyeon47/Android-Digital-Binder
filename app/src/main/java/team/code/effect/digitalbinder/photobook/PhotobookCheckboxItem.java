@@ -17,7 +17,8 @@ public class PhotobookCheckboxItem extends LinearLayout{
     CheckBox checkBox;
     TextView txt_title;
     Photobook photobook;
-    Boolean flag=false;
+    Boolean flag=false;//checkBox 보임 설정을 위한 변수
+
     public PhotobookCheckboxItem(Context context, Photobook photobook) {
         super(context);
         this.photobook= photobook;
@@ -27,6 +28,7 @@ public class PhotobookCheckboxItem extends LinearLayout{
         txt_title=(TextView)findViewById(R.id.txt_title);
         init(photobook);
     }
+
     public PhotobookCheckboxItem(Context context, Photobook photobook,boolean flag) {
         super(context);
         this.photobook= photobook;
@@ -40,6 +42,7 @@ public class PhotobookCheckboxItem extends LinearLayout{
 
 
     public void init(Photobook photobook){
+        this.photobook=photobook;
         showCheckBox(flag);
         txt_title.setText(photobook.getTitle());
     }

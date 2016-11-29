@@ -1,23 +1,25 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.BinderDAO;
 
 /**
  * Created by student on 2016-11-28.
@@ -31,9 +33,10 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
     PhotobookListAdapter photobookListAdapter;
     ArrayList<Photobook> list;
     SQLiteDatabase db;
-    PhotobookDAO photobookDAO;
+    BinderDAO photobookDAO;
     String TAG;
     File dir;
+    Toolbar toolbar;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +46,17 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
         DB_PATH=getDBPath();
         dir = new File(Environment.getExternalStorageDirectory(), "DigtalBinder");
         db = SQLiteDatabase.openDatabase(DB_PATH+DB_NAME,null,SQLiteDatabase.OPEN_READWRITE);
-        photobookDAO =new PhotobookDAO(db);
+        photobookDAO =new BinderDAO(db);
         init();
         Log.d(TAG,"추가할수있는 파일 길이는"+list.size());
         listView = (ListView) findViewById(R.id.listView);
         photobookListAdapter = new PhotobookListAdapter(this, list);
         listView.setAdapter(photobookListAdapter);
         listView.setOnItemClickListener(this);
+
+        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Photobook 추가하기");
     }
     public String getDBPath(){
         String pack=getClass().getPackage().toString();
@@ -79,13 +86,15 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
                     Log.d(TAG,"파일 이름"+file.getName());
                     /*확장자를 뺀 파일명 구해오기*/
                     int lastIndex = file.getName().lastIndexOf(".");
-                    String title = file.getName().substring(0, lastIndex - 1);
+                    String title = file.getName().substring(0, lastIndex);
 
                     Photobook photobook = new Photobook();
                     photobook.setFilename(file.getName());
                     photobook.setTitle(title);
                     list.add(photobook);
                 }
+            }else {
+                Toast.makeText(activity, "추가할수있는 파일이 없습니다.", Toast.LENGTH_SHORT).show();
             }
         }
 

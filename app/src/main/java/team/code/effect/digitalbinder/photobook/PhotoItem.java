@@ -28,8 +28,8 @@ public class PhotoItem extends RelativeLayout {
     public void init(Bitmap file){
           //  Log.d(TAG,"파일 경로는 "+file.getAbsolutePath());
           //  bitmap= BitmapFactory.decodeFile(file.getAbsolutePath());
-             bitmap=file;
-            img.setImageBitmap(bitmap);
+          bitmap=file;
+          img.setImageBitmap(bitmap);
 
     }
 
