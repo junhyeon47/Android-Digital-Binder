@@ -10,6 +10,10 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.camera2" />
 
+    <!-- For Bluetooth-->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

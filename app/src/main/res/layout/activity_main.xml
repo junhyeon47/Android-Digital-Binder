@@ -1,79 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="team.code.effect.digitalbinder.main.MainActivity">
-    <LinearLayout
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#63A69F"
-        android:gravity="center"
-        android:orientation="vertical">
-        <ImageButton
-            android:id="@+id/btn_camera"
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="team.code.effect.digitalbinder.main.MainActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
-            android:src="@drawable/ic_photo_camera_white_48dp"
+            android:layout_weight="1"
             android:background="#63A69F"
-            android:onClick="btnClick"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="6"
+                android:background="#63A69F"
+                android:onClick="btnClick"
+                android:src="@drawable/ic_photo_camera_white_48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="카메라로 사진찍고 사진도 묶어 보세요"
+                android:textColor="#e0edec" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="#ffffff"
-            android:text="카메라로 사진찍고 사진도 묶어 보세요"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#F2E1AC"
-        android:gravity="center"
-        android:orientation="vertical">
-        <ImageButton
-            android:id="@+id/btn_explorer"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="6"
-            android:src="@drawable/ic_photo_library_white_48dp"
             android:background="#F2E1AC"
-            android:onClick="btnClick"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_explorer"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="6"
+                android:background="#F2E1AC"
+                android:onClick="btnClick"
+                android:src="@drawable/ic_photo_library_white_48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="여러 사진들을 선택하여 하나로 묶어 보세요!"
+                android:textColor="#a19672" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="#a19672"
-            android:text="여러 사진들을 선택하여 하나로 묶어 보세요!"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#F2836B"
-        android:gravity="center"
-        android:orientation="vertical">
-        <ImageButton
-            android:id="@+id/btn_photobook"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="6"
-            android:src="@drawable/ic_photo_album_white_48dp"
             android:background="#F2836B"
-            android:onClick="btnClick" />
-        <TextView
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_photobook"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="6"
+                android:background="#F2836B"
+                android:onClick="btnClick"
+                android:src="@drawable/ic_photo_album_white_48dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="사진들을 한번에 확인할 수 있는 포토북!"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+        <!--<RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textColor="#ffffff"
-            android:text="사진들을 한번에 확인할 수 있는 포토북!"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/baseView"></RelativeLayout>-->
     </LinearLayout>
-    <!--<RelativeLayout
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/baseView"></RelativeLayout>-->
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:background="#baf2e4e1"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+</android.support.v4.widget.DrawerLayout>
