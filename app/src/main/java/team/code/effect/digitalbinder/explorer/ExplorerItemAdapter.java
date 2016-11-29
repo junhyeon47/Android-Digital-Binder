@@ -1,6 +1,7 @@
 package team.code.effect.digitalbinder.explorer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 public class ExplorerItemAdapter extends BaseAdapter{
     String TAG;
     ArrayList<Explorer> list=new ArrayList<Explorer>();
+    ArrayList<ExplorerItem> itemList=new ArrayList();
     Context context;
 
     public ExplorerItemAdapter(Context context, ArrayList<Explorer> list) {
@@ -45,10 +47,15 @@ public class ExplorerItemAdapter extends BaseAdapter{
             view=convertView;
             ExplorerItem explorerItem=(ExplorerItem)view;
             explorerItem.setExplorerImg(explorer);
+            itemList.add(explorerItem);
         }else{
             view=new ExplorerItem(context, explorer);
+            ExplorerItem explorerItem=(ExplorerItem)view;
+            itemList.add(explorerItem);
+
         }
 
+        Log.d(TAG, "itemList.size"+itemList.size());
 
 
         return view;

@@ -1,15 +1,19 @@
 package team.code.effect.digitalbinder.explorer;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -24,18 +28,25 @@ import team.code.effect.digitalbinder.R;
 
 public class ExplorerItemListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
+    String TAG;
     GridView ex_gridView;
     Explorer explorer;
+    ExplorerItem explorerItem;
+    ExplorerItemAdapter explorerItemAdapter;
+    int count;
+    boolean flag=true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exploreritemlist);
+        TAG=this.getClass().getName();
         Intent intent = getIntent();
         explorer = intent.getParcelableExtra("data");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
         setSupportActionBar(toolbar);
+
 
         ArrayList<Explorer> list = new ArrayList<Explorer>();
         File dir = new File(explorer.getFilename());
@@ -50,7 +61,7 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
 
         ex_gridView = (GridView) findViewById(R.id.ex_gridView);
 
-        ExplorerItemAdapter explorerItemAdapter = new ExplorerItemAdapter(this, list);
+        explorerItemAdapter = new ExplorerItemAdapter(this, list);
         ex_gridView.setAdapter(explorerItemAdapter);
         ex_gridView.setOnItemClickListener(this);
     }
@@ -66,23 +77,51 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.ex_select:
-                Toast.makeText(this, "전체선택 메뉴", Toast.LENGTH_SHORT).show();
+                for(int i=0; i<explorerItemAdapter.itemList.size();i++){
+                    explorerItemAdapter.itemList.get(i).checkBox.setChecked(true);
+                    count=explorerItemAdapter.itemList.get(i).getChildCount();
+                }
                 break;
             case R.id.make_book:
-                showMsg("안내","포토북을 만드시겠습니까?");
+                if(count==0){
+                    showMsg("안내", "한개 이상의 이미지를 선택하셔야 합니다.");
+                }else{
+                    showMsg("안내", "포토북을 만드시겠습니까?");
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Toast.makeText(this, "누름?", Toast.LENGTH_SHORT).show();
+        explorerItem=(ExplorerItem) view;
+        explorerItem.checkBox.setChecked(flag);
+        if(flag==true){
+            count++;
+        }else{
+            count--;
+        }
+        flag=!flag;
+        Log.d(TAG, "count= "+count);
+
     }
+
 
     public void showMsg(String title, String message){
         AlertDialog.Builder alert=new AlertDialog.Builder(this);
-        alert.setTitle(title).setMessage(message).show();
+        alert.setTitle(title).setMessage(message).setPositiveButton("예", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        }).show();
     }
 
 

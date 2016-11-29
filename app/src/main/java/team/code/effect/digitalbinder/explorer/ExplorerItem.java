@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -24,6 +25,7 @@ public class ExplorerItem extends LinearLayout {
     Context context;
     Explorer explorer;
     ImageView ex_img;
+    CheckBox checkBox;
 
     public ExplorerItem(Context context, Explorer explorer) {
         super(context);
@@ -33,6 +35,7 @@ public class ExplorerItem extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.item_photo_explorer, this);
         ex_img = (ImageView) findViewById(R.id.ex_img);
+        checkBox=(CheckBox)findViewById(R.id.ex_checkBox);
         setExplorerImg(explorer);
     }
 
