@@ -17,13 +17,11 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
     Context context;
     CameraActivity cameraActivity;
     Camera camera;
-    static int pictureWidth, pictureHegith;
 
 
-    public CustomCamera(Context context, CameraActivity cameraActivity) {
-        super(context);
+    public CustomCamera(CameraActivity cameraActivity) {
+        super(cameraActivity.getApplicationContext());
         TAG = getClass().getName();
-        this.context = context;
         this.setSurfaceTextureListener(this);
         this.cameraActivity = cameraActivity;
 
@@ -53,8 +51,6 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
 
         camera.startPreview();
         setRotation(90.0f);
-        CameraActivity.previewWidth = cameraActivity.preview.getWidth();
-        CameraActivity.previewHeight = cameraActivity.preview.getHeight();
 
         Log.d(TAG, "[TextureView Size] width: "+cameraActivity.preview.getWidth()+", height"+cameraActivity.preview.getHeight());
     }
@@ -96,9 +92,8 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
             Log.d(TAG, "image length: "+bytes.length);
             Preview preview = new Preview();
             preview.setBytes(bytes);
-            preview.setOrientation(cameraActivity.orientation);
-            cameraActivity.list.add(preview);
-            //cameraActivity.previewPagerAdapter.notifyDataSetChanged();
+            preview.setOrientation(CameraActivity.orientation);
+            CameraActivity.list.add(preview);
         }
     };
 
@@ -106,8 +101,6 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         Camera.Parameters parameters = camera.getParameters();
         if(parameters != null){
             List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
-            CustomCamera.pictureWidth = pictureSizeList.get(0).width;
-            CustomCamera.pictureHegith = pictureSizeList.get(0).height;
 
             for(Camera.Size size : pictureSizeList){
                 Log.d(TAG, "[Picture Size] width: "+size.width+", height :"+size.height);

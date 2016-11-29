@@ -1,5 +1,6 @@
 package team.code.effect.digitalbinder.camera;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,21 +29,22 @@ import android.widget.PopupWindow;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.DeviceHelper;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
     final String TAG = getClass().getName();
 
     //레이아웃 관련 멤버 변수 정의
     FrameLayout preview;
-    ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter;
+    ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter, btn_back;
     CustomCamera customCamera;
     View popupPreview;
     PopupWindow popupWindow;
     RecyclerView recyclerview;
-    ViewPager viewPager; //not use
     PreviewRecyclerAdapter previewRecyclerAdapter;
-    PreviewPagerAdapter previewPagerAdapter;
     static ArrayList<Preview> list = new ArrayList<Preview>();
+    FrameLayout.LayoutParams layoutParams;
 
     //센서 관련 멤버 변수 정의
     SensorManager sensorManager;
@@ -54,8 +57,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     float[] orientationData = new float[3];
     static int orientation;
 
-    static int previewWidth, previewHeight;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,23 +66,21 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         btn_close_preview = (ImageButton)findViewById(R.id.btn_close_preview);
         btn_save = (ImageButton)findViewById(R.id.btn_save);
         btn_shutter = (ImageButton)findViewById(R.id.btn_shutter);
+        btn_back = (ImageButton)findViewById(R.id.btn_back);
         popupPreview = View.inflate(this, R.layout.popup_preview, null);
+
+        layoutParams = (FrameLayout.LayoutParams)btn_back.getLayoutParams();
 
         recyclerview = (RecyclerView)popupPreview.getRootView().findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayout.HORIZONTAL);
         recyclerview.setLayoutManager(layoutManager);
         recyclerview.setHasFixedSize(true);
-        previewRecyclerAdapter = new PreviewRecyclerAdapter(getApplicationContext(), this);
+        previewRecyclerAdapter = new PreviewRecyclerAdapter(this);
         recyclerview.setAdapter(previewRecyclerAdapter);
-        //iv_selected = (ImageView)popupPreview.getRootView().findViewById(R.id.iv_selected);
-        //viewPager = (ViewPager)popupPreview.getRootView().findViewById(R.id.view_pager);
-        //previewPagerAdapter = new PreviewPagerAdapter(getApplicationContext(), this);
-        //viewPager.setAdapter(previewPagerAdapter);
-        //Log.d(TAG, "ViewPager - width: "+viewPager.getWidth()+", height: "+viewPager.getHeight());
 
         Log.d(TAG, "SDK Version: "+Build.VERSION.SDK_INT);
-        customCamera = new CustomCamera(getApplicationContext(), this);
+        customCamera = new CustomCamera(this);
         preview.addView(customCamera);
         Log.d(TAG, "Previous Camera");
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -140,26 +139,41 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             case R.id.btn_save:
                 //저장 하기.
                 break;
+            case R.id.btn_back:
+                finishActivity();
+                break;
         }
     }
 
-    public void changeButtonRoation(int orientation){
+    public void changeButtonRoation(){
         switch (orientation){
-            case 0:
+            case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
                 btn_open_preview.setRotation(-90f);
                 btn_save.setRotation(-90f);
+                btn_back.setRotation(90f);
+                layoutParams.gravity=Gravity.START;
+                btn_back.setLayoutParams(layoutParams);
                 break;
-            case 1:
+            case DeviceHelper.ORIENTATION_PORTRAIT:
                 btn_open_preview.setRotation(0f);
                 btn_save.setRotation(0f);
+                btn_back.setRotation(0f);
+                layoutParams.gravity=Gravity.START;
+                btn_back.setLayoutParams(layoutParams);
                 break;
-            case 2:
+            case DeviceHelper.ORIENTATION_LANDSCAPE:
                 btn_open_preview.setRotation(90f);
                 btn_save.setRotation(90f);
+                btn_back.setRotation(90f);
+                layoutParams.gravity=Gravity.END;
+                btn_back.setLayoutParams(layoutParams);
                 break;
-            case 3:
+            case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
                 btn_open_preview.setRotation(180f);
                 btn_save.setRotation(180f);
+                btn_back.setRotation(-180f);
+                layoutParams.gravity=Gravity.END;
+                btn_back.setLayoutParams(layoutParams);
                 break;
         }
     }
@@ -187,9 +201,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 orientation = 2;
             else if (pitch >= 45 && roll >= -45 && roll < 45 )
                 orientation = 3;
-            //Log.d(TAG, "[orientation]: "+orientation);
 
-            changeButtonRoation(orientation);
+            changeButtonRoation();
         }
     }
 
@@ -198,18 +211,28 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
-            case KeyEvent.KEYCODE_BACK:
-                if(popupWindow != null) {
-                    if (popupWindow.isShowing())
-                        popupWindow.dismiss();
-                }
-                list.removeAll(list);
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
+    public void finishActivity(){
+        AlertDialog.Builder alert = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진이 삭제됩니다. 계속 하시겠습니까?");
+        alert.setPositiveButton("뒤로가기", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                CameraActivity.list.removeAll(CameraActivity.list);
+                finish();
+            }
+        });
+        alert.setNegativeButton("취소", null);
+
+        alert.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (popupWindow != null) {
+            if (popupWindow.isShowing()) {
+                closePopupPreview();
+                return;
+            }
+        }
+        finishActivity();
+    }
 }

@@ -8,21 +8,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import java.lang.ref.WeakReference;
 
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import uk.co.senab.photoview.PhotoView;
 
-public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
-    private ImageView iv_thumbnail;
-    private ImageButton btn_remove;
-    private TextView txt_index;
+public class SinglePreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
+    private final String TAG = this.getClass().getName();
+    private PhotoView iv_original;
+    private ImageButton btn_close;
 
-    public PreviewAsync(ImageView iv_thumbnail, ImageButton btn_remove, TextView txt_index) {
-        this.iv_thumbnail = iv_thumbnail;
-        this.btn_remove = btn_remove;
-        this.txt_index = txt_index;
+    public SinglePreviewAsync(PhotoView iv_original, ImageButton btn_close) {
+        this.iv_original = iv_original;
+        this.btn_close = btn_close;
     }
 
     @Override
@@ -39,7 +36,6 @@ public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
         int resizeWidth = (bitmapWidth*size)/bitmapHeight;
 
         Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
-        Bitmap cropBitmap = Bitmap.createBitmap(resizeBitmap, (resizeWidth-size)/2, 0, size, size);
         switch (preview.getOrientation()){
             case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
                 rotateRatio = 180f;
@@ -56,13 +52,12 @@ public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
         }
         Matrix rotateMatrix = new Matrix();
         rotateMatrix.preRotate(rotateRatio);
-        return Bitmap.createBitmap(cropBitmap, 0, 0, size, size, rotateMatrix, true);
+        return Bitmap.createBitmap(resizeBitmap, 0, 0, resizeWidth, size, rotateMatrix, true);
     }
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        iv_thumbnail.setImageBitmap(bitmap);
-        btn_remove.setVisibility(View.VISIBLE);
-        txt_index.setVisibility(View.VISIBLE);
+        iv_original.setImageBitmap(bitmap);
+        btn_close.setVisibility(View.VISIBLE);
     }
 }

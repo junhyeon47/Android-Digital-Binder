@@ -17,7 +17,6 @@ public class PreviewViewHolder extends RecyclerView.ViewHolder{
     ImageView iv_thumbnail;
     TextView txt_index;
     ImageButton btn_remove;
-    PreviewRecyclerAdapter adapter;
 
     public PreviewViewHolder(View itemView) {
         super(itemView);
@@ -25,15 +24,5 @@ public class PreviewViewHolder extends RecyclerView.ViewHolder{
         this.iv_thumbnail = (ImageView)itemView.findViewById(R.id.iv_thumbnail);
         this.txt_index = (TextView)itemView.findViewById(R.id.txt_index);
         this.btn_remove = (ImageButton)itemView.findViewById(R.id.btn_remove);
-
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "getAdapterPosition(): "+getAdapterPosition());
-                Preview preview = CameraActivity.list.get(getAdapterPosition());
-               //Bitmap bitmap = CameraActivity.byteToBitmap(preview.getBytes(), 1080, 1920, preview.getOrientation());
-                //CameraActivity.iv_selected.setImageBitmap(bitmap);
-            }
-        });
     }
 }
