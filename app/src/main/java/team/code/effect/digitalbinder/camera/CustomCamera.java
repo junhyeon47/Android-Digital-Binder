@@ -1,6 +1,5 @@
 package team.code.effect.digitalbinder.camera;
 
-import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
@@ -12,9 +11,10 @@ import android.widget.FrameLayout;
 import java.io.IOException;
 import java.util.List;
 
+import team.code.effect.digitalbinder.common.DeviceHelper;
+
 public class CustomCamera extends TextureView implements TextureView.SurfaceTextureListener{
     String TAG;
-    Context context;
     CameraActivity cameraActivity;
     Camera camera;
 
@@ -36,23 +36,21 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
         Log.d(TAG, "onSurfaceTextureAvailable() called");
-
         camera = Camera.open();
-        showPreviewSize();
-        Camera.Size preViewSize = camera.getParameters().getPreviewSize();
-        Log.d(TAG, "preViewSize - width: "+preViewSize.width+", height: "+preViewSize.height);
-        this.setLayoutParams(new FrameLayout.LayoutParams(preViewSize.width, preViewSize.height, Gravity.CENTER));
+        //showPreviewSize();
+        Camera.Size preViewSize = camera.getParameters().getSupportedPreviewSizes().get(0);
+        Log.d(TAG, "[preView Size] width: "+preViewSize.width+", height: "+preViewSize.height);
+        Log.d(TAG, "[TextureView Size] width: "+cameraActivity.preview.getWidth()+", height: "+cameraActivity.preview.getHeight());
+        Log.d(TAG, "[Device Size] width: "+ DeviceHelper.width+", height: "+DeviceHelper.height);
 
+        this.setLayoutParams(new FrameLayout.LayoutParams(cameraActivity.preview.getWidth(), cameraActivity.preview.getHeight(), Gravity.CENTER));
         try {
             camera.setPreviewTexture(surfaceTexture);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        camera.setDisplayOrientation(90);
         camera.startPreview();
-        setRotation(90.0f);
-
-        Log.d(TAG, "[TextureView Size] width: "+cameraActivity.preview.getWidth()+", height"+cameraActivity.preview.getHeight());
     }
 
     @Override
@@ -90,10 +88,12 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         public void onPictureTaken(byte[] bytes, Camera camera) {
             Log.d(TAG, "pictureCallback called");
             Log.d(TAG, "image length: "+bytes.length);
+            camera.stopPreview();
             Preview preview = new Preview();
             preview.setBytes(bytes);
             preview.setOrientation(CameraActivity.orientation);
             CameraActivity.list.add(preview);
+            camera.startPreview();
         }
     };
 
