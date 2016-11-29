@@ -38,7 +38,7 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         Log.d(TAG, "onSurfaceTextureAvailable() called");
 
         camera = Camera.open();
-        //showPreviewSize();
+        showPreviewSize();
         Camera.Size preViewSize = camera.getParameters().getPreviewSize();
         Log.d(TAG, "preViewSize - width: "+preViewSize.width+", height: "+preViewSize.height);
         this.setLayoutParams(new FrameLayout.LayoutParams(preViewSize.width, preViewSize.height, Gravity.CENTER));
