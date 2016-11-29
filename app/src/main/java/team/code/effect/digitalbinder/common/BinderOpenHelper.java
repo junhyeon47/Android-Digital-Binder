@@ -1,4 +1,4 @@
-package team.code.effect.digitalbinder.photobook;
+package team.code.effect.digitalbinder.common;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,10 +11,10 @@ import android.util.Log;
  * Created by student on 2016-11-25.
  */
 
-public class PhotobookOpenHelper extends SQLiteOpenHelper{
+public class BinderOpenHelper extends SQLiteOpenHelper{
     String TAG;
 
-    public PhotobookOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public BinderOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         TAG=getClass().getName();
     }

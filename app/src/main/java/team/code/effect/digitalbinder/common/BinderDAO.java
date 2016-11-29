@@ -1,4 +1,4 @@
-package team.code.effect.digitalbinder.photobook;
+package team.code.effect.digitalbinder.common;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,15 +7,17 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import team.code.effect.digitalbinder.photobook.Photobook;
+
 /**
  * Created by student on 2016-11-25.
  */
 
-public class PhotobookDAO {
+public class BinderDAO {
     String TAG;
     SQLiteDatabase db;
 
-    public PhotobookDAO(SQLiteDatabase db) {
+    public BinderDAO(SQLiteDatabase db) {
         this.db = db;
         TAG=getClass().getName();
     }

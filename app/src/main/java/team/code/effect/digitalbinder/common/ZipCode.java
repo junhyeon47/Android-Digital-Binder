@@ -1,7 +1,8 @@
-package team.code.effect.digitalbinder.photobook;
+package team.code.effect.digitalbinder.common;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -161,7 +162,15 @@ public class ZipCode {
                     File path = new File(targetFile.getParent());
                     path.mkdirs();
                     //  fileList.add(unzipEntry(zis, targetFile));
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+
                     Bitmap bitmap = BitmapFactory.decodeStream(zis);
+
+                    if(bitmap.getWidth()>1000 && bitmap.getHeight() < bitmap.getWidth()){
+                        bitmap=bitmap.createScaledBitmap(bitmap, 1024, 768, true);
+                    }else if(bitmap.getHeight()>1000 && bitmap.getHeight() >bitmap.getWidth()) {
+                        bitmap=bitmap.createScaledBitmap(bitmap, 768, 1024, true);
+                    }
                     isList.add(bitmap);
                     //  isList.add(unzipBitmap(zis, targetFile));
                 }
