@@ -19,12 +19,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -56,6 +60,11 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     float[] rotation = new float[9];
     float[] orientationData = new float[3];
     static int orientation;
+    int oldOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
+    int newOrientation;
+
+    //애니메이션
+    RotateAnimation rotate0To90;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +96,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
+        rotate0To90 = new RotateAnimation(0, 90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate0To90.setDuration(300);
     }
 
     @Override
@@ -153,6 +164,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 btn_back.setRotation(90f);
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
+                newOrientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_PORTRAIT:
                 btn_open_preview.setRotation(0f);
@@ -160,13 +172,14 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 btn_back.setRotation(0f);
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
+                newOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
                 break;
             case DeviceHelper.ORIENTATION_LANDSCAPE:
-                btn_open_preview.setRotation(90f);
-                btn_save.setRotation(90f);
-                btn_back.setRotation(90f);
+                //btn_open_preview.setRotation(90f);
+                //btn_save.setRotation(90f);
+                //btn_back.setRotation(90f);
                 layoutParams.gravity=Gravity.END;
-                btn_back.setLayoutParams(layoutParams);
+                newOrientation = DeviceHelper.ORIENTATION_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
                 btn_open_preview.setRotation(180f);
@@ -174,7 +187,16 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 btn_back.setRotation(-180f);
                 layoutParams.gravity=Gravity.END;
                 btn_back.setLayoutParams(layoutParams);
+                newOrientation = DeviceHelper.ORIENTATION_REVERSE_PORTRAIT;
                 break;
+        }
+
+        if(oldOrientation != newOrientation){
+            Toast.makeText(this, "회전", Toast.LENGTH_SHORT).show();
+            if(oldOrientation == DeviceHelper.ORIENTATION_PORTRAIT && newOrientation == DeviceHelper.ORIENTATION_LANDSCAPE){
+                btn_open_preview.startAnimation(rotate0To90);
+            }
+            oldOrientation = newOrientation;
         }
     }
 
