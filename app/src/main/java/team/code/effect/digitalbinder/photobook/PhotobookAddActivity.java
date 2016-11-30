@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.BinderDAO;
 
 /**
@@ -26,8 +27,8 @@ import team.code.effect.digitalbinder.common.BinderDAO;
  */
 
 public class PhotobookAddActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    private static String DB_PATH;
-    private static String DB_NAME="digitalBinder.sqlite";
+    //private static String DB_PATH;
+    //private static String DB_NAME="digitalBinder.sqlite";
     PhotobookAddActivity activity;
     ListView listView;
     PhotobookListAdapter photobookListAdapter;
@@ -43,9 +44,9 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
         setContentView(R.layout.activity_add_photobook);
         activity =this;
         TAG=getClass().getName();
-        DB_PATH=getDBPath();
-        dir = new File(Environment.getExternalStorageDirectory(), "DigtalBinder");
-        db = SQLiteDatabase.openDatabase(DB_PATH+DB_NAME,null,SQLiteDatabase.OPEN_READWRITE);
+        //DB_PATH=getDBPath();
+        dir = new File(AppConstans.APP_PATH);
+        db = SQLiteDatabase.openDatabase(AppConstans.DB_PATH,null,SQLiteDatabase.OPEN_READWRITE);
         photobookDAO =new BinderDAO(db);
         init();
         Log.d(TAG,"추가할수있는 파일 길이는"+list.size());
@@ -58,6 +59,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Photobook 추가하기");
     }
+
     public String getDBPath(){
         String pack=getClass().getPackage().toString();
         Log.d(TAG,pack);
