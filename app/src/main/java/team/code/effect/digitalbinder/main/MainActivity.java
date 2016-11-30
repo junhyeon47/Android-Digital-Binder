@@ -1,50 +1,30 @@
 package team.code.effect.digitalbinder.main;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.drawable.PaintDrawable;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
 import java.io.File;
-import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.camera.CameraActivity;
 import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.BinderDAO;
+import team.code.effect.digitalbinder.common.DatabaseHelper;
 import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
-
-import static team.code.effect.digitalbinder.main.BluetoothActivity.DISCOVER_DURATION;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     static final int PERMISSION_CAMERA = 1;
@@ -59,10 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //마지막으로 뒤로가기 버튼이 터치된 시간
     private long lastTimeBackPressed;
 
-    /*블루투스*/
-    public static  final int DISCOVER_DURATION = 300;
-    public static final int REQUEST_BLU = 1;
-
+    //DAO 선언
+    public  static BinderDAO dao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //메뉴 리스너
         navigationView = (NavigationView)findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //데이터베이스 얻어오기
+        dao = new BinderDAO(DatabaseHelper.initialize(getApplicationContext()));
     }
 
     public void btnClick(View view) {

@@ -6,7 +6,6 @@
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
-
     android:paddingLeft="@dimen/activity_horizontal_margin"
 
 
@@ -21,6 +20,7 @@
         android:paddingTop="10dp"/>
 
     <TextView
+        android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="example@example.com"

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#2a8886ff">
+        <ImageView
+            android:src="@drawable/ic_textsms_black_48dp"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="28dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:text="어플리케이션 정보"
+            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:onClick="sendViaBluetooth"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#55fff388">
+        <ImageView
+            android:src="@drawable/ic_perm_phone_msg_black_48dp"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:text="개발자 문의"
+            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:onClick="FileChooser"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"/>
+
+
+</LinearLayout>
