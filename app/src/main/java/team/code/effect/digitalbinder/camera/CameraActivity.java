@@ -41,7 +41,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
     //레이아웃 관련 멤버 변수 정의
     FrameLayout preview;
-    ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter, btn_back;
+    ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter, btn_back, btn_shutter_ring;
     CustomCamera customCamera;
     View popupPreview;
     PopupWindow popupWindow;
@@ -79,6 +79,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         btn_save = (ImageButton)findViewById(R.id.btn_save);
         btn_shutter = (ImageButton)findViewById(R.id.btn_shutter);
         btn_back = (ImageButton)findViewById(R.id.btn_back);
+        btn_shutter_ring = (ImageButton)findViewById(R.id.btn_shutter_ring);
         popupPreview = View.inflate(this, R.layout.popup_preview, null);
 
         layoutParams = (FrameLayout.LayoutParams)btn_back.getLayoutParams();
@@ -130,8 +131,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         btn_back.clearAnimation();
         btn_open_preview.setVisibility(View.GONE);
         btn_close_preview.setVisibility(View.VISIBLE);
-        btn_save.setEnabled(false);
         btn_shutter.setEnabled(false);
+        btn_shutter_ring.setImageResource(R.drawable.ic_panorama_fish_eye_gray_48dp);
 
         Log.d(TAG, "Popup Window Size - width: "+preview.getWidth()+", height: "+preview.getHeight());
         popupWindow = new PopupWindow(popupPreview, preview.getWidth(), preview.getHeight(), false);
@@ -141,8 +142,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     private void closePopupPreview() {
         btn_open_preview.setVisibility(View.VISIBLE);
         btn_close_preview.setVisibility(View.GONE);
-        btn_save.setEnabled(true);
         btn_shutter.setEnabled(true);
+        btn_shutter_ring.setImageResource(R.drawable.ic_panorama_fish_eye_white_48dp);
         popupWindow.dismiss();
     }
 

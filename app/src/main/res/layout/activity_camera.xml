@@ -52,8 +52,10 @@
             android:visibility="gone"/>
         <FrameLayout
             android:layout_width="70dp"
-            android:layout_height="70dp">
+            android:layout_height="70dp"
+            android:layout_gravity="center">
             <ImageButton
+                android:id="@+id/btn_shutter_ring"
                 android:src="@drawable/ic_panorama_fish_eye_white_48dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -68,7 +70,7 @@
                 android:background="@android:color/transparent"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
-                android:alpha="0.4"
+                android:alpha="0.5"
                 android:onClick="btnClick"/>
         </FrameLayout>
 

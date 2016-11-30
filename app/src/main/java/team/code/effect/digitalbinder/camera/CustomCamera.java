@@ -79,7 +79,6 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         @Override
         public void onShutter() {
             Log.d(TAG, "shutterCallback called");
-            cameraActivity.btn_shutter.setEnabled(true);
         }
     };
 
@@ -94,6 +93,7 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
             preview.setOrientation(CameraActivity.orientation);
             CameraActivity.list.add(preview);
             camera.startPreview();
+            cameraActivity.btn_shutter.setEnabled(true);
         }
     };
 
