@@ -18,7 +18,6 @@ public class ExplorerTitleAdapter extends BaseAdapter {
     Context context;
 
     public ExplorerTitleAdapter(Context context, ArrayList list) {
-
         TAG=this.getClass().getName();
         this.context=context;
         this.list=list;

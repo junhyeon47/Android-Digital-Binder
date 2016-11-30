@@ -60,7 +60,17 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
         File dcimCamera = new File(Environment.DIRECTORY_DCIM, "Camera");
         File storageCamera = new File(Environment.getExternalStorageDirectory(), dcimCamera.getAbsolutePath());
 
-        File[] cameraFiles = storageCamera.listFiles();
+        File dir=new File(Environment.getExternalStorageDirectory().toString());
+        File[] fileTitle=dir.listFiles();
+
+        String[] fileTitles=dir.toString().split("/");
+
+
+        Log.d(TAG, "fileTitle "+fileTitle[0].getName());
+
+
+
+        //File[] cameraFiles = storageCamera.listFiles();
 
         String[] facebookTitle = storageFacebook.toString().split("/");
         String[] cameraTitle = storageCamera.toString().split("/");
@@ -76,11 +86,14 @@ public class ExplorerActivity extends AppCompatActivity implements AdapterView.O
 
         explorerList = new ArrayList<Explorer>();
 
-        for (int i = 0; i < titleList.length; i++) {
-            Explorer explorer = new Explorer();
-            explorer.setTitle(titleList[i]);
-            explorer.setFilename(filelist[i]);
-            explorerList.add(explorer);
+
+
+        for (int i = 0; i < fileTitle.length; i++) {
+                Explorer explorer = new Explorer();
+                explorer.setTitle(fileTitle[i].getName());
+                explorer.setFilename(fileTitle[i].getPath());
+                explorerList.add(explorer);
+
         }
 
         return explorerList;
