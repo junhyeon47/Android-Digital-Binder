@@ -25,11 +25,13 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/developer"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#55fff388">
+        android:background="#55fff388"
+        android:onClick="bt1">
         <ImageView
             android:src="@drawable/ic_perm_phone_msg_black_48dp"
             android:layout_gravity="center"
@@ -42,8 +44,7 @@
             android:layout_weight="4"
             android:text="개발자 문의"
             android:textSize="20sp"
-            android:gravity="center_vertical"
-            android:onClick="FileChooser"/>
+            android:gravity="center_vertical"/>
     </LinearLayout>
 
 

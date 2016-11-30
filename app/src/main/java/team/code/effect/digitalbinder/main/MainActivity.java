@@ -143,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(MainActivity.this, BluetoothActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.nav_info:
+                intent = new Intent(MainActivity.this, InfoItem.class);
+                startActivity(intent);
+                break;
         }
         return false;
     }

@@ -18,12 +18,6 @@
 
     <item android:title="">
         <menu>
-            <item
-                android:icon="@drawable/ic_textsms_black_48dp"
-                android:title="어플리케이션 정보" />
-            <item
-                android:icon="@drawable/ic_perm_phone_msg_black_48dp"
-                android:title="개발자 문의" />
         </menu>
     </item>
 
