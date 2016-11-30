@@ -60,11 +60,14 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     float[] rotation = new float[9];
     float[] orientationData = new float[3];
     static int orientation;
-    int oldOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
+    int oldOrientation;
     int newOrientation;
 
     //애니메이션
-    RotateAnimation rotate0To90;
+    ArrayList<ImageButton> btnList = new ArrayList<ImageButton>();
+    RotateAnimation rotate;
+    int[] angle = new int[]{-90, 0, 90, 180};
+    Animation anim_shutter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +99,14 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        rotate0To90 = new RotateAnimation(0, 90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotate0To90.setDuration(300);
+        //리스트 애니메이션 적용할 버튼 리스트에 추가
+        btnList.add(btn_back);
+        btnList.add(btn_open_preview);
+        btnList.add(btn_save);
+
+        //적용할 애니메이션
+        oldOrientation = CameraActivity.orientation;
+        anim_shutter = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_shutter);
     }
 
     @Override
@@ -116,6 +125,9 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     }
 
     public void openPopupPreview(){
+        btn_open_preview.clearAnimation();
+        btn_save.clearAnimation();
+        btn_back.clearAnimation();
         btn_open_preview.setVisibility(View.GONE);
         btn_close_preview.setVisibility(View.VISIBLE);
         btn_save.setEnabled(false);
@@ -138,13 +150,13 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         switch (view.getId()){
             case R.id.btn_open_preview:
                 openPopupPreview();
-
                 break;
             case R.id.btn_close_preview:
                 closePopupPreview();
                 break;
             case R.id.btn_shutter:
                 customCamera.takePicture();
+                btn_shutter.startAnimation(anim_shutter);
                 btn_shutter.setEnabled(false);
                 break;
             case R.id.btn_save:
@@ -157,34 +169,23 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     }
 
     public void changeButtonRoation(){
-        switch (orientation){
+        switch (CameraActivity.orientation){
             case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
-                btn_open_preview.setRotation(-90f);
-                btn_save.setRotation(-90f);
-                btn_back.setRotation(90f);
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_PORTRAIT:
-                btn_open_preview.setRotation(0f);
-                btn_save.setRotation(0f);
-                btn_back.setRotation(0f);
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
                 break;
             case DeviceHelper.ORIENTATION_LANDSCAPE:
-                //btn_open_preview.setRotation(90f);
-                //btn_save.setRotation(90f);
-                //btn_back.setRotation(90f);
                 layoutParams.gravity=Gravity.END;
+                btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
-                btn_open_preview.setRotation(180f);
-                btn_save.setRotation(180f);
-                btn_back.setRotation(-180f);
                 layoutParams.gravity=Gravity.END;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_PORTRAIT;
@@ -192,11 +193,27 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         }
 
         if(oldOrientation != newOrientation){
-            Toast.makeText(this, "회전", Toast.LENGTH_SHORT).show();
-            if(oldOrientation == DeviceHelper.ORIENTATION_PORTRAIT && newOrientation == DeviceHelper.ORIENTATION_LANDSCAPE){
-                btn_open_preview.startAnimation(rotate0To90);
-            }
+            animateRotation(angle[oldOrientation], angle[newOrientation]);
             oldOrientation = newOrientation;
+        }
+    }
+
+    public void animateRotation(int fromAngle, int toAngle){
+        if(popupWindow != null)
+            if (popupWindow.isShowing())
+                return;
+
+
+
+
+        for(int i=0; i<btnList.size(); ++i){
+            if(btnList.get(i).getId() == R.id.btn_back && toAngle == -90)
+                rotate = new RotateAnimation(fromAngle, -toAngle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            else
+                rotate = new RotateAnimation(fromAngle, toAngle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            rotate.setDuration(300);
+            rotate.setFillAfter(true);
+            btnList.get(i).startAnimation(rotate);
         }
     }
 

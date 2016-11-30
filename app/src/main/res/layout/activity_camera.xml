@@ -40,7 +40,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:textColor="#FFFFFF"
             android:onClick="btnClick"/>
         <ImageButton
             android:id="@+id/btn_close_preview"
@@ -49,18 +48,30 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:textColor="#FFFFFF"
             android:onClick="btnClick"
             android:visibility="gone"/>
-        <ImageButton
-            android:id="@+id/btn_shutter"
-            android:src="@drawable/ic_panorama_fish_eye_white_48dp"
+        <FrameLayout
             android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:onClick="btnClick"/>
+            android:layout_height="70dp">
+            <ImageButton
+                android:src="@drawable/ic_panorama_fish_eye_white_48dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"/>
+            <ImageButton
+                android:id="@+id/btn_shutter"
+                android:src="@drawable/ic_lens_white_48dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:alpha="0.4"
+                android:onClick="btnClick"/>
+        </FrameLayout>
+
         <ImageButton
             android:id="@+id/btn_save"
             android:src="@drawable/ic_file_download_white_48dp"
@@ -68,8 +79,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="저장"
-            android:textColor="#FFFFFF"
             android:onClick="btnClick"/>
     </LinearLayout>
 </LinearLayout>
