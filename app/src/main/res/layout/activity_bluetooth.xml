@@ -4,15 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/bt_send"
-        android:layout_gravity="right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="sendViaBluetooth"
-        android:text="전송"
-        />
-
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"

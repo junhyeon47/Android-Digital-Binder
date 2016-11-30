@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.BinderDAO;
 import team.code.effect.digitalbinder.photobook.Photobook;
 import team.code.effect.digitalbinder.photobook.PhotobookCheckboxItem;
 import team.code.effect.digitalbinder.photobook.PhotobookListAdapter;
@@ -43,9 +45,12 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     String TAG;
     ListView listView;
     PhotobookListAdapter listAdapter;
+    SQLiteDatabase db;
+    BinderDAO photobookDAO;
     List list;
-    Button bt_send;
-    ArrayList<File> fileList;
+    File file;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,13 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_bluetooth);
         TAG = getClass().getName();
         listView = (ListView) findViewById(R.id.listView);
-        bt_send = (Button) findViewById(R.id.bt_send);
-        list = getFileList();
+        db=SQLiteDatabase.openDatabase(AppConstans.DB_PATH,null,SQLiteDatabase.OPEN_READWRITE);
+        photobookDAO = new BinderDAO(db);
+        list = photobookDAO.selectAll();
+        if(list.size()<=0){
+            Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         listAdapter = new PhotobookListAdapter(this, list);
         listAdapter.flag = true;
         listAdapter.notifyDataSetChanged();
@@ -86,12 +96,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             Toast.makeText(this, "이 기기는 블루투스를 지원하지 않습니다. ", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            fileList = (ArrayList<File>) getItemList(listAdapter.itemList);
-            if (fileList.size() > 0) {
-                enableBluetooth();
-            } else {
-                Toast.makeText(this, "전송할 파일을 선택하여 주세요!!", Toast.LENGTH_SHORT).show();
-            }
+            enableBluetooth();
+            Toast.makeText(this, "전송할 파일을 선택하여 주세요!!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -104,42 +110,37 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == DISCOVER_DURATION && requestCode == REQUEST_BLU) {
+            //  for (int i = 0; i < fileList.size(); i++) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
             intent.setType("text/plain");
+            //    File file = fileList.get(i);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 
-            for (int i = 0; i < fileList.size(); i++) {
-                File file = fileList.get(i);
-                Log.d(TAG,file.getName()+"file전송");
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            PackageManager pm = getPackageManager();
+            List<ResolveInfo> appsList = pm.queryIntentActivities(intent, 0);
 
-                PackageManager pm = getPackageManager();
-                List<ResolveInfo> appsList = pm.queryIntentActivities(intent, 0);
+            if (appsList.size() > 0) {
+                String packageName = null;
+                String className = null;
+                boolean found = false;
 
-                if (appsList.size() > 0) {
-                    Log.d(TAG, "파일보내기 시작");
-                    String packageName = null;
-                    String className = null;
-                    boolean found = false;
-
-                    for (ResolveInfo info : appsList) {
-                        packageName = info.activityInfo.packageName;
-                        Log.d(TAG, "BT검색" + packageName);
-                        if (packageName.equals("com.android.bluetooth")) {
-                            className = info.activityInfo.name;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        Toast.makeText(this, "블루투스가 발견되지 않았습니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d(TAG, "파일보내기 진짜 시작");
-                        intent.setClassName(packageName, className);
-                        startActivity(intent);
+                for (ResolveInfo info : appsList) {
+                    packageName = info.activityInfo.packageName;
+                    if (packageName.equals("com.android.bluetooth")) {
+                        className = info.activityInfo.name;
+                        found = true;
+                        break;
                     }
                 }
+                if (!found) {
+                    Toast.makeText(this, "블루투스가 발견되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    intent.setClassName(packageName, className);
+                    startActivity(intent);
+                }
             }
+            //  }
 
         } else {
             Toast.makeText(this, "블루투스가 취소되었습니다.", Toast.LENGTH_SHORT).show();
@@ -155,24 +156,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     public void itemCheck(View view) {
         PhotobookCheckboxItem item = (PhotobookCheckboxItem) view;
         item.checkBox.setChecked(!item.checkBox.isChecked());
-    }
+        file = new File(AppConstans.APP_PATH + "/" + item.photobook.getFilename());
+        enableBluetooth();
 
-    //
-    public List getItemList(List list) {
-        Log.d(TAG, list.size() + "파일 목록!");
-        ArrayList<File> sendlist = new ArrayList<File>();
-        for (int i = 0; i < list.size(); i++) {
-            PhotobookCheckboxItem item = (PhotobookCheckboxItem) list.get(i);
-            if (item.checkBox.isChecked()) {
-                Photobook photobook = item.photobook;
-                File file = new File(AppConstans.APP_PATH+"/"+photobook.getFilename());
-                Log.d(TAG,AppConstans.APP_PATH+"/"+photobook.getFilename());
-                sendlist.add(file);
-            }
-        }
-        Log.d(TAG, sendlist.size() + "전송할 파일 목록!");
-        return sendlist;
     }
-
 
 }
