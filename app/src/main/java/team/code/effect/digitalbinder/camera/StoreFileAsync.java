@@ -14,6 +14,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,9 +24,10 @@ import java.util.zip.ZipOutputStream;
 
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import team.code.effect.digitalbinder.main.MainActivity;
 import team.code.effect.digitalbinder.photobook.Photobook;
 
-public class StoreFileAsync extends AsyncTask<String, String, Photobook>{
+public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
     private static final int QUALITY = 80;
     private Context context;
     private Dialog dialog;
@@ -46,16 +48,19 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook>{
         String filename = params[0];
         Bitmap bitmap;
         FileOutputStream fos;
-        File cacheDir = context.getExternalCacheDir();
-        File cacheFile;
+        File tempFile = null;
         Preview preview;
-        ArrayList<String> cacheList = new ArrayList<String>();
+        ArrayList<File> tempList = new ArrayList<File>();
         float rotateRatio = 0f;
-        for(int i=0; i<CameraActivity.list.size(); ++i){
-            try {
+        File tempDir = new File(AppConstans.APP_PATH + "/temp");
+        if (tempDir.exists() == false)
+            tempDir.mkdir();
+        try {
+            for (int i = 0; i < CameraActivity.list.size(); ++i) {
+
                 preview = CameraActivity.list.get(i);
                 bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length);
-                switch (preview.getOrientation()){
+                switch (preview.getOrientation()) {
                     case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
                         rotateRatio = 180f;
                         break;
@@ -72,42 +77,45 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook>{
                 Matrix rotateMatrix = new Matrix();
                 rotateMatrix.preRotate(rotateRatio);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotateMatrix, true);
-                cacheFile = File.createTempFile(Integer.toString(i+1), ".jpg", cacheDir);
-                cacheList.add(cacheFile.getAbsolutePath());
-                fos = new FileOutputStream(cacheFile.getName());
+                tempFile = new File(AppConstans.APP_PATH + "/temp/" + Integer.toString(i + 1) + ".jpg");
+                tempList.add(tempFile);
+                fos = new FileOutputStream(tempFile.getAbsolutePath());
                 bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY, fos);
                 fos.flush();
                 fos.close();
-            }catch (IOException e) {
-                e.printStackTrace();
+
             }
-        }
-        try {
-        fos = new FileOutputStream(AppConstans.APP_PATH+"/"+filename);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ZipOutputStream zos = new ZipOutputStream(bos);
 
-
-            for(int i=0; i<cacheList.size(); ++i){
-//                entry = new ZipEntry();
-//                cacheList.get(i);
-//                entry.setSize(cacheFile.length());
-//                zos.putNextEntry(entry);
-//                zos.wr;
-//                zos.closeEntry();
+            byte[] buff = new byte[16 * 1024];
+            fos = new FileOutputStream(AppConstans.APP_PATH + "/" + filename + ".zip");
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ZipOutputStream zos = new ZipOutputStream(bos);
+            FileInputStream fis = null;
+            for (int i = 0; i < tempList.size(); ++i) {
+                Log.d("ASYNC", tempList.get(i).getAbsolutePath());
+                fis = new FileInputStream(tempList.get(i).getAbsolutePath());
+                zos.putNextEntry(new ZipEntry((i + 1) + ".jpg"));
+                int length;
+                while ((length = fis.read(buff, 0, 16 * 1024)) > 0) {
+                    zos.write(buff, 0, length);
+                }
+                zos.closeEntry();
+                fis.close();
             }
             zos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //tempFile.deleteOnExit();
-        Log.d("StoreFileAsync", filename);
-        //Log.d("StoreFileAsync", cacheDir.toString());
-        return null;
+        Photobook photobook = new Photobook();
+        photobook.setFilename(filename + ".zip");
+        photobook.setTitle(filename);
+        photobook.setIcon("default.jpg");
+        return photobook;
     }
 
     @Override
     protected void onPostExecute(Photobook photobook) {
+        MainActivity.dao.insert(photobook);
         dialog.dismiss();
     }
 

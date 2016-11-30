@@ -317,7 +317,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                             //중복이 없을 때.
                             //AsyncTask 이용해 파일로 저장.
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
-                            async.execute(txt_file_name.getText().toString()+".zip");
+                            async.execute(txt_file_name.getText().toString());
                             //dialog.dismiss();
                         }
                     }
