@@ -78,4 +78,14 @@ public class BinderDAO {
         });
         Log.d(TAG,"update");
     }
+
+    //파일 이름으로 중복 찾기.
+    public boolean isDuplicatedTitle(String fileName){
+        String sql = "select * from photobook where filename=?";
+        Cursor rs = db.rawQuery(sql , new String[]{fileName});
+        if(!rs.moveToNext())
+            return false;
+        else
+            return true;
+    }
 }

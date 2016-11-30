@@ -1,16 +1,12 @@
 package team.code.effect.digitalbinder.camera;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,23 +14,24 @@ import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import team.code.effect.digitalbinder.main.MainActivity;
+import team.code.effect.digitalbinder.photobook.Photobook;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
     final String TAG = getClass().getName();
@@ -63,11 +60,14 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     int oldOrientation;
     int newOrientation;
 
-    //애니메이션
+    //애니메이션 관련 멤버변수 정의
     ArrayList<ImageButton> btnList = new ArrayList<ImageButton>();
     RotateAnimation rotate;
     int[] angle = new int[]{-90, 0, 90, 180};
     Animation anim_shutter;
+
+    //SQLite 관련 멤버 변수 정의
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +108,14 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         //적용할 애니메이션
         oldOrientation = CameraActivity.orientation;
         anim_shutter = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_shutter);
+
+        //데이터베이스 관련 테스트
+        Photobook photobook = new Photobook();
+        photobook.setFilename("메롱.zip");
+        photobook.setIcon("아이콘");
+        photobook.setRegdate("123124");
+        photobook.setTitle("메롱");
+        MainActivity.dao.insert(photobook);
     }
 
     @Override
@@ -161,7 +169,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 btn_shutter.setEnabled(false);
                 break;
             case R.id.btn_save:
-                //저장 하기.
+                btnSaveClick();
                 break;
             case R.id.btn_back:
                 finishActivity();
@@ -274,5 +282,52 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             }
         }
         finishActivity();
+    }
+
+    /*
+     * 파일 저장 순서
+     * 1. 입력 받은 값(txt_file_name)이 중복되는지 확인한다.
+     * 1-1. 중복이 된다면. 다이알로그를 닫지 않고 중복되어서 다시 압력하라고 해야함.
+     * 1-2. 중복된 것이 없다면, 바이트로 저장된 이미지를 순서대로 저장한다.
+     * 2. 파일 저장을 byte 파일을 바로 zip 파일로 저장할 수 있는지 찾아본다.
+     * 3. 바로 저장할 수 없다면, 임시 폴더에 저장한 후 파일을 zip 파일로 압축시킨다.
+     */
+    public void btnSaveClick(){
+        //if(CameraActivity.list.size() == 0 ) return;
+        AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진을 하나로 묶습니다.");
+        builder.setView(R.layout.layout_alert_txt);
+        builder.setPositiveButton("저장", null);
+        builder.setNegativeButton("취소", null);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Dialog dialog = (Dialog)dialogInterface;
+                        EditText txt_file_name = (EditText)dialog.findViewById(R.id.txt_file_name);
+                        if(isExistFile(txt_file_name.getText()+".zip")){
+                            //중복일 경우
+                            txt_file_name.setText("");
+                            txt_file_name.setHint("중복된 이름이 존재합니다.");
+                            txt_file_name.setHintTextColor(getResources().getColor(R.color.colorAccent));
+                        }else{
+                            //중복이 없을 때.
+                            //AsyncTask 이용해 파일로 저장.
+                            StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
+                            async.execute(txt_file_name.getText().toString()+".zip");
+                            //dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+        alertDialog.show();
+    }
+
+    public boolean isExistFile(String filename){
+        return MainActivity.dao.isDuplicatedTitle(filename);
     }
 }
