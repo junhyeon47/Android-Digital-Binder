@@ -8,4 +8,12 @@
         android:layout_height="wrap_content"
         android:text="블루투스를 통해 전송"
         android:onClick="sendViaBluetooth"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="파일선택"
+        android:onClick="FileChooser"/>
+
+
 </LinearLayout>

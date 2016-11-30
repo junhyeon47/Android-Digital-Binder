@@ -81,8 +81,7 @@
                 android:layout_weight="6"
                 android:background="#F2836B"
                 android:onClick="btnClick"
-                android:src="@drawable/ic_photo_album_white_48dp"
-                />
+                android:src="@drawable/ic_photo_album_white_48dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -91,10 +90,6 @@
                 android:text="사진들을 한번에 확인할 수 있는 포토북!"
                 android:textColor="#ffffff" />
         </LinearLayout>
-        <!--<RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/baseView"></RelativeLayout>-->
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

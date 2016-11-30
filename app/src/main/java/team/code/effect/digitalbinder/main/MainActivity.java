@@ -1,12 +1,15 @@
 package team.code.effect.digitalbinder.main;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.PaintDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -31,18 +34,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.File;
+import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.camera.CameraActivity;
 import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
 
+import static team.code.effect.digitalbinder.main.BluetoothActivity.DISCOVER_DURATION;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-
-
     static final int PERMISSION_CAMERA = 1;
+    NavigationView navigationView;
     Intent intent;
     MenuItem item;
+
 
     static final int EVENT_MIN_DELTA_X = 150;
     float oldEventX, newEventX;
@@ -50,10 +57,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //마지막으로 뒤로가기 버튼이 터치된 시간
     private long lastTimeBackPressed;
 
+    /*블루투스*/
+    public static  final int DISCOVER_DURATION = 300;
+    public static final int REQUEST_BLU = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //메뉴 리스너
+        navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     public void btnClick(View view) {
@@ -74,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(MainActivity.this, PhotobookActivity.class);
                 startActivity(intent);
                 break;
+
         }
     }
 
@@ -132,8 +148,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lastTimeBackPressed =System.currentTimeMillis();
     }
 
+    public void moreSend(){
+        Toast toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        toast.setView(getLayoutInflater().inflate(R.layout.activity_bluetooth, null));
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.nav_share:
+                intent = new Intent(MainActivity.this, BluetoothActivity.class);
+                startActivity(intent);
+                break;
+        }
         return false;
     }
+
+
+    /*블루투스*/
+/*
+    public void sendViaBluetooth(View v){
+
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(btAdapter == null){
+            Toast.makeText(this, "이 기기는 블루투스를 지원하지 않습니다. ", Toast.LENGTH_SHORT).show();
+        }else {
+            enableBluetooth();
+        }
+    }
+
+    public void enableBluetooth() {
+
+        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+
+        discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, DISCOVER_DURATION);
+
+        startActivityForResult(discoveryIntent, REQUEST_BLU);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode==DISCOVER_DURATION && requestCode == REQUEST_BLU){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            File f = new File(Environment.getExternalStorageDirectory(), "splash.png");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
+
+            PackageManager pm=getPackageManager();
+
+            List<ResolveInfo> appsList=pm.queryIntentActivities(intent, 0);
+
+            if(appsList.size() > 0){
+                String packageName = null;
+                String className = null;
+                boolean found = false;
+
+                for(ResolveInfo info : appsList){
+                    packageName = info.activityInfo.packageName;
+                    if(packageName.equals("com.android.bluetooth")){
+                        className=info.activityInfo.name;
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found){
+                    Toast.makeText(this, "블루투스가 발견되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                }else {
+                    intent.setClassName(packageName, className);
+                    startActivity(intent);
+                }
+            }
+        }else {
+            Toast.makeText(this, "블루투스가 취소되었습니다.", Toast.LENGTH_SHORT).show();
+
+        }
+    }*/
 }
