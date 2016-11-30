@@ -19,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.camera.CameraActivity;
+import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
 
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        checkFolder();
         //메뉴 리스너
         navigationView = (NavigationView)findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -163,7 +165,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return false;
     }
-
+    // App 폴더 있는지 확인
+    public void checkFolder() {
+        File dir = new File(AppConstans.APP_PATH);
+        if (dir.exists() == false) {
+            if (dir.mkdir()) {
+            }
+        } else {
+        }
+    }
 
     /*블루투스*/
 /*

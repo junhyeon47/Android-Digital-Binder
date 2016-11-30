@@ -16,8 +16,8 @@ import java.util.List;
 public class PhotobookListAdapter extends BaseAdapter{
     ArrayList<Photobook> list;
     Context context;
-    ArrayList<PhotobookCheckboxItem> itemList;
-    boolean flag=false;
+    public ArrayList<PhotobookCheckboxItem> itemList;
+    public boolean flag=false;
 
     public PhotobookListAdapter(Context context,List list) {
         this.list=(ArrayList) list;

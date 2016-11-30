@@ -14,10 +14,10 @@ import team.code.effect.digitalbinder.R;
  */
 
 public class PhotobookCheckboxItem extends LinearLayout{
-    CheckBox checkBox;
+    public CheckBox checkBox;
     TextView txt_title;
-    Photobook photobook;
-    Boolean flag=false;//checkBox 보임 설정을 위한 변수
+    public Photobook photobook;
+    public Boolean flag=false;//checkBox 보임 설정을 위한 변수
 
     public PhotobookCheckboxItem(Context context, Photobook photobook) {
         super(context);

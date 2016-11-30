@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ZipCode;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -49,7 +50,7 @@ public class BinderActivity extends AppCompatActivity implements AdapterView.OnI
     public void init(Photobook photobook){
         Log.d(TAG,"압축해제 시작");
         zipCode=new ZipCode();
-        File dir= new File(Environment.getExternalStorageDirectory(),"DigtalBinder");
+        File dir= new File(AppConstans.APP_PATH);
         File file = new File(dir+"/"+photobook.getFilename());
         Log.d(TAG,"압축파일 선택"+file.getAbsolutePath());
         try {
