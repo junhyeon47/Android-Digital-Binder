@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -293,7 +294,10 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
      * 3. 바로 저장할 수 없다면, 임시 폴더에 저장한 후 파일을 zip 파일로 압축시킨다.
      */
     public void btnSaveClick(){
-        //if(CameraActivity.list.size() == 0 ) return;
+        if(CameraActivity.list.size() == 0 ) {
+            Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진을 하나로 묶습니다.");
         builder.setView(R.layout.layout_alert_txt);
         builder.setPositiveButton("저장", null);
@@ -318,7 +322,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                             //AsyncTask 이용해 파일로 저장.
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
                             async.execute(txt_file_name.getText().toString());
-                            //dialog.dismiss();
                         }
                     }
                 });
