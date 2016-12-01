@@ -6,7 +6,6 @@
 
     <include
         layout="@layout/toolbar_explorer"
-
         />
 
 

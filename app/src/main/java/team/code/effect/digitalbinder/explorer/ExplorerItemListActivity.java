@@ -2,10 +2,12 @@ package team.code.effect.digitalbinder.explorer;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -98,12 +100,15 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
     }
 
 
+
     public void showMsg(String title, String message){
         AlertDialog.Builder alert=new AlertDialog.Builder(this);
         alert.setTitle(title).setMessage(message).setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                if(count>0){
 
+                }
             }
         }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
             @Override

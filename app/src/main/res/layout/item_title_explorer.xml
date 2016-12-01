@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_folder_title"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="60dp"
     android:orientation="horizontal">
 
     <ImageView
-        android:paddingRight="10dp"
-        android:src="@android:drawable/sym_contact_card"
-
-        android:layout_width="wrap_content"
-        android:layout_height="40dp" />
+        android:src="@drawable/ic_folder_black_48dp"
+        android:layout_gravity="center"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
 
     <TextView
         android:textSize="23dp"
-        android:id="@+id/ex_sampleTitle"
+        android:paddingLeft="15dp"
+        android:id="@+id/folder_title"
         android:text="Sample Title"
+        android:gravity="center|left"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
