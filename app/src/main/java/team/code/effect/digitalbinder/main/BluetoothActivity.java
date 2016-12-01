@@ -45,8 +45,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     String TAG;
     ListView listView;
     PhotobookListAdapter listAdapter;
-    SQLiteDatabase db;
-    BinderDAO photobookDAO;
     List list;
     File file;
 
@@ -58,9 +56,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_bluetooth);
         TAG = getClass().getName();
         listView = (ListView) findViewById(R.id.listView);
-        db=SQLiteDatabase.openDatabase(AppConstans.DB_PATH,null,SQLiteDatabase.OPEN_READWRITE);
-        photobookDAO = new BinderDAO(db);
-        list = photobookDAO.selectAll();
+        list = MainActivity.dao.selectAll();
         if(list.size()<=0){
             Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
             finish();
