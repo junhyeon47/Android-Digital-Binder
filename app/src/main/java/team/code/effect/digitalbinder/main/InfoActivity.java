@@ -3,13 +3,10 @@ package team.code.effect.digitalbinder.main;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import team.code.effect.digitalbinder.R;
 
@@ -17,13 +14,13 @@ import team.code.effect.digitalbinder.R;
  * Created by 1238TX on 2016-11-30.
  */
 
-public class InfoItem extends AppCompatActivity {
+public class InfoActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.item_info);
+        setContentView(R.layout.activity_info);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar); //activity_bluetooth의 id 값이 toolbar인 툴바를 연결.
         setSupportActionBar(toolbar); //toolbar를 이 화면의 앱바로 설정.
@@ -31,7 +28,7 @@ public class InfoItem extends AppCompatActivity {
 
     }
 
-    public void bt1(View view){
+    public void btnInfo(View view){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:DigitalBinder@google.com"));
         startActivity(intent);

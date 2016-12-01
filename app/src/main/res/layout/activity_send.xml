@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3ca7a1ff">
+    android:background="@drawable/digitalbinder1">
 
-    <!--Toolbar 등록-->
+    <!--Toolbar 등록 #3ca7a1ff-->
     <include layout="@layout/toolbar_bluetooth"/>
 
     <LinearLayout
