@@ -24,7 +24,6 @@ import uk.co.senab.photoview.PhotoViewAttacher;
  */
 
 public class BinderActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
-    Context context;
     ImageView img;
     HorizontalListView listView;
     PhotoItemListAdapter adapter;

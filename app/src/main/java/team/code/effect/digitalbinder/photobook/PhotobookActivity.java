@@ -3,16 +3,13 @@ package team.code.effect.digitalbinder.photobook;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +19,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
-import java.util.jar.Manifest;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.BinderDAO;
-import team.code.effect.digitalbinder.common.BinderOpenHelper;
+import team.code.effect.digitalbinder.main.BluetoothActivity;
+import team.code.effect.digitalbinder.main.MainActivity;
 
 public class PhotobookActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, Toolbar.OnMenuItemClickListener {
     String TAG;
@@ -37,10 +34,9 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     ListView listView;
     BinderDAO photobookDAO;
     PhotobookListAdapter photobookListAdapter;
-    BinderOpenHelper helper;
-    static SQLiteDatabase db;
     List list;
     Boolean mode = false;
+    PhotobookActivity photobookActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +44,7 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_photobook);
         TAG = getClass().getName();
         Log.d(TAG, "액티비티 생성 현액티비티주소" + this);
-
+        photobookActivity=this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Photobook");
@@ -62,8 +58,7 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     public void init() {
         supportPermission();
         checkFolder();
-        sqliteDB();
-        photobookDAO = new BinderDAO(db);
+        photobookDAO = MainActivity.dao;
         list = photobookDAO.selectAll();
 //       Log.d(TAG,"리스트1"+list.size());
         photobookListAdapter = new PhotobookListAdapter(this, list);
@@ -109,12 +104,6 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         } else {
             Log.d(TAG, "폴더가 있어요");
         }
-    }
-
-    //SQLite 생성(SQLiteOpenhelper) 및 SQLitedatabase 생성
-    public void sqliteDB() {
-        helper = new BinderOpenHelper(this, "digitalBinder.sqlite", null, 1);
-        db = helper.getWritableDatabase();
     }
 
     //Photobook Item 선택시 Detail화면으로 이동 시킬것!!!!(Activity 이동)
@@ -259,7 +248,8 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
             public void onClick(DialogInterface dialog, int i) {
                 switch (items[i].toString()) {
                     case AppConstans.BLUETOOTH:
-                        ;
+                        Intent intent = new Intent(photobookActivity, BluetoothActivity.class);
+                        startActivity(intent);;
                         break;
                     case AppConstans.NFC:
                         ;

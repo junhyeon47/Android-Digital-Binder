@@ -4,5 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="pressed_color">#fe564d</color>
-    <color name="default_color">#ffffff</color>
+    <color name="default_color">#000000</color>
 </resources>

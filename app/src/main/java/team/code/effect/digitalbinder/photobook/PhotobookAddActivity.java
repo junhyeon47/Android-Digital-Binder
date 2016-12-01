@@ -1,9 +1,7 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.BinderDAO;
+import team.code.effect.digitalbinder.main.MainActivity;
 
 /**
  * Created by student on 2016-11-28.
@@ -33,7 +32,6 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
     ListView listView;
     PhotobookListAdapter photobookListAdapter;
     ArrayList<Photobook> list;
-    SQLiteDatabase db;
     BinderDAO photobookDAO;
     String TAG;
     File dir;
@@ -46,8 +44,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
         TAG=getClass().getName();
         //DB_PATH=getDBPath();
         dir = new File(AppConstans.APP_PATH);
-        db = SQLiteDatabase.openDatabase(AppConstans.DB_PATH,null,SQLiteDatabase.OPEN_READWRITE);
-        photobookDAO =new BinderDAO(db);
+        photobookDAO = MainActivity.dao;
         init();
         Log.d(TAG,"추가할수있는 파일 길이는"+list.size());
         listView = (ListView) findViewById(R.id.listView);
@@ -58,13 +55,6 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Photobook 추가하기");
-    }
-
-    public String getDBPath(){
-        String pack=getClass().getPackage().toString();
-        Log.d(TAG,pack);
-        String path="/data/data/team.code.effect.digitalbinder/databases/";
-        return path;
     }
 
     public void init() {
