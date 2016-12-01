@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_share:
-                intent = new Intent(MainActivity.this, BluetoothActivity.class);
+                intent = new Intent(MainActivity.this, SendItem.class);
                 startActivity(intent);
                 break;
             case R.id.nav_info:

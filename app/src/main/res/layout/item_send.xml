@@ -5,7 +5,7 @@
     android:background="#3ca7a1ff">
 
     <!--Toolbar 등록-->
-    <include layout="@layout/toolbar_send"/>
+    <include layout="@layout/toolbar_bluetooth"/>
 
     <LinearLayout
         android:orientation="horizontal"

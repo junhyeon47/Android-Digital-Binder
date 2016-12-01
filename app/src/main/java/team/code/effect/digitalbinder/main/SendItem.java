@@ -20,11 +20,6 @@ public class SendItem extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_send);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Photobook");
-        toolbar.setOnMenuItemClickListener(this);
-
     }
 
 

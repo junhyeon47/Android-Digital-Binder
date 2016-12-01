@@ -30,8 +30,8 @@ public class InfoItem extends AppCompatActivity {
     }
 
     public void bt1(View view){
-        Intent intent=new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:027778888"));
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:DigitalBinder@google.com"));
         startActivity(intent);
     }
 }

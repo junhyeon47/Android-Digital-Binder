@@ -1,30 +1,46 @@
 package team.code.effect.digitalbinder.main;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.PersistableBundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.BinderDAO;
 import team.code.effect.digitalbinder.photobook.Photobook;
 import team.code.effect.digitalbinder.photobook.PhotobookCheckboxItem;
 import team.code.effect.digitalbinder.photobook.PhotobookListAdapter;
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-
     public static final int DISCOVER_DURATION = 300;
     public static final int REQUEST_BLU = 1;
     String TAG;
@@ -32,25 +48,29 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     PhotobookListAdapter listAdapter;
     List list;
     File file;
-
-
+    Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth);
+        setContentView(R.layout.activity_bluetooth); //activity_bluetooth안의 리소스들을 객체화
         TAG = getClass().getName();
         listView = (ListView) findViewById(R.id.listView);
-        list = MainActivity.dao.selectAll();
-        if(list.size()<=0){
-            Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-        listAdapter = new PhotobookListAdapter(this, list);
-        listAdapter.flag = true;
-        listAdapter.notifyDataSetChanged();
-        listView.setAdapter(listAdapter);
-        listView.setOnItemClickListener(this);
+        toolbar = (Toolbar)findViewById(R.id.toolbar); //activity_bluetooth의 id 값이 toolbar인 툴바를 연결.
+        setSupportActionBar(toolbar); //toolbar를 이 화면의 앱바로 설정.
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //앱바에 뒤로가기 버튼 추가.
+
+        //리스트뷰 관련
+//        list = MainActivity.dao.selectAll();
+//        if(list.size()<=0){
+//            Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
+//            finish();
+//        }
+//        listAdapter = new PhotobookListAdapter(this, list);
+//        listAdapter.flag = true;
+//        listAdapter.notifyDataSetChanged();
+//        listView.setAdapter(listAdapter);
+//        listView.setOnItemClickListener(this);
     }
 
     public List getFileList() {
@@ -142,4 +162,13 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: // Android.R.id.home 앱바의 뒤로가기 버튼을 눌렀을 때.
+                onBackPressed(); //액티비티가 이전 액티비티로 전환됨.
+                break;
+        }
+        return true;
+    }
 }
