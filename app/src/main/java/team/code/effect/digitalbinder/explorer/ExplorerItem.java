@@ -47,7 +47,7 @@ public class ExplorerItem extends LinearLayout {
     public void setImg() {
         //Bitmap bitmap= BitmapFactory.decodeFile(storageCamera+"/"+cameraFiles[0].getName());
         BitmapFactory.Options options=new BitmapFactory.Options();
-        options.inSampleSize=16;
+        options.inSampleSize=ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
         Bitmap bitmap = BitmapFactory.decodeFile(explorer.getFilename(), options);
         Bitmap resize=Bitmap.createScaledBitmap(bitmap, 450, 450, true);
 

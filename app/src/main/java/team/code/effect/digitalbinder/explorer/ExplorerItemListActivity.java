@@ -30,6 +30,7 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
 
     String TAG;
     GridView ex_gridView;
+    ArrayList<Explorer> fileList;
     Explorer explorer;
     ExplorerItem explorerItem;
     ExplorerItemAdapter explorerItemAdapter;
@@ -42,26 +43,14 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
         setContentView(R.layout.activity_exploreritemlist);
         TAG=this.getClass().getName();
         Intent intent = getIntent();
-        explorer = intent.getParcelableExtra("data");
+        fileList = intent.getParcelableArrayListExtra("data");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
         setSupportActionBar(toolbar);
 
-
-        ArrayList<Explorer> list = new ArrayList<Explorer>();
-        File dir = new File(explorer.getFilename());
-        File[] photo = dir.listFiles();
-        for (int i = 0; i < photo.length; i++) {
-            File file = photo[i];
-            Explorer explorer = new Explorer();
-            explorer.setTitle(file.getName());
-            explorer.setFilename(file.getAbsolutePath());
-            list.add(explorer);
-        }
-
         ex_gridView = (GridView) findViewById(R.id.ex_gridView);
 
-        explorerItemAdapter = new ExplorerItemAdapter(this, list);
+        explorerItemAdapter = new ExplorerItemAdapter(this, fileList);
         ex_gridView.setAdapter(explorerItemAdapter);
         ex_gridView.setOnItemClickListener(this);
     }
