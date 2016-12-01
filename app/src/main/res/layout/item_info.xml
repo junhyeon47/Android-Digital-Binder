@@ -3,6 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#3ca5ffc7">
+
+    <!--Toolbar 등록-->
+    <include layout="@layout/toolbar_bluetooth"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
