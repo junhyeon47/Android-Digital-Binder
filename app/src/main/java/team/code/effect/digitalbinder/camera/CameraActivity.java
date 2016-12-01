@@ -109,14 +109,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         //적용할 애니메이션
         oldOrientation = CameraActivity.orientation;
         anim_shutter = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_shutter);
-
-        //데이터베이스 관련 테스트
-        Photobook photobook = new Photobook();
-        photobook.setFilename("메롱.zip");
-        photobook.setIcon("아이콘");
-        photobook.setRegdate("123124");
-        photobook.setTitle("메롱");
-        MainActivity.dao.insert(photobook);
     }
 
     @Override
