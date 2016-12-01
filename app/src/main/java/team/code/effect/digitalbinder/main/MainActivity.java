@@ -27,7 +27,7 @@ import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-    static final int PERMISSION_CAMERA = 1;
+    static final int PERMISSION_USING_CAMERA = 1;
     NavigationView navigationView;
     Intent intent;
     MenuItem item;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void btnClick(View view) {
         switch (view.getId()) {
             case R.id.btn_camera:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkCameraPermssion();
                 } else {
                     intent = new Intent(MainActivity.this, CameraActivity.class);
@@ -100,8 +100,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void checkCameraPermssion() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_USING_CAMERA);
         } else {
             intent = new Intent(MainActivity.this, CameraActivity.class);
             startActivity(intent);
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_CAMERA:
+            case PERMISSION_USING_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     intent = new Intent(MainActivity.this, CameraActivity.class);
                     startActivity(intent);
