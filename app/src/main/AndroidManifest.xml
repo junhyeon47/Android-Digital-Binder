@@ -68,7 +68,7 @@
             android:name=".main.BluetoothActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".main.InfoItem"
+        <activity android:name=".main.InfoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
