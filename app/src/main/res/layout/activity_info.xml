@@ -11,7 +11,7 @@ android:layout_height="match_parent">
     android:layout_height="70dp"
     android:onClick="layoutClick">
     <ImageView
-        android:src="@drawable/ic_textsms_black_48dp"
+        android:src="@drawable/ic_android_black_48dp"
         android:layout_gravity="center"
         android:layout_margin="17dp"
         android:layout_width="36dp"
@@ -36,7 +36,7 @@ android:layout_height="match_parent">
     android:layout_height="70dp"
     android:onClick="layoutClick">
     <ImageView
-        android:src="@drawable/ic_perm_phone_msg_black_48dp"
+        android:src="@drawable/ic_contact_mail_black_48dp"
         android:layout_gravity="center"
         android:layout_margin="17dp"
         android:layout_width="36dp"

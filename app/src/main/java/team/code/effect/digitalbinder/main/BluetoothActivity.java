@@ -68,7 +68,6 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             finish();
         }
         listAdapter = new PhotobookListAdapter(this, list);
-        listAdapter.flag = true;
         listAdapter.notifyDataSetChanged();
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
@@ -159,17 +158,9 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        itemCheck(view);
-    }
-
-    /*item 선택시 check박스 설정되게 하기*/
-    public void itemCheck(View view) {
-        PhotobookCheckboxItem item = (PhotobookCheckboxItem) view;
-        item.checkBox.setChecked(!item.checkBox.isChecked());
-        file = new File(AppConstans.APP_PATH + "/" + item.photobook.getFilename());
         enableBluetooth();
-
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
