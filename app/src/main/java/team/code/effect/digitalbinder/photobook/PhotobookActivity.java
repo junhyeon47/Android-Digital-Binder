@@ -4,8 +4,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -48,15 +50,15 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Photobook");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
         toolbar.setOnMenuItemClickListener(this);
-
         listView = (ListView) findViewById(R.id.listView);
         init();
     }
 
     //db 연결 및 Photobook목록 불러와 listView에 뿌리기
     public void init() {
-        supportPermission();
         checkFolder();
         photobookDAO = MainActivity.dao;
         list = photobookDAO.selectAll();
@@ -84,21 +86,11 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         //   Log.d(TAG,"리스트3"+photobookListAdapter.getCount());
     }
 
-    //퍼미션 확인하기
-    public void supportPermission() {
-        int externalPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (externalPermission == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-            }, REQUEST_EXTERNAL_PERMISSION);
-        }
-    }
-
     // App 폴더 있는지 확인
     public void checkFolder() {
         File dir = new File(AppConstans.APP_PATH);
         if (dir.exists() == false) {
-            if (dir.mkdir()) {
+            if (dir.mkdirs()) {
                 Log.d(TAG, "폴더 생성");
             }
         } else {
@@ -157,6 +149,17 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
                 break;
         }
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+
     }
 
     /*메뉴 리스트 변경*/
@@ -240,16 +243,17 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
                 AppConstans.BLUETOOTH,
                 AppConstans.NFC,
                 AppConstans.GDRIVE,
-                AppConstans.NDRIVE
+                AppConstans.DROPBOX
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
+        builder.setIcon(R.drawable.share);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int i) {
                 switch (items[i].toString()) {
                     case AppConstans.BLUETOOTH:
                         Intent intent = new Intent(photobookActivity, BluetoothActivity.class);
-                        startActivity(intent);;
+                        startActivity(intent);
                         break;
                     case AppConstans.NFC:
                         ;
@@ -257,12 +261,11 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
                     case AppConstans.GDRIVE:
                         ;
                         break;
-                    case AppConstans.NDRIVE:
+                    case AppConstans.DROPBOX:
                         ;
                         break;
 
                 }
-                ;
                 Toast.makeText(getApplicationContext(),
                         items[i], Toast.LENGTH_SHORT).show();
             }

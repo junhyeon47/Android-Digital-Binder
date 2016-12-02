@@ -158,6 +158,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        PhotobookCheckboxItem item =(PhotobookCheckboxItem) view;
+        file = new File(item.photobook.getFilename());
         enableBluetooth();
     }
 
