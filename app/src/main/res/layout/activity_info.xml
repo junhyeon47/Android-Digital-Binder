@@ -2,17 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/digitalbinder1"
     android:orientation="vertical">
 
     <!--Toolbar 등록 #3ca5ffc7-->
-    <include layout="@layout/toolbar_bluetooth" />
+    <include layout="@layout/toolbar_white" />
 
     <LinearLayout
+        android:id="@+id/infoClick"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:onClick="layoutClick">
 
         <ImageView
             android:layout_width="0dp"
@@ -35,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:onClick="btnInfo"
+        android:onClick="layoutClick"
         android:orientation="horizontal">
 
         <ImageView

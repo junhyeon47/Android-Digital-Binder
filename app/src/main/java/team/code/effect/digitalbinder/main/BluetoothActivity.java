@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,21 +57,29 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_bluetooth); //activity_bluetooth안의 리소스들을 객체화
         TAG = getClass().getName();
         listView = (ListView) findViewById(R.id.listView);
-        toolbar = (Toolbar)findViewById(R.id.toolbar); //activity_bluetooth의 id 값이 toolbar인 툴바를 연결.
-        setSupportActionBar(toolbar); //toolbar를 이 화면의 앱바로 설정.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //앱바에 뒤로가기 버튼 추가.
+        toolbar = (Toolbar)findViewById(R.id.toolbar); //XML 툴바의 주소를 toolbar로 연결.
+        setSupportActionBar(toolbar); //툴바를 현재 액티비티의 액션바로 설정.
+        setToolbar(); //툴바의 설정을 변경하는 메소드 호출.
 
         //리스트뷰 관련
-//        list = MainActivity.dao.selectAll();
-//        if(list.size()<=0){
-//            Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
-//            finish();
-//        }
-//        listAdapter = new PhotobookListAdapter(this, list);
-//        listAdapter.flag = true;
-//        listAdapter.notifyDataSetChanged();
-//        listView.setAdapter(listAdapter);
-//        listView.setOnItemClickListener(this);
+        list = MainActivity.dao.selectAll();
+        if(list.size()<=0){
+            Toast.makeText(this, "전송할 파일이 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        listAdapter = new PhotobookListAdapter(this, list);
+        listAdapter.flag = true;
+        listAdapter.notifyDataSetChanged();
+        listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener(this);
+    }
+
+    //툴바의 설정을 변경하는 메소드
+    public void setToolbar(){
+        getSupportActionBar().setTitle("블루투스로 내보내기");
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFFFF8B7D)); //툴바색상 변경
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
     }
 
     public List getFileList() {

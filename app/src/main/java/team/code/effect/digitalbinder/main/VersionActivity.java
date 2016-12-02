@@ -1,6 +1,7 @@
 package team.code.effect.digitalbinder.main;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,33 +20,18 @@ public class VersionActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_send);
-
-        toolbar = (Toolbar)findViewById(R.id.toolbar); //activity_bluetooth의 id 값이 toolbar인 툴바를 연결.
-        setSupportActionBar(toolbar); //toolbar를 이 화면의 앱바로 설정.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //앱바에 뒤로가기 버튼 추가.
-
+        setContentView(R.layout.activity_version);
+        toolbar = (Toolbar)findViewById(R.id.toolbar); //XML 툴바의 주소를 toolbar로 연결.
+        setSupportActionBar(toolbar); //툴바를 현재 액티비티의 액션바로 설정.
+        setToolbar(); //툴바의 설정을 변경하는 메소드 호출.
     }
 
-    public void layoutClick(View view){
-        switch (view.getId()){
-            case R.id.layout_bluetooth:
-                openBluetoothActivity();
-                break;
-            case R.id.layout_cloud:
-                openCloundActivity();
-                break;
-        }
-    }
-
-    public void openBluetoothActivity(){
-        Intent intent = new Intent(this, BluetoothActivity.class);
-        startActivity(intent);
-    }
-
-    public void openCloundActivity(){
-        Intent intent = new Intent(this, CloudActivity.class);
-        startActivity(intent);
+    //툴바의 설정을 변경하는 메소드
+    public void setToolbar(){
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFFFFFFFF)); //툴바색상 변경
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
     }
 
     @Override

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/digitalbinder1">
+    android:layout_height="match_parent">
 
     <!--Toolbar 등록 #3ca7a1ff-->
-    <include layout="@layout/toolbar_bluetooth"/>
+    <include layout="@layout/toolbar_white"/>
 
     <LinearLayout
         android:id="@+id/layout_bluetooth"
