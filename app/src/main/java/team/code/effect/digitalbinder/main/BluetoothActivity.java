@@ -77,7 +77,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     //툴바의 설정을 변경하는 메소드
     public void setToolbar(){
         getSupportActionBar().setTitle("블루투스로 내보내기");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFFFF8B7D)); //툴바색상 변경
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFFF2594B)); //툴바색상 변경
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
     }
