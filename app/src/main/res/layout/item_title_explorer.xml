@@ -12,7 +12,7 @@
         android:layout_height="60dp" />
 
     <TextView
-        android:textSize="23dp"
+        android:textSize="20dp"
         android:paddingLeft="15dp"
         android:id="@+id/folder_title"
         android:text="Sample Title"

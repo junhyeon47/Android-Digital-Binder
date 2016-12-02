@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
@@ -28,95 +31,52 @@ import team.code.effect.digitalbinder.R;
  * Created by student on 2016-11-28.
  */
 
-public class ExplorerItemListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class ExplorerItemListActivity extends AppCompatActivity{
 
     String TAG;
-    GridView ex_gridView;
-    ArrayList<Explorer> fileList;
     Explorer explorer;
-    ExplorerItem explorerItem;
-    ExplorerItemAdapter explorerItemAdapter;
-    int count;
-    boolean flag=true;
+    Intent intent;
+    RecyclerView recyclerView;
+    ImageRecyclerAdapter imageRecyclerAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exploreritemlist);
         TAG=this.getClass().getName();
-        Intent intent = getIntent();
-        fileList = intent.getParcelableArrayListExtra("data");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
         setSupportActionBar(toolbar);
 
-        ex_gridView = (GridView) findViewById(R.id.ex_gridView);
+        recyclerView=(RecyclerView)findViewById(R.id.ex_photo);
+        GridLayoutManager gridLayoutManager=new GridLayoutManager(getApplicationContext(), 3);
+        imageRecyclerAdapter=new ImageRecyclerAdapter(this);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(imageRecyclerAdapter);
 
-        explorerItemAdapter = new ExplorerItemAdapter(this, fileList);
-        ex_gridView.setAdapter(explorerItemAdapter);
-        ex_gridView.setOnItemClickListener(this);
+        intent = getIntent();
+        String path = intent.getStringExtra("data");
+
+        Log.d(TAG, path);
+        File dir = new File(path);
+        File[] images = dir.listFiles();
+        ArrayList<Explorer> abc=new ArrayList<Explorer>();
+        imageRecyclerAdapter.list.removeAll(imageRecyclerAdapter.list);
+        for(int i=0;i<images.length;++i){
+            Log.d(TAG, "images 실경로 "+images[i].getAbsoluteFile() );
+            Explorer explorer=new Explorer();
+            explorer.setFilename(images[i].getAbsolutePath());
+            Log.d(TAG, " explorer 실경로 "+ explorer.getFilename() );
+            abc.add(explorer);
+        }
+        imageRecyclerAdapter.list=abc;
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_explorer, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.ex_select:
-                for(int i=0; i<explorerItemAdapter.itemList.size();i++){
-                    explorerItemAdapter.itemList.get(i).checkBox.setChecked(true);
-                    count=explorerItemAdapter.itemList.get(i).getChildCount();
-                }
-                break;
-            case R.id.make_book:
-                if(count==0){
-                    showMsg("안내", "한개 이상의 이미지를 선택하셔야 합니다.");
-                }else{
-                    showMsg("안내", "포토북을 만드시겠습니까?");
-                }
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        explorerItem=(ExplorerItem) view;
-        explorerItem.checkBox.setChecked(flag);
-        if(flag==true){
-            count++;
-        }else{
-            count--;
-        }
-        flag=!flag;
-        Log.d(TAG, "count= "+count);
-
-    }
-
-
-
-    public void showMsg(String title, String message){
-        AlertDialog.Builder alert=new AlertDialog.Builder(this);
-        alert.setTitle(title).setMessage(message).setPositiveButton("예", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(count>0){
-
-                }
-            }
-        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        }).show();
-    }
-
 
 }

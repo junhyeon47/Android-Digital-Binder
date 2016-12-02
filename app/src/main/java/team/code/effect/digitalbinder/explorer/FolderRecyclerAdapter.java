@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
-import team.code.effect.digitalbinder.camera.PreviewViewHolder;
 
 /**
  * Created by student on 2016-12-01.
