@@ -57,8 +57,8 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
                 flag=!flag;
             }
         });
-        explorerAsync=new ExplorerAsync(holder);
-        explorerAsync.execute(filename);
+//        explorerAsync=new ExplorerAsync(holder);
+//        explorerAsync.execute(filename);
 
 
 

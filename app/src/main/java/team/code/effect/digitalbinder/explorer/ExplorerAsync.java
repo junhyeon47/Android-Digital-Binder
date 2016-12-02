@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
+
+import team.code.effect.digitalbinder.common.DeviceHelper;
 
 import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
 
@@ -12,45 +15,26 @@ import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
  */
 
 public class ExplorerAsync extends AsyncTask<String, Void, Bitmap> {
-
     String TAG;
-    ImageViewHolder holder;
-    Bitmap bitmap;
+    ImageView imageView;
 
-    public ExplorerAsync(ImageViewHolder holder) {
-        this.holder=holder;
+    public ExplorerAsync(ImageView imageView) {
+        this.imageView=imageView;
         TAG=this.getClass().getName();
     }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @Override
     protected Bitmap doInBackground(String... strings) {
+        int size= DeviceHelper.width/3;
         String filename=strings[0];
-
         BitmapFactory.Options options=new BitmapFactory.Options();
         options.inSampleSize=ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
         Bitmap bitmap=BitmapFactory.decodeFile(filename, options);
-        Bitmap resize=Bitmap.createScaledBitmap(bitmap, 450, 450, true);
-
-
-
+        Bitmap resize=Bitmap.createScaledBitmap(bitmap, size, size, true);
         return resize;
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
-
-
-    }
-
-    @Override
     protected void onPostExecute(Bitmap resize) {
-        super.onPostExecute(bitmap);
-        holder.imageView.setImageBitmap(resize);
+        imageView.setImageBitmap(resize);
     }
 }

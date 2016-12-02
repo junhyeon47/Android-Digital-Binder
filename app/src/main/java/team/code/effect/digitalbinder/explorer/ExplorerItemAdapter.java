@@ -1,37 +1,43 @@
 package team.code.effect.digitalbinder.explorer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
+
+import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.DeviceHelper;
 
 /**
  * Created by 재우 on 2016-11-27.
  */
 
 public class ExplorerItemAdapter extends BaseAdapter{
-    String TAG;
-    ArrayList<Explorer> list=new ArrayList<Explorer>();
-    ArrayList<ExplorerItem> itemList=new ArrayList();
-    Context context;
 
-    public ExplorerItemAdapter(Context context, ArrayList<Explorer> list) {
-        this.context = context;
-        this.list = list;
+    ArrayList<Explorer> phtoList=new ArrayList<Explorer>();
+    CheckBox checkBox;
+    String TAG;
+
+    public ExplorerItemAdapter() {
         TAG=this.getClass().getName();
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return phtoList.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return list.get(i);
+        return phtoList.get(i);
     }
 
     @Override
@@ -40,24 +46,32 @@ public class ExplorerItemAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
-        View view=null;
-        Explorer explorer=list.get(i);
-        if(view!=convertView){
-            view=convertView;
-            ExplorerItem explorerItem=(ExplorerItem)view;
-            explorerItem.setExplorerImg(explorer);
-            itemList.add(explorerItem);
-        }else{
-            view=new ExplorerItem(context, explorer);
-            ExplorerItem explorerItem=(ExplorerItem)view;
-            itemList.add(explorerItem);
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        final int position=i;
+        final Context context=viewGroup.getContext();
 
+        if(view==null){
+            LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view=inflater.inflate(R.layout.item_photo_explorer, viewGroup, false);
         }
 
-        Log.d(TAG, "itemList.size"+itemList.size());
+        ImageView imageView=(ImageView)view.findViewById(R.id.ex_img);
+        checkBox=(CheckBox)view.findViewById(R.id.ex_checkBox);
 
+        if(phtoList.size()>0) {
+            Explorer explorer=phtoList.get(i);
+            Log.d(TAG, "explorer "+explorer.getFilename());
+//            BitmapFactory.Options option = new BitmapFactory.Options();
+//            option.inSampleSize = 4;
+//            Bitmap bitmap = BitmapFactory.decodeFile(explorer.getFilename(), option);
+//            Bitmap resize = Bitmap.createScaledBitmap(bitmap, size, size, true);
+//            imageView.setImageBitmap(resize);
+
+            ExplorerAsync async=new ExplorerAsync(imageView);
+            async.execute(explorer.getFilename());
+        }
 
         return view;
     }
+
 }

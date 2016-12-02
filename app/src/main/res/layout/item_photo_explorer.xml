@@ -20,8 +20,4 @@
         android:gravity="center"
         android:focusable="false"
         android:focusableInTouchMode="false" />
-
-
-
-
 </RelativeLayout>

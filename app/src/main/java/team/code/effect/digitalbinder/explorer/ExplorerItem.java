@@ -20,40 +20,16 @@ import static android.R.attr.height;
  * Created by 재우 on 2016-11-26.
  */
 
-public class ExplorerItem extends LinearLayout {
-    String TAG;
-    Context context;
-    Explorer explorer;
-    ImageView ex_img;
-    CheckBox checkBox;
+public class ExplorerItem{
+    private ImageView imageView;
 
-    public ExplorerItem(Context context, Explorer explorer) {
-        super(context);
-        TAG = this.getClass().getName();
-        this.context = context;
-        this.explorer = explorer;
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.item_photo_explorer, this);
-        ex_img = (ImageView) findViewById(R.id.ex_img);
-        checkBox=(CheckBox)findViewById(R.id.ex_checkBox);
-        setExplorerImg(explorer);
+
+    public ImageView getImageView() {
+        return imageView;
     }
 
-    public void setExplorerImg(Explorer explorer) {
-        this.explorer = explorer;
-        setImg();
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
     }
-
-    public void setImg() {
-        //Bitmap bitmap= BitmapFactory.decodeFile(storageCamera+"/"+cameraFiles[0].getName());
-        BitmapFactory.Options options=new BitmapFactory.Options();
-        options.inSampleSize=ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
-        Bitmap bitmap = BitmapFactory.decodeFile(explorer.getFilename(), options);
-        Bitmap resize=Bitmap.createScaledBitmap(bitmap, 450, 450, true);
-
-        //ex_img.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 100, 100, true));
-        ex_img.setImageBitmap(resize);
-    }
-
 
 }

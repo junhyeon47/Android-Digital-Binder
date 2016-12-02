@@ -31,13 +31,19 @@ import team.code.effect.digitalbinder.R;
  * Created by student on 2016-11-28.
  */
 
-public class ExplorerItemListActivity extends AppCompatActivity{
+public class ExplorerItemListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     String TAG;
     Explorer explorer;
     Intent intent;
+
+    GridView gridView;
+    ExplorerItemAdapter explorerItemAdapter;
+
     RecyclerView recyclerView;
     ImageRecyclerAdapter imageRecyclerAdapter;
+
+    boolean flag=true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,12 +54,15 @@ public class ExplorerItemListActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
         setSupportActionBar(toolbar);
 
-        recyclerView=(RecyclerView)findViewById(R.id.ex_photo);
+        gridView=(GridView)findViewById(R.id.ex_gridView);
+        explorerItemAdapter=new ExplorerItemAdapter();
+
+/*        recyclerView=(RecyclerView)findViewById(R.id.ex_recyclerView);
         GridLayoutManager gridLayoutManager=new GridLayoutManager(getApplicationContext(), 3);
         imageRecyclerAdapter=new ImageRecyclerAdapter(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(imageRecyclerAdapter);
+        recyclerView.setAdapter(imageRecyclerAdapter);*/
 
         intent = getIntent();
         String path = intent.getStringExtra("data");
@@ -61,21 +70,33 @@ public class ExplorerItemListActivity extends AppCompatActivity{
         Log.d(TAG, path);
         File dir = new File(path);
         File[] images = dir.listFiles();
-        ArrayList<Explorer> abc=new ArrayList<Explorer>();
-        imageRecyclerAdapter.list.removeAll(imageRecyclerAdapter.list);
+        ArrayList<Explorer> photoPath=new ArrayList<Explorer>();
+
+
+//        imageRecyclerAdapter.list.removeAll(imageRecyclerAdapter.list);
+
+
         for(int i=0;i<images.length;++i){
             Log.d(TAG, "images 실경로 "+images[i].getAbsoluteFile() );
             Explorer explorer=new Explorer();
             explorer.setFilename(images[i].getAbsolutePath());
             Log.d(TAG, " explorer 실경로 "+ explorer.getFilename() );
-            abc.add(explorer);
+            photoPath.add(explorer);
+            explorerItemAdapter.phtoList.add(explorer);
         }
-        imageRecyclerAdapter.list=abc;
+
+        gridView.setAdapter(explorerItemAdapter);
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_explorer, menu);
+        getMenuInflater().inflate(R.menu.menu_explorer_photo, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
