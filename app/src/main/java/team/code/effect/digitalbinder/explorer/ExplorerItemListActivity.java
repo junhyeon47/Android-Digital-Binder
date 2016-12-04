@@ -2,6 +2,7 @@ package team.code.effect.digitalbinder.explorer;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +19,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,6 +29,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.BitmapHelper;
+import team.code.effect.digitalbinder.common.DeviceHelper;
 
 /**
  * Created by student on 2016-11-28.
@@ -37,13 +42,13 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
     Explorer explorer;
     Intent intent;
 
-    GridView gridView;
+    GridLayout gridView;
     ExplorerItemAdapter explorerItemAdapter;
 
     RecyclerView recyclerView;
     ImageRecyclerAdapter imageRecyclerAdapter;
-
-    boolean flag=true;
+    Bitmap[] arrayBitmap;
+    boolean isScrolled = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,15 +59,17 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
         Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
         setSupportActionBar(toolbar);
 
-        gridView=(GridView)findViewById(R.id.ex_gridView);
-        explorerItemAdapter=new ExplorerItemAdapter();
+//        gridView=(GridLayout) findViewById(R.id.ex_grid_view);
+//        explorerItemAdapter=new ExplorerItemAdapter();
 
-/*        recyclerView=(RecyclerView)findViewById(R.id.ex_recyclerView);
-        GridLayoutManager gridLayoutManager=new GridLayoutManager(getApplicationContext(), 3);
+        recyclerView=(RecyclerView)findViewById(R.id.recycler_thumbnail);
+        GridLayoutManager gridLayoutManager=new GridLayoutManager(getApplicationContext(), 4);
         imageRecyclerAdapter=new ImageRecyclerAdapter(this);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(imageRecyclerAdapter);*/
+        recyclerView.setAdapter(imageRecyclerAdapter);
+        recyclerView.setItemViewCacheSize(100);
+        ImageViewItemDecoration imageViewItemDecoration = new ImageViewItemDecoration(1);
+        recyclerView.addItemDecoration(imageViewItemDecoration);
 
         intent = getIntent();
         String path = intent.getStringExtra("data");
@@ -70,7 +77,7 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
         Log.d(TAG, path);
         File dir = new File(path);
         File[] images = dir.listFiles();
-        ArrayList<Explorer> photoPath=new ArrayList<Explorer>();
+        ArrayList<String> photoPath = new ArrayList<>();
 
 
 //        imageRecyclerAdapter.list.removeAll(imageRecyclerAdapter.list);
@@ -78,15 +85,12 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
 
         for(int i=0;i<images.length;++i){
             Log.d(TAG, "images 실경로 "+images[i].getAbsoluteFile() );
-            Explorer explorer=new Explorer();
-            explorer.setFilename(images[i].getAbsolutePath());
-            Log.d(TAG, " explorer 실경로 "+ explorer.getFilename() );
-            photoPath.add(explorer);
-            explorerItemAdapter.phtoList.add(explorer);
+            String filename = images[i].getAbsolutePath();
+            String ext = filename.substring(filename.lastIndexOf(".")+1, filename.length());
+            if(ext.equals("jpg") || ext.equals("png") || ext.equals("JPG") || ext.equals("PNG")) {
+                imageRecyclerAdapter.list.add(filename);
+            }
         }
-
-        gridView.setAdapter(explorerItemAdapter);
-
     }
 
     @Override

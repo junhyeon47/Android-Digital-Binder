@@ -19,53 +19,33 @@ import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
  */
 
 public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> {
-
     String TAG;
-    ArrayList<Explorer> list=new ArrayList<Explorer>();
+    ArrayList<String> list = new ArrayList<>();
     ExplorerItemListActivity explorerItemListActivity;
-    boolean flag=true;
-    int count=0;
-    ExplorerAsync explorerAsync;
-
 
     public ImageRecyclerAdapter(ExplorerItemListActivity explorerItemListActivity) {
         this.explorerItemListActivity = explorerItemListActivity;
-        TAG=this.getClass().getName();
+        TAG = this.getClass().getName();
     }
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo_explorer, parent, false);
-        ImageViewHolder viewHolder=new ImageViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo_explorer, parent, false);
+        ImageViewHolder viewHolder = new ImageViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, int position) {
-        Explorer explorer=list.get(position);
-        Log.d(TAG, "explorer"+explorer);
-        final  String filename=explorer.getFilename();
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                if(flag==true){
-                    count++;
-                }else{
-                    count--;
-                }
-                holder.checkBox.setChecked(flag);
-                flag=!flag;
-            }
-        });
-//        explorerAsync=new ExplorerAsync(holder);
-//        explorerAsync.execute(filename);
-
-
-
+        String filename = list.get(position);
+        holder.position = position;
+        new BitmapAsync(holder).execute(filename);
     }
 
     @Override
     public int getItemCount() {
         return list.size();
     }
+
+
 }

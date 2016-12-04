@@ -67,8 +67,8 @@ public class ExplorerItemAdapter extends BaseAdapter{
 //            Bitmap resize = Bitmap.createScaledBitmap(bitmap, size, size, true);
 //            imageView.setImageBitmap(resize);
 
-            ExplorerAsync async=new ExplorerAsync(imageView);
-            async.execute(explorer.getFilename());
+//            ExplorerAsync async=new ExplorerAsync(imageView);
+//            async.execute(explorer.getFilename());
         }
 
         return view;

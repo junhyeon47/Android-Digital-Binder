@@ -48,4 +48,5 @@ public class FolderRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolder
     public int getItemCount() {
         return list.size();
     }
+
 }

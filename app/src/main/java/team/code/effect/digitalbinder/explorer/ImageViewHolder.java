@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import team.code.effect.digitalbinder.R;
 
@@ -16,6 +17,8 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     RelativeLayout relativeLayout;
     ImageView imageView;
     CheckBox checkBox;
+    TextView textView;
+    int position;
 
     public ImageViewHolder(View itemView) {
         super(itemView);

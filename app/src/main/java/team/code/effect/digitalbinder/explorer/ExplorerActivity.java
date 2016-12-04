@@ -43,7 +43,6 @@ public class ExplorerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getName();
         setContentView(R.layout.activity_explorer);
-        init();
 
         recyclerView = (RecyclerView) findViewById(R.id.ex_titleList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -55,13 +54,6 @@ public class ExplorerActivity extends AppCompatActivity {
         initList();
     }
 
-    //저장소 접근권한
-    public void init() {
-        int explorerPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (explorerPermission == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
-        }
-    }
 
     public void connectImgFolder(){
         Uri uri=MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
@@ -99,7 +91,6 @@ public class ExplorerActivity extends AppCompatActivity {
                     explorer.setTitle(dir);
                     explorer.setFilename(filePath);
                     hashMap.put(dirPath, dir);
-                    //folderRecyclerAdapter.list.add(explorer);
                 }
             }
             cursor.moveToNext();

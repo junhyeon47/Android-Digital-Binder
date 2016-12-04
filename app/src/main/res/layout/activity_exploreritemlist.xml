@@ -7,18 +7,14 @@
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_explorer" />
-    <GridView
-        android:id="@+id/ex_gridView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_thumbnail"
         android:layout_width="match_parent"
-        android:columnWidth="100dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
         android:layout_height="0dp"
-        android:layout_weight="1">
-    </GridView>
+        android:layout_weight="1"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/ex_recyclerView"
+        android:id="@+id/ex_recycler_selected"
         android:layout_width="match_parent"
         android:layout_height="100dp" />
 
