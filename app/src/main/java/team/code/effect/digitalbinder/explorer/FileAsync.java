@@ -1,7 +1,6 @@
-package team.code.effect.digitalbinder.main;
+package team.code.effect.digitalbinder.explorer;
 
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -9,16 +8,14 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import team.code.effect.digitalbinder.common.FileHelper;
-import team.code.effect.digitalbinder.common.ImageFile;
 
 public class FileAsync extends AsyncTask<Void, String, Void> {
-    SplashActivity splashActivity;
+    ExplorerActivity explorerActivity;
 
-    public FileAsync(SplashActivity splashActivity) {
-        this.splashActivity = splashActivity;
+    public FileAsync(ExplorerActivity explorerActivity) {
+        this.explorerActivity = explorerActivity;
     }
 
     @Override
@@ -29,22 +26,17 @@ public class FileAsync extends AsyncTask<Void, String, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Intent intent = new Intent(splashActivity, MainActivity.class);
-        splashActivity.startActivity(intent);
-        splashActivity.finish();
+
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
-        if(values[0].equals("count")){
-            splashActivity.progress.setProgress(Integer.parseInt(values[1]));
-        }
     }
 
     Uri uriToThumbnail(String imageId) {
         // DATA는 이미지 파일의 스트림 데이터 경로를 나타냅니다.
         String[] projection = { MediaStore.Images.Thumbnails.DATA };
-        ContentResolver contentResolver = splashActivity.getApplicationContext().getContentResolver();
+        ContentResolver contentResolver = explorerActivity.getApplicationContext().getContentResolver();
 
         // 원본 이미지의 _ID가 매개변수 imageId인 썸네일을 출력
         Cursor thumbnailCursor = contentResolver.query(
@@ -76,36 +68,52 @@ public class FileAsync extends AsyncTask<Void, String, Void> {
 
     void fetchAllImages() {
         // DATA는 이미지 파일의 스트림 데이터 경로를 나타냅니다.
-        String[] projection = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
-
-        Cursor imageCursor = splashActivity.getApplicationContext().getContentResolver().query(
+        String[] projection = {
+                MediaStore.Images.Media.BUCKET_ID,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.ORIENTATION,
+                MediaStore.Images.Media.DATE_TAKEN
+        };
+        String orderBy = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, ";
+        orderBy += MediaStore.Images.Media.DATE_TAKEN +" DESC";
+        Cursor imageCursor = explorerActivity.getApplicationContext().getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, // 이미지 컨텐트 테이블
                 projection, // DATA, _ID를 출력
                 null,       // 모든 개체 출력
                 null,
-                null);      // 정렬 안 함
+                orderBy); //폴더별 정렬하고, 최신순으로 정렬.
 
         ArrayList<ImageFile> result = new ArrayList<>(imageCursor.getCount());
-        int dataColumnIndex = imageCursor.getColumnIndex(projection[0]);
-        int idColumnIndex = imageCursor.getColumnIndex(projection[1]);
-        int count = 0;
+        int bucketIdColumnIndex = imageCursor.getColumnIndex(projection[0]);
+        int bucketDisplayNameColumnIndex = imageCursor.getColumnIndex(projection[1]);
+        int idColumnIndex = imageCursor.getColumnIndex(projection[2]);
+        int dataColumnIndex = imageCursor.getColumnIndex(projection[3]);
+        int orientationColumnIndex = imageCursor.getColumnIndex(projection[4]);
+        int dateTakenColumnIndex = imageCursor.getColumnIndex(projection[5]);
+
         if (imageCursor == null) {
             // Error 발생
         } else if (imageCursor.moveToFirst()) {
-            splashActivity.progress.setMax(imageCursor.getCount()); //프로그레스바 설정
             do {
                 String filePath = imageCursor.getString(dataColumnIndex);
                 String imageId = imageCursor.getString(idColumnIndex);
+                String bucketDisplayName = imageCursor.getString(bucketDisplayNameColumnIndex);
+                String bucketId = imageCursor.getString(bucketIdColumnIndex);
+                String orientation = imageCursor.getString(orientationColumnIndex);
+                String dateTaken = imageCursor.getString(dateTakenColumnIndex);
 
                 Uri originUri = Uri.parse(filePath);
-                Uri thumbnailUri = uriToThumbnail(imageId);
-                // 원본 이미지와 썸네일 이미지의 uri를 모두 담을 수 있는 클래스를 선언합니다.
-                Log.d("ASYNC", "originUri: "+originUri);
-                Log.d("ASYNC","thumbnailUri:"+thumbnailUri);
-                ImageFile photo = new ImageFile(originUri, thumbnailUri);
-                FileHelper.list.add(photo);
+                Log.d("ASYNC", "filePath: "+filePath);
+                Log.d("ASYNC", "imageId: "+imageId);
+                Log.d("ASYNC", "bucketName: "+bucketDisplayName);
+                Log.d("ASYNC", "bucketId: "+bucketId);
+                Log.d("ASYNC", "orientation: "+orientation); //null 값을 갖을 수 있다. 처리해야함.
+                Log.d("ASYNC", "dateTaken: "+dateTaken);
 
-                onProgressUpdate("count", Integer.toString(++count));
+                //ImageFile photo = new ImageFile(originUri, thumbnailUri);
+                //FileHelper.list.add(photo);
             } while(imageCursor.moveToNext());
         } else {
             // imageCursor가 비었습니다.

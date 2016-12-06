@@ -17,13 +17,4 @@
         android:textColor="#1a2b2a"
         android:background="@drawable/splash">
     </TextView>
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_gravity="bottom"
-        style="?android:attr/progressBarStyleHorizontal"/>
 </FrameLayout>
