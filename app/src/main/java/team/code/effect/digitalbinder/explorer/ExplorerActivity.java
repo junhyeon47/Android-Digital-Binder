@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import team.code.effect.digitalbinder.R;
 
 public class ExplorerActivity extends AppCompatActivity {
+    static final int CACHE_SIZE = 50;
     String TAG;
     Toolbar toolbar;
     ArrayList<ImageFolder> listFolders;
@@ -61,7 +62,7 @@ public class ExplorerActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 4);
         imageRecyclerAdapter= new ImageRecyclerAdapter(this);
         recycler_view_images.setLayoutManager(gridLayoutManager);
-        recycler_view_images.setItemViewCacheSize(100);
+        recycler_view_images.setItemViewCacheSize(CACHE_SIZE);
         ImageViewItemDecoration imageViewItemDecoration = new ImageViewItemDecoration(1);
         recycler_view_images.addItemDecoration(imageViewItemDecoration);
         recycler_view_images.setAdapter(imageRecyclerAdapter);
@@ -77,15 +78,22 @@ public class ExplorerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //툴바의 메뉴 터치 이벤트
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(layout_images.getVisibility() == View.VISIBLE){
-                    layout_images.setVisibility(View.GONE);
-                    layout_folders.setVisibility(View.VISIBLE);
-                }else {
-                    onBackPressed(); //현재 액티비티에서 이전 액티비티로 전환.
-                }
+                onBackPressed();
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(layout_images.getVisibility() == View.VISIBLE){
+            layout_images.setVisibility(View.GONE);
+            layout_folders.setVisibility(View.VISIBLE);
+            imageRecyclerAdapter.list = null;
+            imageRecyclerAdapter.notifyDataSetChanged();
+        }else {
+            finish(); //현재 액티비티에서 이전 액티비티로 전환.
+        }
     }
 
     public ArrayList<ImageFolder> getAllImageFolders() {
@@ -169,12 +177,12 @@ public class ExplorerActivity extends AppCompatActivity {
                 String orientation = imageCursor.getString(orientationColumnIndex);
                 String dateTaken = imageCursor.getString(dateTakenColumnIndex);
 
-                Log.d("ASYNC", "filePath: "+filePath);
-                Log.d("ASYNC", "imageId: "+imageId);
-                Log.d(TAG, "bucketName: "+bucketDisplayName);
-                Log.d("ASYNC", "bucketId: "+bucketId);
-                Log.d("ASYNC", "orientation: "+orientation); //null 값을 갖을 수 있다. 처리해야함.
-                Log.d("ASYNC", "dateTaken: "+dateTaken);
+//                Log.d("ASYNC", "filePath: "+filePath);
+//                Log.d("ASYNC", "imageId: "+imageId);
+//                Log.d(TAG, "bucketName: "+bucketDisplayName);
+//                Log.d("ASYNC", "bucketId: "+bucketId);
+//                Log.d("ASYNC", "orientation: "+orientation); //null 값을 갖을 수 있다. 처리해야함.
+//                Log.d("ASYNC", "dateTaken: "+dateTaken);
 
                 ImageFile imageFile = new ImageFile(
                         Integer.parseInt(bucketId),

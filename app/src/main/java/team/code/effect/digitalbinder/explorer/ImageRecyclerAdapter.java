@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,8 +38,18 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final ImageViewHolder holder, int position) {
+    public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         new FileAsync(explorerActivity, holder).execute(list.get(position).image_id);
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    Toast.makeText(explorerActivity, "check true postion: "+position, Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(explorerActivity, "check false postion: "+position, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override

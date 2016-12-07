@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class FileAsync extends AsyncTask<Integer, Void, Bitmap> {
         holder.imageView.setMinimumWidth(DeviceHelper.width/4);
         holder.imageView.setMinimumHeight(DeviceHelper.width/4);
         holder.imageView.setImageBitmap(null);
+        holder.checkBox.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -40,6 +42,8 @@ public class FileAsync extends AsyncTask<Integer, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         holder.imageView.setImageBitmap(bitmap);
+        holder.checkBox.setVisibility(View.VISIBLE);
+        holder.checkBox.setChecked(false);
     }
 
     public Bitmap getThumbnaul(int image_id){
