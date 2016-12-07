@@ -20,11 +20,11 @@ import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
 
 public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> {
     String TAG;
-    ArrayList<String> list = new ArrayList<>();
-    ExplorerItemListActivity explorerItemListActivity;
+    ArrayList<ImageFile> list;
+    ExplorerActivity explorerActivity;
 
-    public ImageRecyclerAdapter(ExplorerItemListActivity explorerItemListActivity) {
-        this.explorerItemListActivity = explorerItemListActivity;
+    public ImageRecyclerAdapter(ExplorerActivity explorerActivity) {
+        this.explorerActivity = explorerActivity;
         TAG = this.getClass().getName();
     }
 
@@ -37,9 +37,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, int position) {
-        String filename = list.get(position);
-        holder.position = position;
-        new BitmapAsync(holder).execute(filename);
+        new FileAsync(explorerActivity, holder).execute(list.get(position).image_id);
     }
 
     @Override
@@ -47,5 +45,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
         return list.size();
     }
 
-
+    public void setList(ArrayList<ImageFile> list){
+        this.list = list;
+    }
 }

@@ -56,7 +56,7 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
         setContentView(R.layout.activity_exploreritemlist);
         TAG=this.getClass().getName();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.ex_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 //        gridView=(GridLayout) findViewById(R.id.ex_grid_view);
@@ -64,7 +64,7 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
 
         recyclerView=(RecyclerView)findViewById(R.id.recycler_thumbnail);
         GridLayoutManager gridLayoutManager=new GridLayoutManager(getApplicationContext(), 4);
-        imageRecyclerAdapter=new ImageRecyclerAdapter(this);
+//        imageRecyclerAdapter=new ImageRecyclerAdapter(this);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(imageRecyclerAdapter);
         recyclerView.setItemViewCacheSize(100);
@@ -83,14 +83,14 @@ public class ExplorerItemListActivity extends AppCompatActivity implements Adapt
 //        imageRecyclerAdapter.list.removeAll(imageRecyclerAdapter.list);
 
 
-        for(int i=0;i<images.length;++i){
-            Log.d(TAG, "images 실경로 "+images[i].getAbsoluteFile() );
-            String filename = images[i].getAbsolutePath();
-            String ext = filename.substring(filename.lastIndexOf(".")+1, filename.length());
-            if(ext.equals("jpg") || ext.equals("png") || ext.equals("JPG") || ext.equals("PNG")) {
-                imageRecyclerAdapter.list.add(filename);
-            }
-        }
+//        for(int i=0;i<images.length;++i){
+//            Log.d(TAG, "images 실경로 "+images[i].getAbsoluteFile() );
+//            String filename = images[i].getAbsolutePath();
+//            String ext = filename.substring(filename.lastIndexOf(".")+1, filename.length());
+//            if(ext.equals("jpg") || ext.equals("png") || ext.equals("JPG") || ext.equals("PNG")) {
+//                imageRecyclerAdapter.list.add(filename);
+//            }
+//        }
     }
 
     @Override

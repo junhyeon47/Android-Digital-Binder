@@ -23,7 +23,7 @@ public class ExplorerTitleItem extends LinearLayout {
         this.explorer=explorer;
 
         LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.item_title_explorer, this);
+        inflater.inflate(R.layout.item_explorer_folder, this);
 
         //ex_sampleTitle=(TextView)findViewById(R.id.ex_sampleTitle);
         setExplorerTitle(explorer);
