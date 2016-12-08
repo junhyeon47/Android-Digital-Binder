@@ -4,8 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 
 import team.code.effect.digitalbinder.R;
 
@@ -33,7 +31,7 @@ public class FolderRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolder
                 explorerActivity.imageRecyclerAdapter.setList(explorerActivity.getAllImages(bucket_id));
                 explorerActivity.layout_folders.setVisibility(View.GONE);
                 explorerActivity.layout_images.setVisibility(View.VISIBLE);
-                explorerActivity.txt_folder_name.setText(imageFolder.bucket_name);
+                explorerActivity.txt_folder_name.setText(imageFolder.path);
 
             }
         });

@@ -9,23 +9,15 @@ import android.widget.TextView;
 
 import team.code.effect.digitalbinder.R;
 
-/**
- * Created by student on 2016-12-01.
- */
-
 public class ImageViewHolder extends RecyclerView.ViewHolder {
     RelativeLayout relativeLayout;
     ImageView imageView;
     CheckBox checkBox;
-    TextView textView;
-    int position;
 
     public ImageViewHolder(View itemView) {
         super(itemView);
         relativeLayout=(RelativeLayout)itemView.findViewById(R.id.layout_images);
-        imageView=(ImageView)itemView.findViewById(R.id.ex_img);
-        checkBox=(CheckBox)itemView.findViewById(R.id.ex_checkBox);
+        imageView=(ImageView)itemView.findViewById(R.id.iv_thumbnail);
+        checkBox=(CheckBox)itemView.findViewById(R.id.ch_thumbnail);
     }
-
-
 }

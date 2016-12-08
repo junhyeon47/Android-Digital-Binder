@@ -25,9 +25,8 @@ public class ExplorerActivity extends AppCompatActivity {
     String TAG;
     Toolbar toolbar;
     ArrayList<ImageFolder> listFolders;
-    ArrayList<ImageFile> listFiles;
     LinearLayout layout_folders, layout_images;
-    RecyclerView recycler_view_folders, recycler_view_images;
+    RecyclerView recycler_view_folders, recycler_view_images, recycler_view_selected;
     FolderRecyclerAdapter folderRecyclerAdapter;
     ImageRecyclerAdapter imageRecyclerAdapter;
     TextView txt_folder_name;
@@ -89,8 +88,7 @@ public class ExplorerActivity extends AppCompatActivity {
         if(layout_images.getVisibility() == View.VISIBLE){
             layout_images.setVisibility(View.GONE);
             layout_folders.setVisibility(View.VISIBLE);
-            imageRecyclerAdapter.list = null;
-            imageRecyclerAdapter.notifyDataSetChanged();
+            imageRecyclerAdapter.resetList();
         }else {
             finish(); //현재 액티비티에서 이전 액티비티로 전환.
         }
@@ -100,6 +98,7 @@ public class ExplorerActivity extends AppCompatActivity {
         String[] projection = {
                 MediaStore.Images.Media.BUCKET_ID, //폴더 ID
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME, //폴더 명.
+                MediaStore.Images.Media.DATA,
         };
         String where = MediaStore.Images.Media.BUCKET_DISPLAY_NAME+"="+MediaStore.Images.Media.BUCKET_DISPLAY_NAME+") GROUP BY (";
         where += MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
@@ -115,6 +114,7 @@ public class ExplorerActivity extends AppCompatActivity {
         ArrayList<ImageFolder> result = new ArrayList<>();
         int bucketIdColumnIndex = imageCursor.getColumnIndex(projection[0]);
         int bucketDisplayNameColumnIndex = imageCursor.getColumnIndex(projection[1]);
+        int dataColumnIndex = imageCursor.getColumnIndex(projection[2]);
 
         if (imageCursor == null) {
             // Error 발생
@@ -123,10 +123,12 @@ public class ExplorerActivity extends AppCompatActivity {
             do {
                 String bucketId = imageCursor.getString(bucketIdColumnIndex);
                 String bucketDisplayName = imageCursor.getString(bucketDisplayNameColumnIndex);
-
+                String data = imageCursor.getString(dataColumnIndex);
+                Log.d(TAG, "path: "+data.substring(0, data.lastIndexOf("/")));
                 ImageFolder imageFolder = new ImageFolder(
                         Integer.parseInt(bucketId),
-                        bucketDisplayName
+                        bucketDisplayName,
+                        data.substring(0, data.lastIndexOf("/")+1)
                 );
                 result.add(imageFolder);
             } while(imageCursor.moveToNext());

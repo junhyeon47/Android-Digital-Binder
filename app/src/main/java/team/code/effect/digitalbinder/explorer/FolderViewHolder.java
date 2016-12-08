@@ -10,7 +10,6 @@ import team.code.effect.digitalbinder.R;
 public class FolderViewHolder extends RecyclerView.ViewHolder {
     LinearLayout linearLayout;
     TextView textView;
-    String path;
 
     public FolderViewHolder(View itemView) {
         super(itemView);

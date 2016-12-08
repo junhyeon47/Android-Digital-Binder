@@ -16,14 +16,10 @@ import team.code.effect.digitalbinder.R;
 
 import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
 
-/**
- * Created by student on 2016-12-01.
- */
-
 public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> {
-    String TAG;
-    ArrayList<ImageFile> list;
-    ExplorerActivity explorerActivity;
+    private String TAG;
+    private ArrayList<ImageFile> list;
+    private ExplorerActivity explorerActivity;
 
     public ImageRecyclerAdapter(ExplorerActivity explorerActivity) {
         this.explorerActivity = explorerActivity;
@@ -32,21 +28,29 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo_explorer, parent, false);
-        ImageViewHolder viewHolder = new ImageViewHolder(view);
-        return viewHolder;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_explorer_thumbnail, parent, false);
+        return new ImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ImageViewHolder holder, final int position) {
-        new FileAsync(explorerActivity, holder).execute(list.get(position).image_id);
+    public void onBindViewHolder(final ImageViewHolder holder, int position) {
+        final int index = position;
+        new FileAsync(explorerActivity, holder).execute(list.get(index).image_id);
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(explorerActivity, "click index: "+index, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
-                    Toast.makeText(explorerActivity, "check true postion: "+position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(explorerActivity, "check true index: "+index, Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(explorerActivity, "check false postion: "+position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(explorerActivity, "check false index: "+index, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -59,5 +63,10 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
 
     public void setList(ArrayList<ImageFile> list){
         this.list = list;
+    }
+
+    public void resetList(){
+        list = null;
+        notifyDataSetChanged();
     }
 }
