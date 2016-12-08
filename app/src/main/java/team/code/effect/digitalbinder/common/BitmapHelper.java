@@ -2,6 +2,7 @@ package team.code.effect.digitalbinder.common;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 
 public class BitmapHelper {
     public static BitmapFactory.Options getOptions(String filename){
@@ -61,5 +62,28 @@ public class BitmapHelper {
         bitmap.recycle();
         resizeBitmap.recycle();
         return cropBitmap;
+    }
+
+    public static Bitmap changeOrientation(Bitmap bitmap, int orientation){
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float rotateRatio = 0f;
+        switch (orientation){
+            case 0:
+                rotateRatio = 0;
+                break;
+            case 90:
+                rotateRatio = -90f;
+                break;
+            case 180:
+                rotateRatio = -180f;
+                break;
+            case 270:
+                rotateRatio = -270f;
+                break;
+        }
+        Matrix rotateMatrix = new Matrix();
+        rotateMatrix.preRotate(rotateRatio);
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, rotateMatrix, true);
     }
 }

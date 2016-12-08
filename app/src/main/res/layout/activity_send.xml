@@ -1,57 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-<include layout="@layout/toolbar_white"/>
-<LinearLayout
-    android:id="@+id/layout_bluetooth"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:onClick="layoutClick">
-    <ImageView
-        android:src="@drawable/ic_bluetooth_black_48dp"
-        android:layout_gravity="center"
-        android:layout_margin="17dp"
-        android:layout_width="36dp"
-        android:layout_height="36dp"/>
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:paddingLeft="5dp"
-        android:text="블루투스로 내보내기"
-        android:textSize="16sp"
-        android:gravity="center_vertical" />
-</LinearLayout>
-<View
-    android:layout_width="match_parent"
-    android:layout_height="1dp"
-    android:background="@drawable/divider_gradient"/>
-<LinearLayout
-    android:id="@+id/layout_cloud"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:onClick="layoutClick">
-    <ImageView
-        android:src="@drawable/ic_cloud_upload_black_48dp"
-        android:layout_gravity="center"
-        android:layout_margin="17dp"
-        android:layout_width="36dp"
-        android:layout_height="36dp"/>
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:paddingLeft="5dp"
-        android:text="클라우드로 내보내기"
-        android:textSize="16sp"
-        android:gravity="center_vertical" />
-</LinearLayout>
-<View
-    android:layout_width="match_parent"
-    android:layout_height="5dp"
-    android:background="@drawable/divider_gradient"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include layout="@layout/toolbar_white" />
+
+    <include layout="@layout/layout_send"
+        android:id="@+id/inc_layout_send"/>
+
+    <include layout="@layout/layout_cloud"
+        android:id="@+id/inc_layout_cloud"
+        android:visibility="gone" />
 </LinearLayout>

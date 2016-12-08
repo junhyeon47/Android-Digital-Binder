@@ -7,14 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import team.code.effect.digitalbinder.R;
 
-/**
- * Created by 1238TX on 2016-11-30.
- */
-
 public class SendActivity extends AppCompatActivity {
+    View inc_layout_send, inc_layout_cloud;
     Toolbar toolbar;
 
     @Override
@@ -23,6 +21,9 @@ public class SendActivity extends AppCompatActivity {
         setContentView(R.layout.activity_send);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar); //XML 툴바의 주소를 toolbar로 연결.
+        inc_layout_send = findViewById(R.id.inc_layout_send);
+        inc_layout_cloud = findViewById(R.id.inc_layout_cloud);
+
         setSupportActionBar(toolbar); //툴바를 현재 액티비티의 액션바로 설정.
         setToolbar(); //툴바의 설정을 변경하는 메소드 호출.
 
@@ -42,7 +43,13 @@ public class SendActivity extends AppCompatActivity {
                 openBluetoothActivity();
                 break;
             case R.id.layout_cloud:
-                openCloundActivity();
+                visibleCloudLayout();
+                break;
+            case R.id.layout_google_drive:
+                Toast.makeText(this, "구글 드라이브", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.layout_dropbox:
+                Toast.makeText(this, "드롭박스", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -52,9 +59,16 @@ public class SendActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void openCloundActivity(){
-        Intent intent = new Intent(this, CloudActivity.class);
-        startActivity(intent);
+    public void visibleCloudLayout(){
+        getSupportActionBar().setTitle("클라우드로 내보내기");
+        inc_layout_cloud.setVisibility(View.VISIBLE);
+        inc_layout_send.setVisibility(View.GONE);
+    }
+
+    public void visibleSendLayout(){
+        getSupportActionBar().setTitle("내보내기");
+        inc_layout_cloud.setVisibility(View.GONE);
+        inc_layout_send.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -67,5 +81,11 @@ public class SendActivity extends AppCompatActivity {
         return true;
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if(inc_layout_cloud.getVisibility() == View.VISIBLE)
+            visibleSendLayout();
+        else
+            finish();;
+    }
 }

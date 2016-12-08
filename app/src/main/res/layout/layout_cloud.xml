@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/layout_google_drive"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:onClick="layoutClick">
+        <ImageView
+            android:src="@drawable/google_drive_icon"
+            android:layout_gravity="center"
+            android:layout_margin="17dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:text="구글 드라이브"
+            android:textSize="16sp"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider_gradient"/>
+    <LinearLayout
+        android:id="@+id/layout_dropbox"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:onClick="layoutClick">
+        <ImageView
+            android:src="@drawable/dropbox"
+            android:layout_gravity="center"
+            android:layout_margin="17dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="5dp"
+            android:text="드롭박스"
+            android:textSize="16sp"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider_gradient"/>
+</LinearLayout>
