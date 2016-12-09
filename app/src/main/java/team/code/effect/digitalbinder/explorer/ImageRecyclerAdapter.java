@@ -35,12 +35,14 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, int position) {
         final int index = position;
-        new FileAsync(explorerActivity, holder).execute(list.get(index).image_id);
+        final int orientation= list.get(index).orientation;
+        new FileAsync(explorerActivity, holder).execute(list.get(index).image_id, list.get(index).orientation);
 
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(explorerActivity, "click index: "+index, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(explorerActivity, "click index: "+index, Toast.LENGTH_SHORT).show();
+                Toast.makeText(explorerActivity, "orientation"+orientation, Toast.LENGTH_SHORT).show();
             }
         });
 

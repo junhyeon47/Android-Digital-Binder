@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import team.code.effect.digitalbinder.R;
 
 public class ExplorerActivity extends AppCompatActivity {
-    static final int CACHE_SIZE = 50;
+    static final int CACHE_SIZE = 200;
     String TAG;
     Toolbar toolbar;
     ArrayList<ImageFolder> listFolders;

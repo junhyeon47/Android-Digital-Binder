@@ -12,6 +12,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import team.code.effect.digitalbinder.common.BitmapHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.common.FileHelper;
 
@@ -36,7 +37,7 @@ public class FileAsync extends AsyncTask<Integer, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Integer... params) {
-        return getThumbnaul(params[0]);
+        return getThumbnaul(params[0], params[1]);
     }
 
     @Override
@@ -46,13 +47,13 @@ public class FileAsync extends AsyncTask<Integer, Void, Bitmap> {
         holder.checkBox.setChecked(false);
     }
 
-    public Bitmap getThumbnaul(int image_id){
+    public Bitmap getThumbnaul(int image_id, int orientation){
         Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
                 explorerActivity.getContentResolver(),
                 image_id,
                 MediaStore.Images.Thumbnails.MICRO_KIND,
                 null
         );
-        return  thumbnail;
+        return  BitmapHelper.changeOrientation(thumbnail, orientation);
     }
 }

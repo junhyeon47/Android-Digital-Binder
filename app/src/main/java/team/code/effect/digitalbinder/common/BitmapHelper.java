@@ -73,13 +73,13 @@ public class BitmapHelper {
                 rotateRatio = 0;
                 break;
             case 90:
-                rotateRatio = -90f;
+                rotateRatio = 90f;
                 break;
             case 180:
-                rotateRatio = -180f;
+                rotateRatio = 180f;
                 break;
             case 270:
-                rotateRatio = -270f;
+                rotateRatio = 270f;
                 break;
         }
         Matrix rotateMatrix = new Matrix();
