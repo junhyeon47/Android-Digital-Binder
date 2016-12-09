@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/insert"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_add_white_24dp"
         android:title="추가 하기"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/delete"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/ic_delete_white_24dp"
         android:title="삭제 하기"
         app:showAsAction="ifRoom"/>
     <item
@@ -21,6 +21,4 @@
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title="취소"
         app:showAsAction="never"/>
-
-
 </menu>

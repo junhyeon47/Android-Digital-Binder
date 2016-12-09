@@ -10,12 +10,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,6 +27,7 @@ import java.io.File;
 import java.util.List;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.camera.PreviewRecyclerAdapter;
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.BinderDAO;
 import team.code.effect.digitalbinder.main.BluetoothActivity;
@@ -34,11 +39,12 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     private Menu menu;
     Toolbar toolbar;
     ListView listView;
-    BinderDAO photobookDAO;
+    BinderDAO photobookDAO = MainActivity.dao;;
     PhotobookListAdapter photobookListAdapter;
     List list;
     Boolean mode = false;
     PhotobookActivity photobookActivity;
+    RecyclerView recycler_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +55,22 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         photobookActivity=this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Photobook");
+        getSupportActionBar().setTitle("포토북");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
         toolbar.setOnMenuItemClickListener(this);
         listView = (ListView) findViewById(R.id.listView);
-        init();
+
+
+        recycler_view = (RecyclerView)findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setOrientation(LinearLayout.HORIZONTAL);
+        recycler_view.setLayoutManager(layoutManager);
+        recycler_view.setHasFixedSize(true);
+        recycler_view.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
+        PhotobookRecyclerAdapter photobookRecyclerAdapter = new PhotobookRecyclerAdapter(this);
+        recycler_view.setAdapter(photobookRecyclerAdapter);
+        //init();
     }
 
     //db 연결 및 Photobook목록 불러와 listView에 뿌리기

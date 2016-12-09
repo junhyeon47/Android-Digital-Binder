@@ -5,9 +5,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import team.code.effect.digitalbinder.R;
 
 /**
  * Created by student on 2016-11-25.
@@ -46,9 +49,9 @@ public class PhotobookListAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
+    public View getView(int position, View convertView, ViewGroup viewGroup) {
         View view=null;
-        Photobook photobook=list.get(i);
+        Photobook photobook=list.get(position);
         if(convertView==null){
             view = new PhotobookCheckboxItem(context,photobook,flag);
         }else{
@@ -57,6 +60,15 @@ public class PhotobookListAdapter extends BaseAdapter{
             item.flag=flag;
             item.init(photobook);
         }
+        String title = photobook.getTitle();
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<title.length(); ++i){
+            sb.append(title.charAt(i));
+            if(i != title.length()-1){
+                sb.append("\n");
+            }
+        }
+        ((TextView)view.findViewById(R.id.txt_title)).setText(sb.toString());
         itemList.add((PhotobookCheckboxItem)view);
         return view;
     }

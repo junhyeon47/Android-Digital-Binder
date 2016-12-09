@@ -4,14 +4,24 @@
     android:id="@+id/activity_photobook"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="team.code.effect.digitalbinder.photobook.PhotobookActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="team.code.effect.digitalbinder.photobook.PhotobookActivity">
     <!--Toolbar 등록-->
-    <include layout="@layout/toolbar_photobook"/>
+    <include layout="@layout/toolbar_photobook" />
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 </LinearLayout>

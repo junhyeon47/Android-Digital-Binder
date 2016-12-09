@@ -86,6 +86,6 @@ public class SendActivity extends AppCompatActivity {
         if(inc_layout_cloud.getVisibility() == View.VISIBLE)
             visibleSendLayout();
         else
-            finish();;
+            finish();
     }
 }
