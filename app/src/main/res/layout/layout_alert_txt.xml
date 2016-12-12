@@ -13,4 +13,15 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:hint="이름을 입력해주세요."/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:textSize="17sp"
+        android:textColor="#000000"
+        android:text="포토북 색상을 선택하세요."/>
+
 </LinearLayout>

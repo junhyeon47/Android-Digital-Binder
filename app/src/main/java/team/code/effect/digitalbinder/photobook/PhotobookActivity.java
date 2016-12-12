@@ -45,6 +45,7 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     Boolean mode = false;
     PhotobookActivity photobookActivity;
     RecyclerView recycler_view;
+    PhotobookRecyclerAdapter photobookRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
         recycler_view.setLayoutManager(layoutManager);
         recycler_view.setHasFixedSize(true);
         recycler_view.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
-        PhotobookRecyclerAdapter photobookRecyclerAdapter = new PhotobookRecyclerAdapter(this);
+        photobookRecyclerAdapter = new PhotobookRecyclerAdapter(this);
         recycler_view.setAdapter(photobookRecyclerAdapter);
         //init();
     }
@@ -89,16 +90,16 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     protected void onRestart() {
         super.onRestart();
         //       Log.d(TAG,"리스타트 현액티비티주소"+this);
-        if (mode) {
-            showCheckbox(mode);
-        } else {
-            mode = !mode;
-            showCheckbox(mode);
-        }
-        list = photobookDAO.selectAll();
-        //       Log.d(TAG,"리스트2"+list.size());
-        photobookListAdapter.setList(list);
-        photobookListAdapter.notifyDataSetChanged();
+//        if (mode) {
+//            showCheckbox(mode);
+//        } else {
+//            mode = !mode;
+//            showCheckbox(mode);
+//        }
+//        list = photobookDAO.selectAll();
+//        //       Log.d(TAG,"리스트2"+list.size());
+//        photobookListAdapter.setList(list);
+//        photobookListAdapter.notifyDataSetChanged();
         //   Log.d(TAG,"리스트3"+photobookListAdapter.getCount());
     }
 
@@ -154,14 +155,15 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
                 regist();
                 break;
             case R.id.delete:
-                remove();
+                //remove();
+                showCheckbox();
                 break;
             case R.id.share:
                 Log.d(TAG, "공유하기");
                 share();
                 break;
             case R.id.cancel:
-                showCheckbox(mode);
+                //showCheckbox(mode);
                 break;
         }
         return true;
@@ -211,28 +213,30 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
 
     /*삭제 메서드*/
     public void remove() {
-        Toast.makeText(this, "mode" + mode, Toast.LENGTH_SHORT).show();
-        if (!mode) {
-            showCheckbox(mode);
-        } else {
-            /*삭제 동작*/
-            mode = !mode;
-            deleteItemList(photobookListAdapter.itemList);
-        }
+//        Toast.makeText(this, "mode" + mode, Toast.LENGTH_SHORT).show();
+//        if (!mode) {
+//            showCheckbox(mode);
+//        } else {
+//            /*삭제 동작*/
+//            mode = !mode;
+//            deleteItemList(photobookListAdapter.itemList);
+//        }
     }
 
     /*삭제 item 선택 checkbox 보이게 하기!*/
-    public void showCheckbox(Boolean mode) {
-        this.mode = !mode;
-        List list = photobookListAdapter.itemList;
-        for (int i = 0; i < list.size(); i++) {
-            PhotobookCheckboxItem item = (PhotobookCheckboxItem) list.get(i);
-            item.checkBox.setChecked(false);
-        }
-        photobookListAdapter.flag = this.mode;
-        photobookListAdapter.notifyDataSetChanged();
-        photobookListAdapter.itemList.removeAll(photobookListAdapter.itemList);
-        changePhotobookMenu(photobookListAdapter.flag);
+    public void showCheckbox() {
+//        this.mode = !mode;
+//        List list = photobookListAdapter.itemList;
+//        for (int i = 0; i < list.size(); i++) {
+//            PhotobookCheckboxItem item = (PhotobookCheckboxItem) list.get(i);
+//            item.checkBox.setChecked(false);
+//        }
+//        photobookListAdapter.flag = this.mode;
+//        photobookListAdapter.notifyDataSetChanged();
+//        photobookListAdapter.itemList.removeAll(photobookListAdapter.itemList);
+//        changePhotobookMenu(photobookListAdapter.flag);
+        photobookRecyclerAdapter.isDeleteMemuClicked = !photobookRecyclerAdapter.isDeleteMemuClicked;
+        photobookRecyclerAdapter.notifyDataSetChanged();
     }
 
     /*삭제 목록 만들기*/

@@ -5,12 +5,12 @@
         android:id="@+id/insert"
         android:icon="@drawable/ic_add_white_24dp"
         android:title="추가 하기"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
     <item
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="삭제 하기"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
     <item
         android:id="@+id/share"
         android:icon="@android:drawable/ic_menu_share"
