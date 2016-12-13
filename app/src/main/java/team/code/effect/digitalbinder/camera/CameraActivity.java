@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
 import team.code.effect.digitalbinder.photobook.Photobook;
@@ -67,8 +68,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     int[] angle = new int[]{-90, 0, 90, 180};
     Animation anim_shutter;
 
-    //SQLite 관련 멤버 변수 정의
-
+    //Color Palette 관련 멤버변수 정의
+    LinearLayout layout_palette;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -299,6 +300,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             @Override
             public void onShow(final DialogInterface dialogInterface) {
                 Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                layout_palette = (LinearLayout)((Dialog)dialogInterface).findViewById(R.id.layout_palette);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -317,12 +319,26 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                         }
                     }
                 });
+                for(int i=0; i<ColorPaletteHelper.ID.length; ++i){
+                    final int position = i;
+                    layout_palette.findViewById(ColorPaletteHelper.ID[i]).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(CameraActivity.this, "color: "+position, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
+
         alertDialog.show();
     }
 
     public boolean isExistFile(String filename){
         return MainActivity.dao.isDuplicatedTitle(filename);
+    }
+
+    public void paletteClick(View view){
+        Toast.makeText(CameraActivity.this, "id: "+view.getId(), Toast.LENGTH_SHORT).show();
     }
 }
