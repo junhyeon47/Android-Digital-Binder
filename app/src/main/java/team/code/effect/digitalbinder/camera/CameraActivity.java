@@ -2,13 +2,16 @@ package team.code.effect.digitalbinder.camera;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
@@ -21,16 +24,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
+import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
 import team.code.effect.digitalbinder.photobook.Photobook;
@@ -69,7 +76,9 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     Animation anim_shutter;
 
     //Color Palette 관련 멤버변수 정의
-    LinearLayout layout_palette;
+    RecyclerView recycler_view_color;
+    ArrayList<ColorPalette> colorPaletteList = new ArrayList<>();
+    ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +119,11 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         //적용할 애니메이션
         oldOrientation = CameraActivity.orientation;
         anim_shutter = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_shutter);
+
+        //Color Palette 관련 초기화
+        initColorPaletteList();
+        colorPaletteRecyclerAdapter = new ColorPaletteRecyclerAdapter();
+        colorPaletteRecyclerAdapter.setList(colorPaletteList);
     }
 
     @Override
@@ -206,9 +220,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             if (popupWindow.isShowing())
                 return;
 
-
-
-
         for(int i=0; i<btnList.size(); ++i){
             if(btnList.get(i).getId() == R.id.btn_back && toAngle == -90)
                 rotate = new RotateAnimation(fromAngle, -toAngle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -300,34 +311,52 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             @Override
             public void onShow(final DialogInterface dialogInterface) {
                 Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                layout_palette = (LinearLayout)((Dialog)dialogInterface).findViewById(R.id.layout_palette);
+                recycler_view_color = (RecyclerView)((Dialog)dialogInterface).findViewById(R.id.recycler_view_color);
+                GridLayoutManager layoutManager = new GridLayoutManager(((Dialog)dialogInterface).getContext(), 5);
+                recycler_view_color.setLayoutManager(layoutManager);
+                recycler_view_color.setAdapter(colorPaletteRecyclerAdapter);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Dialog dialog = (Dialog)dialogInterface;
                         EditText txt_file_name = (EditText)dialog.findViewById(R.id.txt_file_name);
+                        TextView txt_color = (TextView)dialog.findViewById(R.id.txt_color);
+                        boolean flagDuplicate, flagFileName, flagColor;
+
+                        //파일명 중복 여부 확인
                         if(isExistFile(txt_file_name.getText()+".zip")){
-                            //중복일 경우
                             txt_file_name.setText("");
                             txt_file_name.setHint("중복된 이름이 존재합니다.");
-                            txt_file_name.setHintTextColor(getResources().getColor(R.color.colorAccent));
+                            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                            flagDuplicate = false;
                         }else{
-                            //중복이 없을 때.
-                            //AsyncTask 이용해 파일로 저장.
+                            flagDuplicate = true;
+                        }
+
+                        if(txt_file_name.getText().length() == 0){
+                            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                            flagFileName = false;
+                        }else{
+                            flagFileName = true;
+                        }
+
+                        //색상 선택여부를 확인
+                        if(!isCheckedColor()) {
+                            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                            flagColor = false;
+                        }else {
+                            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
+                            flagColor = true;
+                        }
+
+                        //중복이 없을 때.
+                        //AsyncTask 이용해 파일로 저장.
+                        if(flagDuplicate && flagFileName && flagColor){
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
                             async.execute(txt_file_name.getText().toString());
                         }
                     }
                 });
-                for(int i=0; i<ColorPaletteHelper.ID.length; ++i){
-                    final int position = i;
-                    layout_palette.findViewById(ColorPaletteHelper.ID[i]).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Toast.makeText(CameraActivity.this, "color: "+position, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
             }
         });
 
@@ -338,7 +367,23 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         return MainActivity.dao.isDuplicatedTitle(filename);
     }
 
-    public void paletteClick(View view){
-        Toast.makeText(CameraActivity.this, "id: "+view.getId(), Toast.LENGTH_SHORT).show();
+    public void initColorPaletteList(){
+        ColorPalette colorPalette;
+        for(int i=0; i<ColorPaletteHelper.VALUE.length; ++i){
+            colorPalette = new ColorPalette();
+            colorPalette.setCheck(false);
+            colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
+            colorPaletteList.add(colorPalette);
+        }
+    }
+    public boolean isCheckedColor(){
+        boolean result = false;
+        for(int i=0; i<colorPaletteList.size(); ++i){
+            if(colorPaletteList.get(i).isCheck()){
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 }
