@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.explorer;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -25,11 +26,14 @@ public class ExplorerActivity extends AppCompatActivity {
     String TAG;
     Toolbar toolbar;
     ArrayList<ImageFolder> listFolders;
-    LinearLayout layout_folders, layout_images;
-    RecyclerView recycler_view_folders, recycler_view_images, recycler_view_selected;
+    LinearLayout layout_folders, layout_images, layout_detail;
+    RecyclerView recycler_view_folders, recycler_view_images, recycler_view_selected, recycler_view_image_detial;
     FolderRecyclerAdapter folderRecyclerAdapter;
     ImageRecyclerAdapter imageRecyclerAdapter;
+    ImageViewDetailRecyclerAdapter imageViewDetailRecyclerAdapter;
     TextView txt_folder_name;
+    ViewPager viewPager;
+    ImageViewPagerAdapter imageViewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +43,17 @@ public class ExplorerActivity extends AppCompatActivity {
 
         listFolders = getAllImageFolders();
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setToolbar();
 
-        layout_folders = (LinearLayout)findViewById(R.id.layout_folders);
-        layout_images = (LinearLayout)findViewById(R.id.layout_images);
-        txt_folder_name = (TextView)findViewById(R.id.txt_folder_name);
+        layout_folders = (LinearLayout) findViewById(R.id.layout_folders);
+        layout_images = (LinearLayout) findViewById(R.id.layout_images);
+        layout_detail = (LinearLayout) findViewById(R.id.layout_detail);
+
+        txt_folder_name = (TextView) findViewById(R.id.txt_folder_name);
 
         //폴더 관련 RecyclerView 설정
-        recycler_view_folders = (RecyclerView)findViewById(R.id.recycler_view_folders);
+        recycler_view_folders = (RecyclerView) findViewById(R.id.recycler_view_folders);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayout.VERTICAL);
         recycler_view_folders.setLayoutManager(layoutManager);
@@ -57,17 +63,26 @@ public class ExplorerActivity extends AppCompatActivity {
         recycler_view_folders.setAdapter(folderRecyclerAdapter);
 
         //썸네일 관련 RecyclerView 설정
-        recycler_view_images = (RecyclerView)findViewById(R.id.recycler_view_images);
+        recycler_view_images = (RecyclerView) findViewById(R.id.recycler_view_images);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 4);
-        imageRecyclerAdapter= new ImageRecyclerAdapter(this);
+        imageRecyclerAdapter = new ImageRecyclerAdapter(this);
         recycler_view_images.setLayoutManager(gridLayoutManager);
         recycler_view_images.setItemViewCacheSize(CACHE_SIZE);
         ImageViewItemDecoration imageViewItemDecoration = new ImageViewItemDecoration(1);
         recycler_view_images.addItemDecoration(imageViewItemDecoration);
         recycler_view_images.setAdapter(imageRecyclerAdapter);
+
+        //이미지 클릭시 관련 RecyclerView 설정
+        recycler_view_image_detial = (RecyclerView) findViewById(R.id.recycler_view_image_detial);
+        LinearLayoutManager detailLinearLayout = new LinearLayoutManager(getApplicationContext());
+        detailLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        recycler_view_image_detial.setLayoutManager(detailLinearLayout);
+        imageViewDetailRecyclerAdapter=new ImageViewDetailRecyclerAdapter(this);
+        recycler_view_image_detial.setAdapter(imageViewDetailRecyclerAdapter);
+
     }
 
-    public void setToolbar(){
+    public void setToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("사진 선택");
@@ -85,11 +100,11 @@ public class ExplorerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(layout_images.getVisibility() == View.VISIBLE){
+        if (layout_images.getVisibility() == View.VISIBLE) {
             layout_images.setVisibility(View.GONE);
             layout_folders.setVisibility(View.VISIBLE);
             imageRecyclerAdapter.resetList();
-        }else {
+        } else {
             finish(); //현재 액티비티에서 이전 액티비티로 전환.
         }
     }
@@ -100,7 +115,7 @@ public class ExplorerActivity extends AppCompatActivity {
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME, //폴더 명.
                 MediaStore.Images.Media.DATA,
         };
-        String where = MediaStore.Images.Media.BUCKET_DISPLAY_NAME+"="+MediaStore.Images.Media.BUCKET_DISPLAY_NAME+") GROUP BY (";
+        String where = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=" + MediaStore.Images.Media.BUCKET_DISPLAY_NAME + ") GROUP BY (";
         where += MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
         String orderBy = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC";
 
@@ -124,14 +139,14 @@ public class ExplorerActivity extends AppCompatActivity {
                 String bucketId = imageCursor.getString(bucketIdColumnIndex);
                 String bucketDisplayName = imageCursor.getString(bucketDisplayNameColumnIndex);
                 String data = imageCursor.getString(dataColumnIndex);
-                Log.d(TAG, "path: "+data.substring(0, data.lastIndexOf("/")));
+                Log.d(TAG, "path: " + data.substring(0, data.lastIndexOf("/")));
                 ImageFolder imageFolder = new ImageFolder(
                         Integer.parseInt(bucketId),
                         bucketDisplayName,
-                        data.substring(0, data.lastIndexOf("/")+1)
+                        data.substring(0, data.lastIndexOf("/") + 1)
                 );
                 result.add(imageFolder);
-            } while(imageCursor.moveToNext());
+            } while (imageCursor.moveToNext());
         } else {
             // imageCursor가 비었습니다.
         }
@@ -148,9 +163,9 @@ public class ExplorerActivity extends AppCompatActivity {
                 MediaStore.Images.Media.ORIENTATION, //이미지 회전 각도.
                 MediaStore.Images.Media.DATE_TAKEN //이미지 촬영날짜.
         };
-        String where = MediaStore.Images.Media.BUCKET_ID+"="+Integer.toString(bucket_id);
+        String where = MediaStore.Images.Media.BUCKET_ID + "=" + Integer.toString(bucket_id);
         String orderBy = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, ";
-        orderBy += MediaStore.Images.Media.DATE_TAKEN +" DESC";
+        orderBy += MediaStore.Images.Media.DATE_TAKEN + " DESC";
 
         Cursor imageCursor = getApplicationContext().getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, // 이미지 컨텐트 테이블
@@ -191,11 +206,11 @@ public class ExplorerActivity extends AppCompatActivity {
                         bucketDisplayName,
                         Integer.parseInt(imageId),
                         Uri.parse(filePath),
-                        (orientation == null)? 0: Integer.parseInt(orientation),
+                        (orientation == null) ? 0 : Integer.parseInt(orientation),
                         dateTaken
                 );
                 result.add(imageFile);
-            } while(imageCursor.moveToNext());
+            } while (imageCursor.moveToNext());
         } else {
             // imageCursor가 비었습니다.
         }

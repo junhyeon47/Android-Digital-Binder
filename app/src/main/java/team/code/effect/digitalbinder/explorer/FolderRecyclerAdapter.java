@@ -32,7 +32,6 @@ public class FolderRecyclerAdapter extends RecyclerView.Adapter<FolderViewHolder
                 explorerActivity.layout_folders.setVisibility(View.GONE);
                 explorerActivity.layout_images.setVisibility(View.VISIBLE);
                 explorerActivity.txt_folder_name.setText(imageFolder.path);
-
             }
         });
         holder.textView.setText(imageFolder.bucket_name);
