@@ -37,16 +37,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("[DB] local: ",db.toString());
         StringBuffer sql = new StringBuffer();
         sql.append("create table photobook(");
-        sql.append("photobook_id Integer primary key autoincrement");
-        sql.append(",title varchar(30)");
-        sql.append(",filename varchar(20)");
-        sql.append(",icon varchar(20)");
+        sql.append("photobook_id integer primary key autoincrement");
+        sql.append(",title varchar(100)");
+        sql.append(",filename varchar(100)");
+        sql.append(",color int");
         sql.append(",regdate timestamp DEFAULT CURRENT_TIMESTAMP");
         sql.append(");");
-
         db.execSQL(sql.toString());
     }
 

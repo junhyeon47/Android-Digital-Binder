@@ -2,12 +2,7 @@ package team.code.effect.digitalbinder.photobook;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -27,19 +22,17 @@ import java.io.File;
 import java.util.List;
 
 import team.code.effect.digitalbinder.R;
-import team.code.effect.digitalbinder.camera.PreviewRecyclerAdapter;
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.common.BinderDAO;
+import team.code.effect.digitalbinder.common.PhotobookDAO;
 import team.code.effect.digitalbinder.main.BluetoothActivity;
 import team.code.effect.digitalbinder.main.MainActivity;
 
-public class PhotobookActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, Toolbar.OnMenuItemClickListener {
+public class PhotobookActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
     String TAG;
-    static final int REQUEST_EXTERNAL_PERMISSION = 1;
     private Menu menu;
     Toolbar toolbar;
     ListView listView;
-    BinderDAO photobookDAO = MainActivity.dao;;
+    PhotobookDAO photobookDAO = MainActivity.dao;;
     PhotobookListAdapter photobookListAdapter;
     List list;
     Boolean mode = false;
@@ -75,16 +68,16 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     }
 
     //db 연결 및 Photobook목록 불러와 listView에 뿌리기
-    public void init() {
-        checkFolder();
-        photobookDAO = MainActivity.dao;
-        list = photobookDAO.selectAll();
+//    public void init() {
+//        checkFolder();
+//        photobookDAO = MainActivity.dao;
+//        list = photobookDAO.selectAll();
 //       Log.d(TAG,"리스트1"+list.size());
-        photobookListAdapter = new PhotobookListAdapter(this, list);
+//        photobookListAdapter = new PhotobookListAdapter(this, list);
 //        Log.d(TAG,"리스트1"+photobookListAdapter.getCount());
-        listView.setAdapter(photobookListAdapter);
-        listView.setOnItemClickListener(this);
-    }
+//        listView.setAdapter(photobookListAdapter);
+//        listView.setOnItemClickListener(this);
+//    }
 
     @Override
     protected void onRestart() {
@@ -116,21 +109,21 @@ public class PhotobookActivity extends AppCompatActivity implements AdapterView.
     }
 
     //Photobook Item 선택시 Detail화면으로 이동 시킬것!!!!(Activity 이동)
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (mode) {
-            itemCheck(view);
-        } else {
-            showBinder(view);
-        }
-    }
+//    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//        if (mode) {
+//            itemCheck(view);
+//        } else {
+//            showBinder(view);
+//        }
+//    }
 
     /*(delete mode off일때)binderActivity로 연결하기*/
-    public void showBinder(View view) {
-        PhotobookCheckboxItem item = (PhotobookCheckboxItem) view;
-        Intent intent = new Intent(this, BinderActivity.class);//이동할 Activity
-        intent.putExtra("photobook", item.photobook);
-        startActivity(intent);
-    }
+//    public void showBinder(View view) {
+//        PhotobookCheckboxItem item = (PhotobookCheckboxItem) view;
+//        Intent intent = new Intent(this, BinderActivity.class);//이동할 Activity
+//        intent.putExtra("photobook", item.photobook);
+//        startActivity(intent);
+//    }
 
     /*(delete mode On일때)item 선택시 check박스 설정되게 하기*/
     public void itemCheck(View view) {

@@ -20,7 +20,7 @@ import java.io.File;
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.camera.CameraActivity;
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.common.BinderDAO;
+import team.code.effect.digitalbinder.common.PhotobookDAO;
 import team.code.effect.digitalbinder.common.DatabaseHelper;
 import team.code.effect.digitalbinder.explorer.ExplorerActivity;
 import team.code.effect.digitalbinder.photobook.PhotobookActivity;
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static final int PERMISSION_USING_PHOTOBOOK = 3;
     private Intent intent;
     private long lastTimeBackPressed; //마지막으로 뒤로가기 버튼이 터치된 시간
-    public  static BinderDAO dao; //DAO 선언
+    public  static PhotobookDAO dao; //DAO 선언
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         //데이터베이스 얻어오기
-        dao = new BinderDAO(DatabaseHelper.initialize(getApplicationContext()));
+        dao = new PhotobookDAO(DatabaseHelper.initialize(getApplicationContext()));
     }
 
     public void btnClick(View view) {

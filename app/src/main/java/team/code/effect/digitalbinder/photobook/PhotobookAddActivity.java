@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.common.BinderDAO;
+import team.code.effect.digitalbinder.common.PhotobookDAO;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 /**
@@ -33,7 +33,7 @@ public class PhotobookAddActivity extends AppCompatActivity implements AdapterVi
     ListView listView;
     PhotobookListAdapter photobookListAdapter;
     ArrayList<Photobook> list;
-    BinderDAO photobookDAO;
+    PhotobookDAO photobookDAO;
     String TAG;
     File dir;
     Toolbar toolbar;

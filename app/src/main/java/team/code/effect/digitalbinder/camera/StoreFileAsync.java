@@ -52,6 +52,7 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
     @Override
     protected Photobook doInBackground(String... params) {
         String filename = params[0];
+        int color = Integer.parseInt(params[1]);
         Bitmap bitmap;
         FileOutputStream fos;
         File tempFile = null;
@@ -144,7 +145,7 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
         Photobook photobook = new Photobook();
         photobook.setFilename(filename + ".zip");
         photobook.setTitle(filename);
-        photobook.setIcon("default.jpg");
+        photobook.setColor(color);
         return photobook;
     }
 

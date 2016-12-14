@@ -15,7 +15,7 @@ import team.code.effect.digitalbinder.R;
 
 public class PhotobookViewHolder extends RecyclerView.ViewHolder {
     LinearLayout layout_photobook;
-    TextView txt_title;
+    TextView txt_title, txt_count, txt_regdate;
     ImageButton ib_bookmark_true, ib_bookmark_false;
     CheckBox checkBox;
 
@@ -24,6 +24,8 @@ public class PhotobookViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         layout_photobook = (LinearLayout)itemView.findViewById(R.id.layout_photobook);
         txt_title = (TextView)itemView.findViewById(R.id.txt_title);
+        txt_count = (TextView)itemView.findViewById(R.id.txt_count);
+        txt_regdate = (TextView)itemView.findViewById(R.id.txt_regdate);
         ib_bookmark_true = (ImageButton)itemView.findViewById(R.id.ib_bookmark_true);
         ib_bookmark_false = (ImageButton)itemView.findViewById(R.id.ib_bookmark_false);
         checkBox = (CheckBox)itemView.findViewById(R.id.checkBox);

@@ -4,13 +4,18 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.zip.ZipFile;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 /**
@@ -42,14 +47,32 @@ public class PhotobookRecyclerAdapter extends RecyclerView.Adapter<PhotobookView
         Photobook photobook = list.get(position);
         String title = photobook.getTitle();
         StringBuffer sb = new StringBuffer();
+        int count = 0;
+        String regdate = photobook.getRegdate().substring(0, 11);
+
+        //포토북 제목 세로로 출력.
         for(int i=0; i<title.length(); ++i){
             sb.append(title.charAt(i));
             if(i != title.length()-1){
                 sb.append("\n");
             }
         }
+
+        //파일 개수 세기
+        try {
+            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH+"/"+photobook.getFilename());
+            count = zipFile.size();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //파일이 등록된 날짜를 보기 좋게 변환.
+
+
         holder.txt_title.setText(sb.toString());
-        holder.layout_photobook.setBackgroundColor(Color.rgb(rgb[position%3][0], rgb[position%3][1], rgb[position%3][2]));
+        holder.txt_count.setText(Integer.toString(count));
+        holder.txt_regdate.setText(regdate.replaceFirst("-", "\n").replaceFirst("-", "."));
+        holder.layout_photobook.setBackgroundResource(ColorPaletteHelper.VALUE[photobook.getColor()]);
         holder.ib_bookmark_false.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

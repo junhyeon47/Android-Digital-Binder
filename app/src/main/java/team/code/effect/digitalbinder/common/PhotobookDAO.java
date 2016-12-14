@@ -13,23 +13,22 @@ import team.code.effect.digitalbinder.photobook.Photobook;
  * Created by student on 2016-11-25.
  */
 
-public class BinderDAO {
+public class PhotobookDAO {
     String TAG;
     SQLiteDatabase db;
 
-    public BinderDAO(SQLiteDatabase db) {
+    public PhotobookDAO(SQLiteDatabase db) {
         this.db = db;
         TAG=getClass().getName();
     }
     //Photobook 1건 추가
     public void insert(Photobook photobook){
-        String sql="insert into photobook(title,filename,icon) values(?,?,?)";
-       db.execSQL(sql,new String[]{
+        String sql="insert into photobook(title, filename, color) values(?,?,?)";
+       db.execSQL(sql,new Object[]{
                 photobook.getTitle(),
                 photobook.getFilename(),
-                photobook.getIcon()
+                photobook.getColor()
         });
-        Log.d(TAG,"insert");
     }
     //Photobook 1건 가져오기
     public Photobook select(int photobook_id){
@@ -40,7 +39,7 @@ public class BinderDAO {
         photobook.setPhotobook_id(rs.getInt(rs.getColumnIndex("photobook_id")));
         photobook.setTitle(rs.getString(rs.getColumnIndex("title")));
         photobook.setFilename(rs.getString(rs.getColumnIndex("filename")));
-        photobook.setIcon(rs.getString(rs.getColumnIndex("icon")));
+        photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
         photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
         return photobook;
     }
@@ -54,7 +53,7 @@ public class BinderDAO {
             photobook.setPhotobook_id(rs.getInt(rs.getColumnIndex("photobook_id")));
             photobook.setTitle(rs.getString(rs.getColumnIndex("title")));
             photobook.setFilename(rs.getString(rs.getColumnIndex("filename")));
-            photobook.setIcon(rs.getString(rs.getColumnIndex("icon")));
+            photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
             photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
             list.add(photobook);
         }
@@ -73,7 +72,7 @@ public class BinderDAO {
         db.execSQL(sql,new Object[]{
                 photobook.getTitle(),
                 photobook.getFilename(),
-                photobook.getIcon(),
+                photobook.getColor(),
                 photobook.getPhotobook_id()
         });
         Log.d(TAG,"update");

@@ -121,7 +121,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         anim_shutter = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_shutter);
 
         //Color Palette 관련 초기화
-        initColorPaletteList();
         colorPaletteRecyclerAdapter = new ColorPaletteRecyclerAdapter();
         colorPaletteRecyclerAdapter.setList(colorPaletteList);
     }
@@ -298,10 +297,10 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
      * 3. 바로 저장할 수 없다면, 임시 폴더에 저장한 후 파일을 zip 파일로 압축시킨다.
      */
     public void btnSaveClick(){
-//        if(CameraActivity.list.size() == 0 ) {
-//            Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
+        if(CameraActivity.list.size() == 0 ) {
+            Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진을 하나로 묶습니다.");
         builder.setView(R.layout.layout_alert_txt);
         builder.setPositiveButton("저장", null);
@@ -311,6 +310,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             @Override
             public void onShow(final DialogInterface dialogInterface) {
                 Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                initColorPaletteList();
                 recycler_view_color = (RecyclerView)((Dialog)dialogInterface).findViewById(R.id.recycler_view_color);
                 GridLayoutManager layoutManager = new GridLayoutManager(((Dialog)dialogInterface).getContext(), 5);
                 recycler_view_color.setLayoutManager(layoutManager);
@@ -321,39 +321,12 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                         Dialog dialog = (Dialog)dialogInterface;
                         EditText txt_file_name = (EditText)dialog.findViewById(R.id.txt_file_name);
                         TextView txt_color = (TextView)dialog.findViewById(R.id.txt_color);
-                        boolean flagDuplicate, flagFileName, flagColor;
 
-                        //파일명 중복 여부 확인
-                        if(isExistFile(txt_file_name.getText()+".zip")){
-                            txt_file_name.setText("");
-                            txt_file_name.setHint("중복된 이름이 존재합니다.");
-                            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-                            flagDuplicate = false;
-                        }else{
-                            flagDuplicate = true;
-                        }
-
-                        if(txt_file_name.getText().length() == 0){
-                            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-                            flagFileName = false;
-                        }else{
-                            flagFileName = true;
-                        }
-
-                        //색상 선택여부를 확인
-                        if(!isCheckedColor()) {
-                            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-                            flagColor = false;
-                        }else {
-                            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
-                            flagColor = true;
-                        }
-
-                        //중복이 없을 때.
-                        //AsyncTask 이용해 파일로 저장.
-                        if(flagDuplicate && flagFileName && flagColor){
+                        int colorValue;
+                        //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
+                        if((colorValue=checkValidity(txt_file_name, txt_color)) != -1){
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
-                            async.execute(txt_file_name.getText().toString());
+                            async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
                         }
                     }
                 });
@@ -363,27 +336,71 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         alertDialog.show();
     }
 
+    public void initColorPaletteList(){
+        if(colorPaletteList.size() == 0) {
+            ColorPalette colorPalette;
+            for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
+                colorPalette = new ColorPalette();
+                colorPalette.setCheck(false);
+                colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
+                colorPaletteList.add(colorPalette);
+            }
+        }else{
+            for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
+                colorPaletteList.get(i).setCheck(false);
+            }
+        }
+    }
+
+    //파일명 중복 유효성 체크
     public boolean isExistFile(String filename){
         return MainActivity.dao.isDuplicatedTitle(filename);
     }
-
-    public void initColorPaletteList(){
-        ColorPalette colorPalette;
-        for(int i=0; i<ColorPaletteHelper.VALUE.length; ++i){
-            colorPalette = new ColorPalette();
-            colorPalette.setCheck(false);
-            colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
-            colorPaletteList.add(colorPalette);
-        }
-    }
-    public boolean isCheckedColor(){
-        boolean result = false;
+    //Color Palette 유효성 체크
+    public int isCheckedColor(){
+        int result = -1;
         for(int i=0; i<colorPaletteList.size(); ++i){
             if(colorPaletteList.get(i).isCheck()){
-                result = true;
+                result = i;
                 break;
             }
         }
         return result;
+    }
+
+    //유효성 체크
+    public int checkValidity(EditText txt_file_name, TextView txt_color){
+        int result = isCheckedColor();
+        boolean flagDuplicate, flagFileName, flagColor;
+        //파일명 중복 여부 확인
+        if(isExistFile(txt_file_name.getText()+".zip")){
+            txt_file_name.setText("");
+            txt_file_name.setHint("중복된 이름이 존재합니다.");
+            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagDuplicate = false;
+        }else{
+            flagDuplicate = true;
+        }
+
+        if(txt_file_name.getText().length() == 0){
+            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagFileName = false;
+        }else{
+            flagFileName = true;
+        }
+
+        //색상 선택여부를 확인
+        if(result == -1) {
+            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagColor = false;
+        }else {
+            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
+            flagColor = true;
+        }
+
+        if(flagDuplicate && flagFileName && flagColor)
+            return result;
+        else
+            return -1;
     }
 }
