@@ -1,10 +1,7 @@
 package team.code.effect.digitalbinder.photobook;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +19,8 @@ import team.code.effect.digitalbinder.main.MainActivity;
  * Created by student on 2016-12-09.
  */
 
-public class PhotobookRecyclerAdapter extends RecyclerView.Adapter<PhotobookViewHolder> {
-    PhotobookActivity photobookActivity;
+public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<PhotobookListViewHolder> {
+    PhotobookListActivity photobookListActivity;
     ArrayList<Photobook> list = (ArrayList)MainActivity.dao.selectAll();
     boolean isDeleteMemuClicked = false;
     int [][] rgb = {
@@ -32,18 +29,18 @@ public class PhotobookRecyclerAdapter extends RecyclerView.Adapter<PhotobookView
             {242, 131, 107}
     };
 
-    public PhotobookRecyclerAdapter(PhotobookActivity photobookActivity) {
-        this.photobookActivity = photobookActivity;
+    public PhotobookListRecyclerAdapter(PhotobookListActivity photobookListActivity) {
+        this.photobookListActivity = photobookListActivity;
     }
 
     @Override
-    public PhotobookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PhotobookListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photobook, parent, false);
-        return new PhotobookViewHolder(view);
+        return new PhotobookListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final PhotobookViewHolder holder, int position) {
+    public void onBindViewHolder(final PhotobookListViewHolder holder, int position) {
         Photobook photobook = list.get(position);
         String title = photobook.getTitle();
         StringBuffer sb = new StringBuffer();
@@ -73,6 +70,13 @@ public class PhotobookRecyclerAdapter extends RecyclerView.Adapter<PhotobookView
         holder.txt_count.setText(Integer.toString(count));
         holder.txt_regdate.setText(regdate.replaceFirst("-", "\n").replaceFirst("-", "."));
         holder.layout_photobook.setBackgroundResource(ColorPaletteHelper.VALUE[photobook.getColor()]);
+        holder.layout_photobook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(photobookListActivity, PhotobookActivity.class);
+                photobookListActivity.startActivity(intent);
+            }
+        });
         holder.ib_bookmark_false.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

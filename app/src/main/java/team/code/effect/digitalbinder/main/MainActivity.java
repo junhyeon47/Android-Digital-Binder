@@ -23,7 +23,7 @@ import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.PhotobookDAO;
 import team.code.effect.digitalbinder.common.DatabaseHelper;
 import team.code.effect.digitalbinder.explorer.ExplorerActivity;
-import team.code.effect.digitalbinder.photobook.PhotobookActivity;
+import team.code.effect.digitalbinder.photobook.PhotobookListActivity;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     static final int PERMISSION_USING_CAMERA = 1;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkPhotobookPermission();
                 } else {
-                    intent = new Intent(MainActivity.this, PhotobookActivity.class);
+                    intent = new Intent(MainActivity.this, PhotobookListActivity.class);
                     startActivity(intent);
                 }
                 break;
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_USING_PHOTOBOOK);
         } else {
-            intent = new Intent(MainActivity.this, PhotobookActivity.class);
+            intent = new Intent(MainActivity.this, PhotobookListActivity.class);
             startActivity(intent);
         }
     }
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case PERMISSION_USING_PHOTOBOOK:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    intent = new Intent(MainActivity.this, PhotobookActivity.class);
+                    intent = new Intent(MainActivity.this, PhotobookListActivity.class);
                     startActivity(intent);
                 }
                 break;

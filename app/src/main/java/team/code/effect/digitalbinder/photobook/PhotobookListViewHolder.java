@@ -13,14 +13,14 @@ import team.code.effect.digitalbinder.R;
  * Created by student on 2016-12-09.
  */
 
-public class PhotobookViewHolder extends RecyclerView.ViewHolder {
+public class PhotobookListViewHolder extends RecyclerView.ViewHolder {
     LinearLayout layout_photobook;
     TextView txt_title, txt_count, txt_regdate;
     ImageButton ib_bookmark_true, ib_bookmark_false;
     CheckBox checkBox;
 
 
-    public PhotobookViewHolder(View itemView) {
+    public PhotobookListViewHolder(View itemView) {
         super(itemView);
         layout_photobook = (LinearLayout)itemView.findViewById(R.id.layout_photobook);
         txt_title = (TextView)itemView.findViewById(R.id.txt_title);
