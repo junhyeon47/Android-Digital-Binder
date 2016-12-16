@@ -20,7 +20,7 @@ import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ImageFile;
 import team.code.effect.digitalbinder.main.MainActivity;
 
-public class UnzipAsync extends AsyncTask<Integer, String, ArrayList<ImageFile>>{
+public class UnzipAsync extends AsyncTask<Integer, String, Void>{
     String TAG;
     PhotobookActivity photobookActivity;
 
@@ -30,11 +30,7 @@ public class UnzipAsync extends AsyncTask<Integer, String, ArrayList<ImageFile>>
     }
 
     @Override
-    protected void onPreExecute() {
-    }
-
-    @Override
-    protected ArrayList<ImageFile> doInBackground(Integer... params) {
+    protected Void doInBackground(Integer... params) {
         Photobook photobook = MainActivity.dao.select(params[0]);
 
         //디렉터리 존재 여부 확인 및 사진파일 삭제.
@@ -104,7 +100,6 @@ public class UnzipAsync extends AsyncTask<Integer, String, ArrayList<ImageFile>>
                 orderBy
         );
 
-        ArrayList<ImageFile> result = new ArrayList<>(imageCursor.getCount());
         int bucketIdColumnIndex = imageCursor.getColumnIndex(projection[0]);
         int bucketDisplayNameColumnIndex = imageCursor.getColumnIndex(projection[1]);
         int idColumnIndex = imageCursor.getColumnIndex(projection[2]);
@@ -139,25 +134,17 @@ public class UnzipAsync extends AsyncTask<Integer, String, ArrayList<ImageFile>>
                         (orientation == null) ? 0 : Integer.parseInt(orientation),
                         dateTaken
                 );
-                result.add(imageFile);
+                photobookActivity.list.add(imageFile);
             } while (imageCursor.moveToNext());
         } else {
             // imageCursor가 비었습니다.
         }
         imageCursor.close();
-
-        return result;
+        return null;
     }
 
     @Override
-    protected void onPostExecute(ArrayList<ImageFile> list) {
-        Log.d(TAG, "list size: "+list.size());
-        photobookActivity.photobookPagerAdapter.list = list;
-        photobookActivity.view_pager.setAdapter(photobookActivity.photobookPagerAdapter);
-    }
-
-    @Override
-    protected void onProgressUpdate(String... values) {
-
+    protected void onPostExecute(Void aVoid) {
+        photobookActivity.photobookPagerAdapter.notifyDataSetChanged();
     }
 }

@@ -81,7 +81,8 @@
         <activity
             android:name=".photobook.PhotobookActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:hardwareAccelerated="false"/>
 
     </application>
 

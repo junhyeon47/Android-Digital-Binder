@@ -14,25 +14,26 @@ import uk.co.senab.photoview.PhotoView;
 
 public class PhotobookPagerAdapter extends PagerAdapter{
     String TAG;
+    PhotobookActivity photobookActivity;
     LayoutInflater inflater;
-    ArrayList<ImageFile> list;
 
-    public PhotobookPagerAdapter(Context context) {
+    public PhotobookPagerAdapter(PhotobookActivity photobookActivity) {
         TAG = this.getClass().getName();
-        this.inflater = LayoutInflater.from(context);
+        this.photobookActivity = photobookActivity;
+        this.inflater = LayoutInflater.from(photobookActivity.getApplicationContext());
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return photobookActivity.list.size();
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = inflater.inflate(R.layout.layout_photo_view, container, false);
         PhotoView photo_view = (PhotoView)view.findViewById(R.id.photo_view);
-        ImageFile imageFile = list.get(position);
-        new PhotobookAsync(photo_view).execute(imageFile.path.toString());
+        ImageFile imageFile = photobookActivity.list.get(position);
+        new PhotobookAsync(photo_view).execute(imageFile.path.toString(), Integer.toString(imageFile.orientation));
         container.addView(view);
         return view;
     }

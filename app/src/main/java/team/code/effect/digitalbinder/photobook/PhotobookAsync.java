@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.photobook;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.annotation.IntegerRes;
 import android.util.Log;
 
 import team.code.effect.digitalbinder.common.BitmapHelper;
@@ -19,7 +20,8 @@ public class PhotobookAsync extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(String... parmas) {
         Log.d("ASYNC", parmas[0]);
-        return BitmapHelper.decodeFile(parmas[0], DeviceHelper.width, DeviceHelper.height);
+        Bitmap bitmap = BitmapHelper.decodeFile(parmas[0], DeviceHelper.width, DeviceHelper.height);
+        return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(parmas[1]));
     }
 
     @Override
