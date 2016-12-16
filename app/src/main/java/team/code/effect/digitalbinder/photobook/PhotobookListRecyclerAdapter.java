@@ -15,10 +15,6 @@ import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
 
-/**
- * Created by student on 2016-12-09.
- */
-
 public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<PhotobookListViewHolder> {
     PhotobookListActivity photobookListActivity;
     ArrayList<Photobook> list = (ArrayList)MainActivity.dao.selectAll();
@@ -41,7 +37,7 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
 
     @Override
     public void onBindViewHolder(final PhotobookListViewHolder holder, int position) {
-        Photobook photobook = list.get(position);
+        final Photobook photobook = list.get(position);
         String title = photobook.getTitle();
         StringBuffer sb = new StringBuffer();
         int count = 0;
@@ -62,10 +58,6 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //파일이 등록된 날짜를 보기 좋게 변환.
-
-
         holder.txt_title.setText(sb.toString());
         holder.txt_count.setText(Integer.toString(count));
         holder.txt_regdate.setText(regdate.replaceFirst("-", "\n").replaceFirst("-", "."));
@@ -74,6 +66,7 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(photobookListActivity, PhotobookActivity.class);
+                intent.putExtra("photobook_id", photobook.getPhotobook_id());
                 photobookListActivity.startActivity(intent);
             }
         });

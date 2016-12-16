@@ -1,12 +1,7 @@
 package team.code.effect.digitalbinder.explorer;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +12,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
-
-import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
+import team.code.effect.digitalbinder.common.ImageFile;
 
 public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> {
     private String TAG;

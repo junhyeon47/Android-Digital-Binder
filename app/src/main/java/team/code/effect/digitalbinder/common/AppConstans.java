@@ -8,8 +8,9 @@ import android.os.Environment;
 
 public class AppConstans {
     public static final String DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
-    public static final String APP_PATH = DIR + "/DigitalBinder";
-    public static final String TEMP_PHOTOBOOK_PATH = APP_PATH+"/temp_photobook";
+    public static final String APP_PATH = DIR + "/DigitalBinder/";
+    public static final String APP_PATH_DATA = APP_PATH+"/data/";
+    public static final String APP_PATH_TEMP = APP_PATH+"/temp/";
     public static final String BLUETOOTH = "블루투스";
     public static final String NFC = "NFC";
     public static final String GDRIVE = "드라이브";

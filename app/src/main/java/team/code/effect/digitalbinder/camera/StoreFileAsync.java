@@ -30,6 +30,8 @@ import team.code.effect.digitalbinder.photobook.Photobook;
 
 public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
     private static final int QUALITY = 80;
+    private static final String EXT_DAT = ".dat";
+    private static final String EXT_IMAGE = ".jpg";
     private Context context;
     private Dialog dialog;
     private ProgressDialog progressDialog;
@@ -51,15 +53,17 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
 
     @Override
     protected Photobook doInBackground(String... params) {
-        String filename = params[0];
+        String title = params[0];
         int color = Integer.parseInt(params[1]);
+        String filename = Long.toString(System.currentTimeMillis());
         Bitmap bitmap;
         FileOutputStream fos;
         File tempFile = null;
         Preview preview;
         ArrayList<File> tempList = new ArrayList<File>();
         float rotateRatio = 0f;
-        File tempDir = new File(AppConstans.APP_PATH + "/temp");
+        File tempDir = new File(AppConstans.APP_PATH_TEMP);
+        File dataDir = new File(AppConstans.APP_PATH_DATA);
 
 
         progressDialog.setMax(CameraActivity.list.size()*2);
@@ -67,6 +71,14 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
 
         if(!tempDir.exists()) { //temp 폴더가 존재하지 않으면 폴더 생성.
             isCreateDir = tempDir.mkdirs();
+            if(!isCreateDir) {
+                //폴더 생성 실패로 액티비티를 종료해야한다.
+                return null;
+            }
+        }
+
+        if(!dataDir.exists()) { //data 폴더가 존재하지 않으면 폴더 생성.
+            isCreateDir = dataDir.mkdirs();
             if(!isCreateDir) {
                 //폴더 생성 실패로 액티비티를 종료해야한다.
                 return null;
@@ -97,7 +109,7 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotateMatrix, true);
 
                 //회전한 이미지를 파일로 저장.
-                tempFile = new File(AppConstans.APP_PATH + "/temp/" + Integer.toString(i + 1) + ".jpg");
+                tempFile = new File(AppConstans.APP_PATH_TEMP + Integer.toString(i + 1) + EXT_IMAGE);
                 tempList.add(tempFile);
                 fos = new FileOutputStream(tempFile.getAbsolutePath());
                 bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY, fos);
@@ -108,7 +120,8 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
             }
             //파일로 저장된 이미지를 하나의 압축파일로 묶음.
             byte[] buff = new byte[16 * 1024];
-            fos = new FileOutputStream(AppConstans.APP_PATH + "/" + filename + ".zip");
+
+            fos = new FileOutputStream(AppConstans.APP_PATH_DATA + filename + EXT_DAT);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             ZipOutputStream zos = new ZipOutputStream(bos);
             FileInputStream fis = null;
@@ -118,7 +131,7 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
                 int length;
                 while ((length = fis.read(buff, 0, 16 * 1024)) > 0) {
                     zos.write(buff, 0, length);
-                    publishProgress("progress", Integer.toString(progressCount), "압축 파일로 변환하는 중...");
+                    publishProgress("progress", Integer.toString(progressCount), "파일 변환하는 중...");
                 }
                 zos.closeEntry();
                 fis.close();
@@ -143,8 +156,8 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
 
         //DB에 저장할 DTO 생성 및 반환
         Photobook photobook = new Photobook();
-        photobook.setFilename(filename + ".zip");
-        photobook.setTitle(filename);
+        photobook.setFilename(filename + EXT_DAT);
+        photobook.setTitle(title);
         photobook.setColor(color);
         return photobook;
     }

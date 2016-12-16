@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.ImageFile;
 
 /**
  * Created by student on 2016-12-12.

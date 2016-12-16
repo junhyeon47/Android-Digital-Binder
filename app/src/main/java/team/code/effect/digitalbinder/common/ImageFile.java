@@ -1,16 +1,16 @@
-package team.code.effect.digitalbinder.explorer;
+package team.code.effect.digitalbinder.common;
 
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ImageFile implements Parcelable{
-    int bucket_id;
-    String bucket_name;
-    int image_id;
-    Uri path;
-    int orientation;
-    String takenDate;
+    public int bucket_id;
+    public String bucket_name;
+    public int image_id;
+    public Uri path;
+    public int orientation;
+    public String takenDate;
 
     public ImageFile(int bucket_id, String bucket_name, int image_id, Uri path, int orientation, String takenDate) {
         this.bucket_id = bucket_id;
