@@ -1,39 +1,58 @@
 package team.code.effect.digitalbinder.explorer;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.camera.CameraActivity;
+import team.code.effect.digitalbinder.camera.StoreFileAsync;
+import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.ColorPalette;
+import team.code.effect.digitalbinder.common.ColorPaletteHelper;
+import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
+import team.code.effect.digitalbinder.common.ImageFile;
+import team.code.effect.digitalbinder.common.ZipCode;
+import team.code.effect.digitalbinder.main.MainActivity;
 
 public class ExplorerActivity extends AppCompatActivity {
     static final int CACHE_SIZE = 200;
     String TAG;
     Toolbar toolbar;
     ArrayList<ImageFolder> listFolders;
-    LinearLayout layout_folders, layout_images, layout_detail;
-    RecyclerView recycler_view_folders, recycler_view_images, recycler_view_selected, recycler_view_image_detial;
+    LinearLayout layout_folders, layout_images, layout_detail, layout_selected;
+    RecyclerView recycler_view_folders, recycler_view_images, recycler_view_selected;
     FolderRecyclerAdapter folderRecyclerAdapter;
     ImageRecyclerAdapter imageRecyclerAdapter;
-    ImageViewDetailRecyclerAdapter imageViewDetailRecyclerAdapter;
     TextView txt_folder_name;
-    ViewPager viewPager;
-    ImageViewPagerAdapter imageViewPagerAdapter;
+    ImageSelectedRecyclerAdapter imageSelectedRecyclerAdapter;
+    ArrayList<ColorPalette> colorPaletteList = new ArrayList<>();
+    RecyclerView recycler_view_color;
+    ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +68,7 @@ public class ExplorerActivity extends AppCompatActivity {
         layout_folders = (LinearLayout) findViewById(R.id.layout_folders);
         layout_images = (LinearLayout) findViewById(R.id.layout_images);
         layout_detail = (LinearLayout) findViewById(R.id.layout_detail);
+        layout_selected=(LinearLayout)findViewById(R.id.layout_selected);
 
         txt_folder_name = (TextView) findViewById(R.id.txt_folder_name);
 
@@ -72,14 +92,18 @@ public class ExplorerActivity extends AppCompatActivity {
         recycler_view_images.addItemDecoration(imageViewItemDecoration);
         recycler_view_images.setAdapter(imageRecyclerAdapter);
 
-        //이미지 클릭시 관련 RecyclerView 설정
-        recycler_view_image_detial = (RecyclerView) findViewById(R.id.recycler_view_image_detial);
-        LinearLayoutManager detailLinearLayout = new LinearLayoutManager(getApplicationContext());
-        detailLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        recycler_view_image_detial.setLayoutManager(detailLinearLayout);
-        imageViewDetailRecyclerAdapter=new ImageViewDetailRecyclerAdapter(this);
-        recycler_view_image_detial.setAdapter(imageViewDetailRecyclerAdapter);
+        //이미지 선택시 선택된 이미지만 출력하는 RecyclerView 설정
+        recycler_view_selected=(RecyclerView)findViewById(R.id.recycler_view_selected);
+        LinearLayoutManager selectedManager=new LinearLayoutManager(getApplicationContext());
+        selectedManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recycler_view_selected.setLayoutManager(selectedManager);
+        imageSelectedRecyclerAdapter=new ImageSelectedRecyclerAdapter();
+        recycler_view_selected.setAdapter(imageSelectedRecyclerAdapter);
+        recycler_view_selected.setItemViewCacheSize(CACHE_SIZE);
+        layout_selected.setVisibility(View.GONE);
 
+        colorPaletteRecyclerAdapter=new ColorPaletteRecyclerAdapter();
+        colorPaletteRecyclerAdapter.setList(colorPaletteList);
     }
 
     public void setToolbar() {
@@ -94,8 +118,34 @@ public class ExplorerActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.ex_select:
+                Toast.makeText(this, "모두 선택", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.make_book:
+                if(imageSelectedRecyclerAdapter.list.size()==0){
+                    Toast.makeText(this, "한개 이상의 파일을 선택하셔야 합니다.", Toast.LENGTH_SHORT).show();
+                }else{
+                    makeBook();
+                    this.finish();
+                }
+                break;
         }
         return true;
+    }
+
+    public void makeBook(){
+        ArrayList<File> bookList=new ArrayList<File>();
+        for(int i=0;i<imageSelectedRecyclerAdapter.list.size();i++){
+            File file=new File(imageSelectedRecyclerAdapter.list.get(i).path.toString());
+            bookList.add(file);
+        }
+       btnSaveClick(bookList);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_explorer_photo, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -217,4 +267,114 @@ public class ExplorerActivity extends AppCompatActivity {
         imageCursor.close();
         return result;
     }
+
+
+    public void btnSaveClick(ArrayList<File> list){
+        if(list.size() == 0 ) {
+            Toast.makeText(this, "선택된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "선택한 사진을 하나로 묶습니다.");
+        builder.setView(R.layout.layout_alert_txt);
+        builder.setPositiveButton("저장", null);
+        builder.setNegativeButton("취소", null);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                initColorPaletteList();
+                recycler_view_color = (RecyclerView)((Dialog)dialogInterface).findViewById(R.id.recycler_view_color);
+                GridLayoutManager layoutManager = new GridLayoutManager(((Dialog)dialogInterface).getContext(), 5);
+                recycler_view_color.setLayoutManager(layoutManager);
+                recycler_view_color.setAdapter(colorPaletteRecyclerAdapter);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Dialog dialog = (Dialog)dialogInterface;
+                        EditText txt_file_name = (EditText)dialog.findViewById(R.id.txt_file_name);
+                        TextView txt_color = (TextView)dialog.findViewById(R.id.txt_color);
+
+                        int colorValue;
+                        //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
+                        if((colorValue=checkValidity(txt_file_name, txt_color)) != -1){
+                            StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
+                            async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
+                        }
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    public void initColorPaletteList(){
+        if(colorPaletteList.size() == 0) {
+            ColorPalette colorPalette;
+            for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
+                colorPalette = new ColorPalette();
+                colorPalette.setCheck(false);
+                colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
+                colorPaletteList.add(colorPalette);
+            }
+        }else{
+            for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
+                colorPaletteList.get(i).setCheck(false);
+            }
+        }
+    }
+
+    //파일명 중복 유효성 체크
+    public boolean isExistFile(String filename){
+        return MainActivity.dao.isDuplicatedTitle(filename);
+    }
+    //Color Palette 유효성 체크
+    public int isCheckedColor(){
+        int result = -1;
+        for(int i=0; i<colorPaletteList.size(); ++i){
+            if(colorPaletteList.get(i).isCheck()){
+                result = i;
+                break;
+            }
+        }
+        return result;
+    }
+
+    //유효성 체크
+    public int checkValidity(EditText txt_file_name, TextView txt_color){
+        int result = isCheckedColor();
+        boolean flagDuplicate, flagFileName, flagColor;
+        //파일명 중복 여부 확인
+        if(isExistFile(txt_file_name.getText()+".zip")){
+            txt_file_name.setText("");
+            txt_file_name.setHint("중복된 이름이 존재합니다.");
+            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagDuplicate = false;
+        }else{
+            flagDuplicate = true;
+        }
+
+        if(txt_file_name.getText().length() == 0){
+            txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagFileName = false;
+        }else{
+            flagFileName = true;
+        }
+
+        //색상 선택여부를 확인
+        if(result == -1) {
+            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            flagColor = false;
+        }else {
+            txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
+            flagColor = true;
+        }
+
+        if(flagDuplicate && flagFileName && flagColor)
+            return result;
+        else
+            return -1;
+    }
+
 }

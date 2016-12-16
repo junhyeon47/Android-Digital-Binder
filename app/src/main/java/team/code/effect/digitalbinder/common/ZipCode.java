@@ -31,18 +31,18 @@ public class ZipCode {
 
     /**
      * 지정된 폴더를 Zip 파일로 압축한다.
-     * @param sourcePath - 압축 대상 디렉토리
-     * @param output - 저장 zip 파일 이름
+     *
+     * @param output     - 저장 zip 파일 이름
      * @throws Exception
      */
-    public static void zip(String sourcePath, String output) throws Exception {
+    public static void zip(ArrayList<File> sourceFile, String output) throws Exception {
 
         // 압축 대상(sourcePath)이 디렉토리나 파일이 아니면 리턴한다.
-        File sourceFile = new File(sourcePath);
+   /*     File sourceFile = new File(sourcePath);
         if (!sourceFile.isFile() && !sourceFile.isDirectory()) {
             throw new Exception("압축 대상의 파일을 찾을 수가 없습니다.");
         }
-
+*/
         // output 의 확장자가 zip이 아니면 리턴한다.
         //if (!(StringUtils.substringAfterLast(output, ".")).equalsIgnoreCase("zip")) {
         //    throw new Exception("압축 후 저장 파일명의 확장자를 확인하세요");
@@ -58,7 +58,7 @@ public class ZipCode {
             zos = new ZipOutputStream(bos); // ZipOutputStream
             zos.setLevel(COMPRESSION_LEVEL); // 압축 레벨 - 최대 압축률은 9, 디폴트 8
 
-            zipEntry(sourceFile, sourcePath, zos); // Zip 파일 생성
+            zipEntry(sourceFile, zos); // Zip 파일 생성
             zos.finish(); // ZipOutputStream finish
         } finally {
             if (zos != null) {
@@ -75,14 +75,14 @@ public class ZipCode {
 
     /**
      * 압축
+     *
      * @param sourceFile
-     * @param sourcePath
      * @param zos
      * @throws Exception
      */
-    private static void zipEntry(File sourceFile, String sourcePath, ZipOutputStream zos) throws Exception {
+    private static void zipEntry(ArrayList<File> sourceFile, ZipOutputStream zos) throws Exception {
         // sourceFile 이 디렉토리인 경우 하위 파일 리스트 가져와 재귀호출
-        if (sourceFile.isDirectory()) {
+        /*if (sourceFile.isDirectory()) {
             if (sourceFile.getName().equalsIgnoreCase(".metadata")) { // .metadata 디렉토리 return
                 return;
             }
@@ -90,25 +90,26 @@ public class ZipCode {
             for (int i = 0; i < fileArray.length; i++) {
                 zipEntry(fileArray[i], sourcePath, zos); // 재귀 호출
             }
-        } else { // sourcehFile 이 디렉토리가 아닌 경우
+        } else { // sourcehFile 이 디렉토리가 아닌 경우*/
+        for(int i=0;i<sourceFile.size();i++) {
+            File file=sourceFile.get(i);
             BufferedInputStream bis = null;
-
             try {
-                String sFilePath = sourceFile.getPath();
+                String sFilePath = file.getPath();
                 Log.i("aa", sFilePath);
                 //String zipEntryName = sFilePath.substring(sourcePath.length() + 1, sFilePath.length());
-                StringTokenizer tok = new StringTokenizer(sFilePath,"/");
+                StringTokenizer tok = new StringTokenizer(sFilePath, "/");
 
                 int tok_len = tok.countTokens();
-                String zipEntryName=tok.toString();
-                while(tok_len != 0){
+                String zipEntryName = tok.toString();
+                while (tok_len != 0) {
                     tok_len--;
                     zipEntryName = tok.nextToken();
                 }
-                bis = new BufferedInputStream(new FileInputStream(sourceFile));
+                bis = new BufferedInputStream(new FileInputStream(file));
 
                 ZipEntry zentry = new ZipEntry(zipEntryName);
-                zentry.setTime(sourceFile.lastModified());
+                zentry.setTime(file.lastModified());
                 zos.putNextEntry(zentry);
 
                 byte[] buffer = new byte[BUFFER_SIZE];
@@ -123,14 +124,15 @@ public class ZipCode {
                     bis.close();
                 }
             }
+
         }
     }
 
     /**
      * Zip 파일의 압축을 푼다.
      *
-     * @param zipFile - 압축 풀 Zip 파일
-     * @param targetDir - 압축 푼 파일이 들어간 디렉토리
+     * @param zipFile             - 압축 풀 Zip 파일
+     * @param targetDir           - 압축 푼 파일이 들어간 디렉토리
      * @param fileNameToLowerCase - 파일명을 소문자로 바꿀지 여부
      * @throws Exception
      */
@@ -166,10 +168,10 @@ public class ZipCode {
 
                     Bitmap bitmap = BitmapFactory.decodeStream(zis);
 
-                    if(bitmap.getWidth()>1000 && bitmap.getHeight() < bitmap.getWidth()){
-                        bitmap=bitmap.createScaledBitmap(bitmap, 1024, 768, true);
-                    }else if(bitmap.getHeight()>1000 && bitmap.getHeight() >bitmap.getWidth()) {
-                        bitmap=bitmap.createScaledBitmap(bitmap, 768, 1024, true);
+                    if (bitmap.getWidth() > 1000 && bitmap.getHeight() < bitmap.getWidth()) {
+                        bitmap = bitmap.createScaledBitmap(bitmap, 1024, 768, true);
+                    } else if (bitmap.getHeight() > 1000 && bitmap.getHeight() > bitmap.getWidth()) {
+                        bitmap = bitmap.createScaledBitmap(bitmap, 768, 1024, true);
                     }
                     isList.add(bitmap);
                     //  isList.add(unzipBitmap(zis, targetFile));
@@ -191,9 +193,9 @@ public class ZipCode {
      * Zip 파일의 한 개 엔트리의 압축을 푼다.
      *
      * @param zis - Zip Input Stream
-     * @paramfilePath - 압축 풀린 파일의 경로
      * @return
      * @throws Exception
+     * @paramfilePath - 압축 풀린 파일의 경로
      */
     protected static File unzipEntry(ZipInputStream zis, File targetFile) throws Exception {
         FileOutputStream fos = null;
@@ -212,11 +214,12 @@ public class ZipCode {
         }
         return targetFile;
     }
+
     //file생성후 비트맴 뽑기
     protected static Bitmap unzipBitmap(ZipInputStream zis, File targetFile) throws Exception {
-        Bitmap bitmap=null;
+        Bitmap bitmap = null;
         FileOutputStream fos = null;
-        InputStream is=null;
+        InputStream is = null;
         try {
             fos = new FileOutputStream(targetFile);
 
@@ -226,12 +229,12 @@ public class ZipCode {
                 fos.write(buffer, 0, len);
             }
             is = new FileInputStream(targetFile);
-            bitmap= BitmapFactory.decodeStream(is);
+            bitmap = BitmapFactory.decodeStream(is);
         } finally {
             if (fos != null) {
                 fos.close();
             }
-            if(is!=null) {
+            if (is != null) {
                 is.close();
             }
             targetFile.delete();

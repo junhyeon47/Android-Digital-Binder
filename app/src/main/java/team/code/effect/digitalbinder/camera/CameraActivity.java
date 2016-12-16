@@ -336,8 +336,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         alertDialog.show();
     }
 
-    public void initColorPaletteList(){
-        if(colorPaletteList.size() == 0) {
+    public void initColorPaletteList() {
+        if (colorPaletteList.size() == 0) {
             ColorPalette colorPalette;
             for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
                 colorPalette = new ColorPalette();
@@ -345,7 +345,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
                 colorPaletteList.add(colorPalette);
             }
-        }else{
+        } else {
             for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
                 colorPaletteList.get(i).setCheck(false);
             }

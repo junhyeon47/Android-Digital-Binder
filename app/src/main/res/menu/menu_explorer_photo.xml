@@ -9,7 +9,7 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_insert_link_black_24dp"
         android:id="@+id/make_book"
         android:title="압축하기"
         app:showAsAction="always"/>
