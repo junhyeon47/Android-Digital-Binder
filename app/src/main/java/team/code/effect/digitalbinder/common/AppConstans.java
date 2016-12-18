@@ -15,5 +15,7 @@ public class AppConstans {
     public static final String NFC = "NFC";
     public static final String GDRIVE = "드라이브";
     public static final String DROPBOX = "드롭박스";
-            ;
+    public static final int QUALITY = 80;
+    public static final String EXT_DAT = ".dat";
+    public static final String EXT_IMAGE = ".jpg";
 }

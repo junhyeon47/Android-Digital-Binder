@@ -85,13 +85,8 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
     Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
-            Log.d(TAG, "pictureCallback called");
-            Log.d(TAG, "image length: "+bytes.length);
             camera.stopPreview();
-            Preview preview = new Preview();
-            preview.setBytes(bytes);
-            preview.setOrientation(CameraActivity.orientation);
-            CameraActivity.list.add(preview);
+            cameraActivity.takePicture(bytes);
             camera.startPreview();
             cameraActivity.btn_shutter.setEnabled(true);
         }

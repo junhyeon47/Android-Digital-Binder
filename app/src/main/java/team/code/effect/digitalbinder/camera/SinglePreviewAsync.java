@@ -24,35 +24,22 @@ public class SinglePreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Integer... params) {
-        int index = params[0];
-        int size = DeviceHelper.width;
-        Preview preview = CameraActivity.list.get(index);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inTempStorage = new byte[16 * 1024];
-        Bitmap bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length, options);
-        float rotateRatio = 0f;
-        int bitmapWidth = bitmap.getWidth();
-        int bitmapHeight = bitmap.getHeight();
-        int resizeWidth = (bitmapWidth*size)/bitmapHeight;
-
-        Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
-        switch (preview.getOrientation()){
-            case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
-                rotateRatio = 180f;
-                break;
-            case DeviceHelper.ORIENTATION_PORTRAIT:
-                rotateRatio = 90f;
-                break;
-            case DeviceHelper.ORIENTATION_LANDSCAPE:
-                rotateRatio = 0f;
-                break;
-            case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
-                rotateRatio = -90f;
-                break;
-        }
-        Matrix rotateMatrix = new Matrix();
-        rotateMatrix.preRotate(rotateRatio);
-        return Bitmap.createBitmap(resizeBitmap, 0, 0, resizeWidth, size, rotateMatrix, true);
+//        int index = params[0];
+//        int size = DeviceHelper.width;
+//        Preview preview = CameraActivity.list.get(index);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inTempStorage = new byte[16 * 1024];
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length, options);
+//        float rotateRatio = 0f;
+//        int bitmapWidth = bitmap.getWidth();
+//        int bitmapHeight = bitmap.getHeight();
+//        int resizeWidth = (bitmapWidth*size)/bitmapHeight;
+//
+//        Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
+//        Matrix rotateMatrix = new Matrix();
+//        rotateMatrix.preRotate(rotateRatio);
+//        return Bitmap.createBitmap(resizeBitmap, 0, 0, resizeWidth, size, rotateMatrix, true);
+        return null;
     }
 
     @Override

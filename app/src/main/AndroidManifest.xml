@@ -80,10 +80,10 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".photobook.PhotobookActivity"
+            android:hardwareAccelerated="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-            android:hardwareAccelerated="false"/>
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+        <activity android:name=".camera.PreviewActivity"></activity>
     </application>
 
 </manifest>

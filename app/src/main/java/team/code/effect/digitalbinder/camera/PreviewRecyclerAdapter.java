@@ -64,14 +64,14 @@ public class PreviewRecyclerAdapter extends RecyclerView.Adapter<PreviewViewHold
 
     @Override
     public int getItemCount() {
-        return CameraActivity.list.size();
+        return cameraActivity.list.size();
     }
 
     public void removeItem(int position){
-        CameraActivity.list.remove(position);
+        cameraActivity.list.remove(position);
         if(getItemCount() != 0) {
             notifyItemRemoved(position);
-            notifyItemRangeChanged(position, CameraActivity.list.size());
+            notifyItemRangeChanged(position, cameraActivity.list.size());
         }else
             notifyDataSetChanged();
     }

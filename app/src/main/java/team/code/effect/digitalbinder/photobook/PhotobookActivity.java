@@ -1,11 +1,16 @@
 package team.code.effect.digitalbinder.photobook;
 
+import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +26,6 @@ public class PhotobookActivity extends AppCompatActivity {
     ViewPager view_pager;
     PhotobookPagerAdapter photobookPagerAdapter;
 
-    ImageButton btn_upward, btn_downward;
     RecyclerView recycler_view;
 
     @Override
@@ -33,8 +37,6 @@ public class PhotobookActivity extends AppCompatActivity {
         photobook_id = getIntent().getIntExtra("photobook_id", 0);
 
         view_pager = (ViewPager)findViewById(R.id.view_pager);
-        btn_upward = (ImageButton)findViewById(R.id.btn_upward);
-        btn_downward = (ImageButton)findViewById(R.id.btn_downward);
         recycler_view = (RecyclerView) findViewById(R.id.recycler_view);
 
         photobookPagerAdapter = new PhotobookPagerAdapter(this);
@@ -56,26 +58,17 @@ public class PhotobookActivity extends AppCompatActivity {
                 if(files[i].getName().equals("temp") || files[i].getName().equals("data"))
                     continue;
                 if(!files[i].isDirectory()){
-                    files[i].delete();
+                    if(files[i].delete()){
+                        Log.d(TAG, "파일 삭제 성공: "+ Uri.fromFile(files[i]));
+                        //sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(files[i])));
+                    }else{
+                        Log.d(TAG, "파일 삭제 실패: "+files[i].getAbsolutePath());
+                    }
                 }
             }
         }
     }
 
-    public void btnClick(View view){
-        switch (view.getId()){
-            case R.id.btn_upward:
-                recycler_view.setVisibility(View.VISIBLE);
-                btn_upward.setVisibility(View.GONE);
-                btn_downward.setVisibility(View.VISIBLE);
-                break;
-            case R.id.btn_downward:
-                recycler_view.setVisibility(View.GONE);
-                btn_downward.setVisibility(View.GONE);
-                btn_upward.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
     @Override
     public void onBackPressed() {
         checkDirectory();

@@ -19,11 +19,6 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
     PhotobookListActivity photobookListActivity;
     ArrayList<Photobook> list = (ArrayList)MainActivity.dao.selectAll();
     boolean isDeleteMemuClicked = false;
-    int [][] rgb = {
-            {99, 166, 159},
-            {242, 225, 172},
-            {242, 131, 107}
-    };
 
     public PhotobookListRecyclerAdapter(PhotobookListActivity photobookListActivity) {
         this.photobookListActivity = photobookListActivity;
@@ -53,7 +48,7 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
 
         //파일 개수 세기
         try {
-            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH+"/"+photobook.getFilename());
+            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH_DATA+"/"+photobook.getFilename());
             count = zipFile.size();
         } catch (IOException e) {
             e.printStackTrace();

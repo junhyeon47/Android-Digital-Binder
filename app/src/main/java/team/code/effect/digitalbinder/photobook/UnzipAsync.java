@@ -1,12 +1,16 @@
 package team.code.effect.digitalbinder.photobook;
 
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -48,14 +52,18 @@ public class UnzipAsync extends AsyncTask<Integer, String, Void>{
             int count;
 
             while((entry = zis.getNextEntry()) != null){
-                Log.d(TAG, "filename: "+entry.getName());
+                Log.d(TAG, "압축을 해제한 파일: "+entry.getName());
                 FileOutputStream fos = new FileOutputStream(AppConstans.APP_PATH+entry.getName());
-
-                while ((count = zis.read(buffer)) != -1){
-                    fos.write(buffer, 0, count);
-                }
+                Bitmap bitmap = BitmapFactory.decodeStream(zis);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                while ((count = zis.read(buffer)) != -1){
+//                    fos.write(buffer, 0, count);
+//                }
                 fos.close();
                 zis.closeEntry();
+//                File file = new File(AppConstans.APP_PATH+entry.getName());
+//                Log.d(TAG, "path: "+Uri.fromFile(file.getAbsoluteFile()));
+//                photobookActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -77,7 +85,6 @@ public class UnzipAsync extends AsyncTask<Integer, String, Void>{
                 }
             }
         }
-
         //이미지 파일 불러오기
         String[] projection = {
                 MediaStore.Images.Media.BUCKET_ID, //폴더 ID
@@ -88,7 +95,7 @@ public class UnzipAsync extends AsyncTask<Integer, String, Void>{
                 MediaStore.Images.Media.DATE_TAKEN //이미지 촬영날짜.
         };
 
-        String where = "bucket_display_name='Camera'";
+        String where = "bucket_display_name='DigitalBinder'";
         String orderBy = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, ";
         orderBy += MediaStore.Images.Media.DATE_TAKEN + " DESC";
 

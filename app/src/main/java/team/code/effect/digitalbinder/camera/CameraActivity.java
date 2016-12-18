@@ -2,11 +2,11 @@ package team.code.effect.digitalbinder.camera;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,23 +24,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import team.code.effect.digitalbinder.common.ImageFile;
 import team.code.effect.digitalbinder.main.MainActivity;
-import team.code.effect.digitalbinder.photobook.Photobook;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
     final String TAG = getClass().getName();
@@ -53,7 +54,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     PopupWindow popupWindow;
     RecyclerView recyclerview;
     PreviewRecyclerAdapter previewRecyclerAdapter;
-    static ArrayList<Preview> list = new ArrayList<Preview>();
+    ArrayList<ImageFile> list = new ArrayList<>();
     FrameLayout.LayoutParams layoutParams;
 
     //센서 관련 멤버 변수 정의
@@ -72,7 +73,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     //애니메이션 관련 멤버변수 정의
     ArrayList<ImageButton> btnList = new ArrayList<ImageButton>();
     RotateAnimation rotate;
-    int[] angle = new int[]{-90, 0, 90, 180};
     Animation anim_shutter;
 
     //Color Palette 관련 멤버변수 정의
@@ -186,22 +186,22 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
     public void changeButtonRoation(){
         switch (CameraActivity.orientation){
-            case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
+            case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE: //180
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
                 break;
-            case DeviceHelper.ORIENTATION_PORTRAIT:
+            case DeviceHelper.ORIENTATION_PORTRAIT: //90
                 layoutParams.gravity=Gravity.START;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
                 break;
-            case DeviceHelper.ORIENTATION_LANDSCAPE:
+            case DeviceHelper.ORIENTATION_LANDSCAPE: //0
                 layoutParams.gravity=Gravity.END;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_LANDSCAPE;
                 break;
-            case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
+            case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT: //270
                 layoutParams.gravity=Gravity.END;
                 btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_PORTRAIT;
@@ -209,7 +209,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         }
 
         if(oldOrientation != newOrientation){
-            animateRotation(angle[oldOrientation], angle[newOrientation]);
+            animateRotation(oldOrientation-90, newOrientation-90);
             oldOrientation = newOrientation;
         }
     }
@@ -246,14 +246,13 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             float roll = (float) Math.toDegrees(orientationData[2]);
 
             if (pitch >= -45 && pitch < 45 && roll >= 45)
-                orientation = 0;
+                orientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
             else if (pitch < -45 && roll >= -45 && roll < 45)
-                orientation = 1;
+                orientation = DeviceHelper.ORIENTATION_PORTRAIT;
             else if (pitch >= -45 && pitch < 45 && roll < -45)
-                orientation = 2;
+                orientation = DeviceHelper.ORIENTATION_LANDSCAPE;
             else if (pitch >= 45 && roll >= -45 && roll < 45 )
-                orientation = 3;
-
+                orientation = DeviceHelper.ORIENTATION_REVERSE_PORTRAIT;
             changeButtonRoation();
         }
     }
@@ -268,7 +267,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         alert.setPositiveButton("뒤로가기", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                CameraActivity.list.removeAll(CameraActivity.list);
+                list.removeAll(list);
                 finish();
             }
         });
@@ -288,6 +287,15 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         finishActivity();
     }
 
+    public void takePicture(byte[] bytes){
+        //filename, orientation, takendate;
+        Uri fileName = Uri.parse(AppConstans.APP_PATH_TEMP+(Integer.toString(list.size()+1))+AppConstans.EXT_IMAGE);
+        String takenDate = Long.toString(System.currentTimeMillis());
+        ImageFile imageFile =  new ImageFile(fileName, CameraActivity.orientation, takenDate);
+        list.add(imageFile);
+        new StoreTempFileAsync(this).execute(bytes);
+    }
+
     /*
      * 파일 저장 순서
      * 1. 입력 받은 값(txt_file_name)이 중복되는지 확인한다.
@@ -297,7 +305,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
      * 3. 바로 저장할 수 없다면, 임시 폴더에 저장한 후 파일을 zip 파일로 압축시킨다.
      */
     public void btnSaveClick(){
-        if(CameraActivity.list.size() == 0 ) {
+        if(list.size() == 0 ) {
             Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }

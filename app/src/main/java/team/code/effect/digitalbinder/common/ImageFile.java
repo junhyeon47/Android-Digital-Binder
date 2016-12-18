@@ -21,6 +21,11 @@ public class ImageFile implements Parcelable{
         this.takenDate = takenDate;
     }
 
+    public ImageFile(Uri path, int orientation, String takenDate){
+        this.path = path;
+        this.orientation = orientation;
+        this.takenDate = takenDate;
+    }
 
     @Override
     public int describeContents() {

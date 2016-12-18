@@ -12,10 +12,6 @@ import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 
-/**
- * Created by student on 2016-11-25.
- */
-
 public class PhotobookListAdapter extends BaseAdapter{
     ArrayList<Photobook> list;
     Context context;

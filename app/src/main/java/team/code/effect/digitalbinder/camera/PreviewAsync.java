@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
+import team.code.effect.digitalbinder.common.BitmapHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
 
 public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
@@ -27,36 +28,21 @@ public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Integer... params) {
-        int index = params[0];
-        int size = DeviceHelper.width;
-        Preview preview = CameraActivity.list.get(index);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inTempStorage = new byte[16 * 1024];
-        Bitmap bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length, options);
-        float rotateRatio = 0f;
-        int bitmapWidth = bitmap.getWidth();
-        int bitmapHeight = bitmap.getHeight();
-        int resizeWidth = (bitmapWidth*size)/bitmapHeight;
-
-        Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
-        Bitmap cropBitmap = Bitmap.createBitmap(resizeBitmap, (resizeWidth-size)/2, 0, size, size);
-        switch (preview.getOrientation()){
-            case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE:
-                rotateRatio = 180f;
-                break;
-            case DeviceHelper.ORIENTATION_PORTRAIT:
-                rotateRatio = 90f;
-                break;
-            case DeviceHelper.ORIENTATION_LANDSCAPE:
-                rotateRatio = 0f;
-                break;
-            case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT:
-                rotateRatio = -90f;
-                break;
-        }
-        Matrix rotateMatrix = new Matrix();
-        rotateMatrix.preRotate(rotateRatio);
-        return Bitmap.createBitmap(cropBitmap, 0, 0, size, size, rotateMatrix, true);
+//        int index = params[0];
+//        int size = DeviceHelper.width;
+//        Preview preview = CameraActivity.list.get(index);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inTempStorage = new byte[16 * 1024];
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length, options);
+//        float rotateRatio = 0f;
+//        int bitmapWidth = bitmap.getWidth();
+//        int bitmapHeight = bitmap.getHeight();
+//        int resizeWidth = (bitmapWidth*size)/bitmapHeight;
+//
+//        Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
+//        Bitmap cropBitmap = Bitmap.createBitmap(resizeBitmap, (resizeWidth-size)/2, 0, size, size);
+//        return BitmapHelper.changeOrientation(cropBitmap, preview.getOrientation());
+        return null;
     }
 
     @Override
