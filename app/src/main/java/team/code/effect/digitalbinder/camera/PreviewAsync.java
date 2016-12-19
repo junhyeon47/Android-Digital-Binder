@@ -14,41 +14,23 @@ import java.lang.ref.WeakReference;
 
 import team.code.effect.digitalbinder.common.BitmapHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import uk.co.senab.photoview.PhotoView;
 
-public class PreviewAsync extends AsyncTask<Integer, Void, Bitmap> {
-    private ImageView iv_thumbnail;
-    private ImageButton btn_remove;
-    private TextView txt_index;
+public class PreviewAsync extends AsyncTask<String, Void, Bitmap> {
+    PhotoView photo_view;
 
-    public PreviewAsync(ImageView iv_thumbnail, ImageButton btn_remove, TextView txt_index) {
-        this.iv_thumbnail = iv_thumbnail;
-        this.btn_remove = btn_remove;
-        this.txt_index = txt_index;
+    public PreviewAsync(PhotoView photo_view) {
+        this.photo_view = photo_view;
     }
 
     @Override
-    protected Bitmap doInBackground(Integer... params) {
-//        int index = params[0];
-//        int size = DeviceHelper.width;
-//        Preview preview = CameraActivity.list.get(index);
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inTempStorage = new byte[16 * 1024];
-//        Bitmap bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length, options);
-//        float rotateRatio = 0f;
-//        int bitmapWidth = bitmap.getWidth();
-//        int bitmapHeight = bitmap.getHeight();
-//        int resizeWidth = (bitmapWidth*size)/bitmapHeight;
-//
-//        Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, resizeWidth, size, true);
-//        Bitmap cropBitmap = Bitmap.createBitmap(resizeBitmap, (resizeWidth-size)/2, 0, size, size);
-//        return BitmapHelper.changeOrientation(cropBitmap, preview.getOrientation());
-        return null;
+    protected Bitmap doInBackground(String... params) {
+        Bitmap bitmap = BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
+        return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(params[1]));
     }
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        iv_thumbnail.setImageBitmap(bitmap);
-        btn_remove.setVisibility(View.VISIBLE);
-        txt_index.setVisibility(View.VISIBLE);
+        photo_view.setImageBitmap(bitmap);
     }
 }

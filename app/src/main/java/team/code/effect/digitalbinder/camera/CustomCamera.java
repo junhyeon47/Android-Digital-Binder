@@ -4,6 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -49,6 +50,10 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Camera.Parameters params = camera.getParameters();
+        params.setRotation(0);
+        camera.setParameters(params);
+
         camera.setDisplayOrientation(90);
         camera.startPreview();
     }
@@ -86,7 +91,7 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
             camera.stopPreview();
-            cameraActivity.takePicture(bytes);
+            cameraActivity.takePicture(bytes, CameraActivity.orientation);
             camera.startPreview();
             cameraActivity.btn_shutter.setEnabled(true);
         }

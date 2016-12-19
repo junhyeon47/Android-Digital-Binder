@@ -18,10 +18,10 @@ public class PhotobookAsync extends AsyncTask<String, Void, Bitmap> {
     }
 
     @Override
-    protected Bitmap doInBackground(String... parmas) {
-        Log.d("ASYNC", parmas[0]);
-        Bitmap bitmap = BitmapHelper.decodeFile(parmas[0], DeviceHelper.width, DeviceHelper.height);
-        return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(parmas[1]));
+    protected Bitmap doInBackground(String... params) {
+        Log.d("ASYNC", params[0]);
+        Bitmap bitmap = BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
+        return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(params[1]));
     }
 
     @Override

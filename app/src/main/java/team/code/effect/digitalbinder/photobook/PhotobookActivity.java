@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.photobook;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -66,6 +67,12 @@ public class PhotobookActivity extends AppCompatActivity {
                     }
                 }
             }
+            String where = "bucket_display_name='DigitalBinder'";
+            getContentResolver().delete(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    where,
+                    null
+            );
         }
     }
 

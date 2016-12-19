@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
 public class BitmapHelper {
+    public static int QUALITY = 80;
     public static BitmapFactory.Options getOptions(String filename){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

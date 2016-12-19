@@ -1,86 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="team.code.effect.digitalbinder.camera.CameraActivity">
-    <FrameLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
         <FrameLayout
             android:id="@+id/preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ImageButton
-                android:id="@+id/btn_back"
-                android:src="@drawable/ic_arrow_back_white_48dp"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:layout_margin="5dp"
-                android:onClick="btnClick"/>
-        </FrameLayout>
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:orientation="horizontal"
-        android:background="#000000">
         <ImageButton
-            android:id="@+id/btn_open_preview"
-            android:src="@drawable/ic_view_carousel_white_48dp"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:onClick="btnClick"/>
-        <ImageButton
-            android:id="@+id/btn_close_preview"
-            android:src="@drawable/ic_photo_camera_white_48dp"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:onClick="btnClick"
+            android:src="@drawable/ic_arrow_back_white_48dp" />
+        <TextView
+            android:id="@+id/txt_sensor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:textColor="#000000"
+            android:layout_centerInParent="true"
             android:visibility="gone"/>
-        <FrameLayout
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+
             <ImageButton
-                android:id="@+id/btn_shutter_ring"
-                android:src="@drawable/ic_panorama_fish_eye_white_48dp"
-                android:layout_width="match_parent"
+                android:id="@+id/btn_open_preview"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"/>
+                android:onClick="btnClick"
+                android:src="@drawable/ic_view_carousel_white_48dp" />
+
             <ImageButton
-                android:id="@+id/btn_shutter"
-                android:src="@drawable/ic_lens_white_48dp"
+                android:id="@+id/btn_close_preview"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="btnClick"
+                android:src="@drawable/ic_photo_camera_white_48dp"
+                android:visibility="gone" />
+
+            <FrameLayout
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:alpha="0.5"
-                android:onClick="btnClick"/>
-        </FrameLayout>
+                android:layout_gravity="center">
 
-        <ImageButton
-            android:id="@+id/btn_save"
-            android:src="@drawable/ic_insert_link_white_48dp"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:onClick="btnClick"/>
-    </LinearLayout>
-</LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_shutter_ring"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_panorama_fish_eye_white_48dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_shutter"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:alpha="0.5"
+                    android:background="@android:color/transparent"
+                    android:onClick="btnClick"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_lens_white_48dp" />
+            </FrameLayout>
+
+            <ImageButton
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="btnClick"
+                android:src="@drawable/ic_insert_link_white_48dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

@@ -34,45 +34,45 @@ public class PreviewRecyclerAdapter extends RecyclerView.Adapter<PreviewViewHold
     //리스트뷰에서 getView 메서드와 동일.
     @Override
     public void onBindViewHolder(PreviewViewHolder holder, final int position) {
-        PreviewAsync async = new PreviewAsync(holder.iv_thumbnail, holder.btn_remove, holder.txt_index);
-        async.execute(position);
-        holder.txt_index.setText(Integer.toString(position+1));
-        holder.iv_thumbnail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(cameraActivity, SinglePreviewActivity.class);
-                intent.putExtra("position", position);
-
-                cameraActivity.startActivity(intent);
-            }
-        });
-        holder.btn_remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder alert = AlertHelper.getAlertDialog(cameraActivity, "알림", "선택한 사진이 삭제됩니다.");
-                alert.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        removeItem(position);
-                    }
-                });
-                alert.setNegativeButton("취소", null);
-                alert.show();
-            }
-        });
+//        PreviewAsync async = new PreviewAsync(holder.iv_thumbnail, holder.btn_remove, holder.txt_index);
+//        async.execute(position);
+//        holder.txt_index.setText(Integer.toString(position+1));
+//        holder.iv_thumbnail.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(cameraActivity, SinglePreviewActivity.class);
+//                intent.putExtra("position", position);
+//
+//                cameraActivity.startActivity(intent);
+//            }
+//        });
+//        holder.btn_remove.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                AlertDialog.Builder alert = AlertHelper.getAlertDialog(cameraActivity, "알림", "선택한 사진이 삭제됩니다.");
+//                alert.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        removeItem(position);
+//                    }
+//                });
+//                alert.setNegativeButton("취소", null);
+//                alert.show();
+//            }
+//        });
     }
 
     @Override
     public int getItemCount() {
-        return cameraActivity.list.size();
+        return 0;
     }
 
     public void removeItem(int position){
-        cameraActivity.list.remove(position);
-        if(getItemCount() != 0) {
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, cameraActivity.list.size());
-        }else
-            notifyDataSetChanged();
+//        cameraActivity.list.remove(position);
+//        if(getItemCount() != 0) {
+//            notifyItemRemoved(position);
+//            notifyItemRangeChanged(position, cameraActivity.list.size());
+//        }else
+//            notifyDataSetChanged();
     }
 }

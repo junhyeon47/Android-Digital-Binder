@@ -2,6 +2,7 @@ package team.code.effect.digitalbinder.camera;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -27,11 +28,15 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
@@ -41,6 +46,8 @@ import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.common.ImageFile;
+import team.code.effect.digitalbinder.common.MediaStorageHelper;
+import team.code.effect.digitalbinder.explorer.ImageViewpagerActivity;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
@@ -48,14 +55,11 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
     //레이아웃 관련 멤버 변수 정의
     FrameLayout preview;
-    ImageButton btn_open_preview, btn_close_preview, btn_save, btn_shutter, btn_back, btn_shutter_ring;
+    ImageButton btn_open_preview, btn_save, btn_shutter, btn_back, btn_shutter_ring;
     CustomCamera customCamera;
-    View popupPreview;
-    PopupWindow popupWindow;
     RecyclerView recyclerview;
     PreviewRecyclerAdapter previewRecyclerAdapter;
-    ArrayList<ImageFile> list = new ArrayList<>();
-    FrameLayout.LayoutParams layoutParams;
+    RelativeLayout.LayoutParams layoutParams;
 
     //센서 관련 멤버 변수 정의
     SensorManager sensorManager;
@@ -70,6 +74,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     int oldOrientation;
     int newOrientation;
 
+    TextView txt_sensor;
+
     //애니메이션 관련 멤버변수 정의
     ArrayList<ImageButton> btnList = new ArrayList<ImageButton>();
     RotateAnimation rotate;
@@ -80,33 +86,36 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     ArrayList<ColorPalette> colorPaletteList = new ArrayList<>();
     ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
 
+    //파일 저장관련 멤버 변수 정의
+    File[] files;
+    public static ArrayList<StoreTempFileAsync> listAsync = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        txt_sensor = (TextView)findViewById(R.id.txt_sensor);
         preview = (FrameLayout)findViewById(R.id.preview);
         btn_open_preview = (ImageButton)findViewById(R.id.btn_open_preview);
-        btn_close_preview = (ImageButton)findViewById(R.id.btn_close_preview);
         btn_save = (ImageButton)findViewById(R.id.btn_save);
         btn_shutter = (ImageButton)findViewById(R.id.btn_shutter);
         btn_back = (ImageButton)findViewById(R.id.btn_back);
         btn_shutter_ring = (ImageButton)findViewById(R.id.btn_shutter_ring);
-        popupPreview = View.inflate(this, R.layout.popup_preview, null);
 
-        layoutParams = (FrameLayout.LayoutParams)btn_back.getLayoutParams();
+        layoutParams = (RelativeLayout.LayoutParams)btn_back.getLayoutParams();
 
-        recyclerview = (RecyclerView)popupPreview.getRootView().findViewById(R.id.recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        layoutManager.setOrientation(LinearLayout.HORIZONTAL);
-        recyclerview.setLayoutManager(layoutManager);
-        recyclerview.setHasFixedSize(true);
-        previewRecyclerAdapter = new PreviewRecyclerAdapter(this);
-        recyclerview.setAdapter(previewRecyclerAdapter);
+//        recyclerview = (RecyclerView)findViewById(R.id.recycler_view);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+//        layoutManager.setOrientation(LinearLayout.HORIZONTAL);
+//        recyclerview.setLayoutManager(layoutManager);
+//        recyclerview.setHasFixedSize(true);
+//        previewRecyclerAdapter = new PreviewRecyclerAdapter(this);
+//        recyclerview.setAdapter(previewRecyclerAdapter);
 
-        Log.d(TAG, "SDK Version: "+Build.VERSION.SDK_INT);
         customCamera = new CustomCamera(this);
         preview.addView(customCamera);
-        Log.d(TAG, "Previous Camera");
+
+
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -123,6 +132,11 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         //Color Palette 관련 초기화
         colorPaletteRecyclerAdapter = new ColorPaletteRecyclerAdapter();
         colorPaletteRecyclerAdapter.setList(colorPaletteList);
+
+        //폴더 관련 초기화
+        checkDirectory();
+        checkPreviousFiles();
+        CameraActivity.listAsync.removeAll(CameraActivity.listAsync);
     }
 
     @Override
@@ -140,35 +154,21 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         sensorManager.unregisterListener(this);
     }
 
-    public void openPopupPreview(){
-        btn_open_preview.clearAnimation();
-        btn_save.clearAnimation();
-        btn_back.clearAnimation();
-        btn_open_preview.setVisibility(View.GONE);
-        btn_close_preview.setVisibility(View.VISIBLE);
-        btn_shutter.setEnabled(false);
-        btn_shutter_ring.setImageResource(R.drawable.ic_panorama_fish_eye_gray_48dp);
-
-        Log.d(TAG, "Popup Window Size - width: "+preview.getWidth()+", height: "+preview.getHeight());
-        popupWindow = new PopupWindow(popupPreview, preview.getWidth(), preview.getHeight(), false);
-        popupWindow.showAtLocation(preview, Gravity.NO_GRAVITY, 0, 0);
-    }
-
-    private void closePopupPreview() {
-        btn_open_preview.setVisibility(View.VISIBLE);
-        btn_close_preview.setVisibility(View.GONE);
-        btn_shutter.setEnabled(true);
-        btn_shutter_ring.setImageResource(R.drawable.ic_panorama_fish_eye_white_48dp);
-        popupWindow.dismiss();
+    public void openPreviewActivity(){
+        files = new File(AppConstans.APP_PATH_TEMP).listFiles();
+        if(files.length == 0){
+            Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent=new Intent(this, PreviewActivity.class);
+        intent.putParcelableArrayListExtra("listAsync", listAsync);
+        startActivity(intent);
     }
 
     public void btnClick(View view){
         switch (view.getId()){
             case R.id.btn_open_preview:
-                openPopupPreview();
-                break;
-            case R.id.btn_close_preview:
-                closePopupPreview();
+                openPreviewActivity();
                 break;
             case R.id.btn_shutter:
                 customCamera.takePicture();
@@ -187,23 +187,23 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     public void changeButtonRoation(){
         switch (CameraActivity.orientation){
             case DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE: //180
-                layoutParams.gravity=Gravity.START;
-                btn_back.setLayoutParams(layoutParams);
+                //layoutParams.setLayoutDirection(RelativeLayout.ALIGN_LEFT);
+                //btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_PORTRAIT: //90
-                layoutParams.gravity=Gravity.START;
-                btn_back.setLayoutParams(layoutParams);
+                //layoutParams.gravity=Gravity.START;
+                //btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_PORTRAIT;
                 break;
             case DeviceHelper.ORIENTATION_LANDSCAPE: //0
-                layoutParams.gravity=Gravity.END;
-                btn_back.setLayoutParams(layoutParams);
+                //layoutParams.gravity=Gravity.END;
+                //btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_LANDSCAPE;
                 break;
             case DeviceHelper.ORIENTATION_REVERSE_PORTRAIT: //270
-                layoutParams.gravity=Gravity.END;
-                btn_back.setLayoutParams(layoutParams);
+                //layoutParams.gravity=Gravity.END;
+                //btn_back.setLayoutParams(layoutParams);
                 newOrientation = DeviceHelper.ORIENTATION_REVERSE_PORTRAIT;
                 break;
         }
@@ -215,10 +215,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     }
 
     public void animateRotation(int fromAngle, int toAngle){
-        if(popupWindow != null)
-            if (popupWindow.isShowing())
-                return;
-
         for(int i=0; i<btnList.size(); ++i){
             if(btnList.get(i).getId() == R.id.btn_back && toAngle == -90)
                 rotate = new RotateAnimation(fromAngle, -toAngle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -242,9 +238,11 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         if (lastAccelerometerSet && lastMagnetometerSet) {
             SensorManager.getRotationMatrix(rotation, null, lastAccelerometer, lastMagnetometer);
             SensorManager.getOrientation(rotation, orientationData);
+            float azimuth = (float)Math.toDegrees(orientationData[0]);
             float pitch = (float)Math.toDegrees(orientationData[1]);
             float roll = (float) Math.toDegrees(orientationData[2]);
 
+            //txt_sensor.setText("azimuth: "+azimuth+"\npitch: "+pitch+"\nroll: "+roll);
             if (pitch >= -45 && pitch < 45 && roll >= 45)
                 orientation = DeviceHelper.ORIENTATION_REVERSE_LANDSCAPE;
             else if (pitch < -45 && roll >= -45 && roll < 45)
@@ -263,37 +261,37 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     }
 
     public void finishActivity(){
-        AlertDialog.Builder alert = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진이 삭제됩니다. 계속 하시겠습니까?");
-        alert.setPositiveButton("뒤로가기", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                list.removeAll(list);
-                finish();
-            }
-        });
-        alert.setNegativeButton("취소", null);
-
-        alert.show();
+        files = new File(AppConstans.APP_PATH_TEMP).listFiles();
+        if(files.length > 0) {
+            AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "촬영한 사진들을 임시폴더에 저장합니다. (다음 촬영에 이어서 촬영할 수 있습니다.)");
+            builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                }
+            });
+            builder.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    deleteAllFiles();
+                    finish();
+                }
+            });
+            builder.show();
+        }else{
+            finish();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (popupWindow != null) {
-            if (popupWindow.isShowing()) {
-                closePopupPreview();
-                return;
-            }
-        }
         finishActivity();
     }
 
-    public void takePicture(byte[] bytes){
-        //filename, orientation, takendate;
-        Uri fileName = Uri.parse(AppConstans.APP_PATH_TEMP+(Integer.toString(list.size()+1))+AppConstans.EXT_IMAGE);
-        String takenDate = Long.toString(System.currentTimeMillis());
-        ImageFile imageFile =  new ImageFile(fileName, CameraActivity.orientation, takenDate);
-        list.add(imageFile);
-        new StoreTempFileAsync(this).execute(bytes);
+    public void takePicture(byte[] bytes, int orientation){
+        StoreTempFileAsync async = new StoreTempFileAsync(this, orientation);
+        async.execute(bytes);
+        CameraActivity.listAsync.add(async);
     }
 
     /*
@@ -305,7 +303,8 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
      * 3. 바로 저장할 수 없다면, 임시 폴더에 저장한 후 파일을 zip 파일로 압축시킨다.
      */
     public void btnSaveClick(){
-        if(list.size() == 0 ) {
+        files = new File(AppConstans.APP_PATH_TEMP).listFiles();
+        if(files.length == 0 ) {
             Toast.makeText(this, "촬영된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -410,5 +409,40 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             return result;
         else
             return -1;
+    }
+    public void checkDirectory(){
+        File tempDir = new File(AppConstans.APP_PATH_TEMP);
+        boolean isCreateDir;
+        if(!tempDir.exists()) { //temp 폴더가 존재하지 않으면 폴더 생성.
+            isCreateDir = tempDir.mkdirs();
+            if(!isCreateDir) {
+                //폴더 생성 실패로 액티비티를 종료해야한다.
+                finish();
+            }
+        }
+    }
+    public void checkPreviousFiles(){
+        files = new File(AppConstans.APP_PATH_TEMP).listFiles();
+        if(files.length > 0) {
+            AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "이전에 촬영했던 사진이 존재합니다. 이어서 촬영하시겠습니까?");
+            builder.setCancelable(false);
+            builder.setPositiveButton("이어서 촬영", null);
+            builder.setNegativeButton("삭제", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    deleteAllFiles();
+                }
+            });
+            builder.show();
+        }
+    }
+
+    public void deleteAllFiles(){
+        for(int i=0; i<files.length; ++i){
+            if(files[i].delete()){
+                Log.d(TAG, "파일 삭제: "+files[i].getAbsolutePath());
+            }
+        }
+        MediaStorageHelper.delete(this, MediaStorageHelper.WHERE);
     }
 }
