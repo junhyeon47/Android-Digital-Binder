@@ -6,7 +6,10 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,13 +22,14 @@ import team.code.effect.digitalbinder.main.MainActivity;
 import team.code.effect.digitalbinder.main.SplashActivity;
 
 public class PreviewActivity extends AppCompatActivity {
+    private static int CACHE_SIZE = 100;
     String TAG;
     ArrayList<StoreTempFileAsync> listAsync;
     ArrayList<ImageFile> list;
     File[] files;
 
-    ViewPager view_pager;
-    PreviewPagerAdapter previewPagerAdapter;
+    RecyclerView recycler_view;
+    PreviewRecyclerAdapter previewRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +40,13 @@ public class PreviewActivity extends AppCompatActivity {
 
         files = new File(AppConstans.APP_PATH_TEMP).listFiles();
 
-        view_pager = (ViewPager)findViewById(R.id.view_pager);
+        recycler_view = (RecyclerView) findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setOrientation(LinearLayout.HORIZONTAL);
+        recycler_view.setLayoutManager(layoutManager);
+        recycler_view.setHasFixedSize(true);
+        recycler_view.setItemViewCacheSize(CACHE_SIZE);
+
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
@@ -62,8 +72,8 @@ public class PreviewActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         list = MediaStorageHelper.getImageFiles(PreviewActivity.this, MediaStorageHelper.WHERE, MediaStorageHelper.ASC);
-                        previewPagerAdapter = new PreviewPagerAdapter(PreviewActivity.this);
-                        view_pager.setAdapter(previewPagerAdapter);
+                        previewRecyclerAdapter = new PreviewRecyclerAdapter(PreviewActivity.this);
+                        recycler_view.setAdapter(previewRecyclerAdapter);
                     }
                 }, 1000);
             }

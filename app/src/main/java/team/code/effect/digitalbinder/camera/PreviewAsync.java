@@ -25,8 +25,7 @@ public class PreviewAsync extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... params) {
-        Bitmap bitmap = BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
-        return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(params[1]));
+        return BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
     }
 
     @Override
