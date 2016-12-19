@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -29,14 +28,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
-import team.code.effect.digitalbinder.camera.CameraActivity;
 import team.code.effect.digitalbinder.camera.StoreFileAsync;
 import team.code.effect.digitalbinder.common.AlertHelper;
 import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.ImageFile;
-import team.code.effect.digitalbinder.common.ZipCode;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 public class ExplorerActivity extends AppCompatActivity {
@@ -53,13 +50,14 @@ public class ExplorerActivity extends AppCompatActivity {
     ArrayList<ColorPalette> colorPaletteList = new ArrayList<>();
     RecyclerView recycler_view_color;
     ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
+    static ExplorerActivity explorerActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = this.getClass().getName();
         setContentView(R.layout.activity_explorer);
-
+        explorerActivity=this;
         listFolders = getAllImageFolders();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -68,7 +66,7 @@ public class ExplorerActivity extends AppCompatActivity {
         layout_folders = (LinearLayout) findViewById(R.id.layout_folders);
         layout_images = (LinearLayout) findViewById(R.id.layout_images);
         layout_detail = (LinearLayout) findViewById(R.id.layout_detail);
-        layout_selected=(LinearLayout)findViewById(R.id.layout_selected);
+        layout_selected = (LinearLayout) findViewById(R.id.layout_selected);
 
         txt_folder_name = (TextView) findViewById(R.id.txt_folder_name);
 
@@ -93,16 +91,16 @@ public class ExplorerActivity extends AppCompatActivity {
         recycler_view_images.setAdapter(imageRecyclerAdapter);
 
         //이미지 선택시 선택된 이미지만 출력하는 RecyclerView 설정
-        recycler_view_selected=(RecyclerView)findViewById(R.id.recycler_view_selected);
-        LinearLayoutManager selectedManager=new LinearLayoutManager(getApplicationContext());
+        recycler_view_selected = (RecyclerView) findViewById(R.id.recycler_view_selected);
+        LinearLayoutManager selectedManager = new LinearLayoutManager(getApplicationContext());
         selectedManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recycler_view_selected.setLayoutManager(selectedManager);
-        imageSelectedRecyclerAdapter=new ImageSelectedRecyclerAdapter();
+        imageSelectedRecyclerAdapter = new ImageSelectedRecyclerAdapter();
         recycler_view_selected.setAdapter(imageSelectedRecyclerAdapter);
         recycler_view_selected.setItemViewCacheSize(CACHE_SIZE);
         layout_selected.setVisibility(View.GONE);
 
-        colorPaletteRecyclerAdapter=new ColorPaletteRecyclerAdapter();
+        colorPaletteRecyclerAdapter = new ColorPaletteRecyclerAdapter();
         colorPaletteRecyclerAdapter.setList(colorPaletteList);
     }
 
@@ -122,9 +120,9 @@ public class ExplorerActivity extends AppCompatActivity {
                 Toast.makeText(this, "모두 선택", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.make_book:
-                if(imageSelectedRecyclerAdapter.list.size()==0){
+                if (imageSelectedRecyclerAdapter.list.size() == 0) {
                     Toast.makeText(this, "한개 이상의 파일을 선택하셔야 합니다.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     makeBook();
                     this.finish();
                 }
@@ -133,13 +131,13 @@ public class ExplorerActivity extends AppCompatActivity {
         return true;
     }
 
-    public void makeBook(){
-        ArrayList<File> bookList=new ArrayList<File>();
-        for(int i=0;i<imageSelectedRecyclerAdapter.list.size();i++){
-            File file=new File(imageSelectedRecyclerAdapter.list.get(i).path.toString());
+    public void makeBook() {
+        ArrayList<File> bookList = new ArrayList<File>();
+        for (int i = 0; i < imageSelectedRecyclerAdapter.list.size(); i++) {
+            File file = new File(imageSelectedRecyclerAdapter.list.get(i).path.toString());
             bookList.add(file);
         }
-       btnSaveClick(bookList);
+        btnSaveClick(bookList);
     }
 
     @Override
@@ -269,8 +267,8 @@ public class ExplorerActivity extends AppCompatActivity {
     }
 
 
-    public void btnSaveClick(ArrayList<File> list){
-        if(list.size() == 0 ) {
+    public void btnSaveClick(ArrayList<File> list) {
+        if (list.size() == 0) {
             Toast.makeText(this, "선택된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -284,20 +282,20 @@ public class ExplorerActivity extends AppCompatActivity {
             public void onShow(final DialogInterface dialogInterface) {
                 Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 initColorPaletteList();
-                recycler_view_color = (RecyclerView)((Dialog)dialogInterface).findViewById(R.id.recycler_view_color);
-                GridLayoutManager layoutManager = new GridLayoutManager(((Dialog)dialogInterface).getContext(), 5);
+                recycler_view_color = (RecyclerView) ((Dialog) dialogInterface).findViewById(R.id.recycler_view_color);
+                GridLayoutManager layoutManager = new GridLayoutManager(((Dialog) dialogInterface).getContext(), 5);
                 recycler_view_color.setLayoutManager(layoutManager);
                 recycler_view_color.setAdapter(colorPaletteRecyclerAdapter);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Dialog dialog = (Dialog)dialogInterface;
-                        EditText txt_file_name = (EditText)dialog.findViewById(R.id.txt_file_name);
-                        TextView txt_color = (TextView)dialog.findViewById(R.id.txt_color);
+                        Dialog dialog = (Dialog) dialogInterface;
+                        EditText txt_file_name = (EditText) dialog.findViewById(R.id.txt_file_name);
+                        TextView txt_color = (TextView) dialog.findViewById(R.id.txt_color);
 
                         int colorValue;
                         //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
-                        if((colorValue=checkValidity(txt_file_name, txt_color)) != -1){
+                        if ((colorValue = checkValidity(txt_file_name, txt_color)) != -1) {
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
                             async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
                         }
@@ -309,8 +307,8 @@ public class ExplorerActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void initColorPaletteList(){
-        if(colorPaletteList.size() == 0) {
+    public void initColorPaletteList() {
+        if (colorPaletteList.size() == 0) {
             ColorPalette colorPalette;
             for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
                 colorPalette = new ColorPalette();
@@ -318,7 +316,7 @@ public class ExplorerActivity extends AppCompatActivity {
                 colorPalette.setColorValue(ColorPaletteHelper.VALUE[i]);
                 colorPaletteList.add(colorPalette);
             }
-        }else{
+        } else {
             for (int i = 0; i < ColorPaletteHelper.VALUE.length; ++i) {
                 colorPaletteList.get(i).setCheck(false);
             }
@@ -326,14 +324,15 @@ public class ExplorerActivity extends AppCompatActivity {
     }
 
     //파일명 중복 유효성 체크
-    public boolean isExistFile(String filename){
+    public boolean isExistFile(String filename) {
         return MainActivity.dao.isDuplicatedTitle(filename);
     }
+
     //Color Palette 유효성 체크
-    public int isCheckedColor(){
+    public int isCheckedColor() {
         int result = -1;
-        for(int i=0; i<colorPaletteList.size(); ++i){
-            if(colorPaletteList.get(i).isCheck()){
+        for (int i = 0; i < colorPaletteList.size(); ++i) {
+            if (colorPaletteList.get(i).isCheck()) {
                 result = i;
                 break;
             }
@@ -342,36 +341,36 @@ public class ExplorerActivity extends AppCompatActivity {
     }
 
     //유효성 체크
-    public int checkValidity(EditText txt_file_name, TextView txt_color){
+    public int checkValidity(EditText txt_file_name, TextView txt_color) {
         int result = isCheckedColor();
         boolean flagDuplicate, flagFileName, flagColor;
         //파일명 중복 여부 확인
-        if(isExistFile(txt_file_name.getText()+".zip")){
+        if (isExistFile(txt_file_name.getText() + ".zip")) {
             txt_file_name.setText("");
             txt_file_name.setHint("중복된 이름이 존재합니다.");
             txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
             flagDuplicate = false;
-        }else{
+        } else {
             flagDuplicate = true;
         }
 
-        if(txt_file_name.getText().length() == 0){
+        if (txt_file_name.getText().length() == 0) {
             txt_file_name.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
             flagFileName = false;
-        }else{
+        } else {
             flagFileName = true;
         }
 
         //색상 선택여부를 확인
-        if(result == -1) {
+        if (result == -1) {
             txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
             flagColor = false;
-        }else {
+        } else {
             txt_color.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorBlack));
             flagColor = true;
         }
 
-        if(flagDuplicate && flagFileName && flagColor)
+        if (flagDuplicate && flagFileName && flagColor)
             return result;
         else
             return -1;

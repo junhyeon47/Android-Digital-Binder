@@ -1,7 +1,5 @@
 package team.code.effect.digitalbinder.explorer;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +17,7 @@ import team.code.effect.digitalbinder.common.ImageFile;
 public class ImageSelectedRecyclerAdapter extends RecyclerView.Adapter<ImageFileSelected> {
     ExplorerActivity explorerActivity;
     ArrayList<ImageFile> list=new ArrayList<ImageFile>();
+    ArrayList<ImageViewHolder> list2=new ArrayList<ImageViewHolder>();
     @Override
     public ImageFileSelected onCreateViewHolder(ViewGroup parent, int viewType) {
         View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.item_selected, parent, false);
@@ -26,15 +25,16 @@ public class ImageSelectedRecyclerAdapter extends RecyclerView.Adapter<ImageFile
     }
     @Override
     public void onBindViewHolder(final ImageFileSelected holder, final int position) {
-        Bitmap bitmap= BitmapFactory.decodeFile(list.get(position).path.toString());
-        int width=bitmap.getWidth();
-        int height=bitmap.getHeight();
-        Bitmap resize= Bitmap.createScaledBitmap(bitmap, width/4, height/4, true);
-        holder.imageView.setImageBitmap(resize);
+        final int index = position;
+        final int orientation= list.get(index).orientation;
+        explorerActivity=ExplorerActivity.explorerActivity;
+        new ImageSelectAsync(explorerActivity, holder).execute(list.get(index).image_id, list.get(index).orientation);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                list2.get(index).checkBox.setChecked(false);
                 list.remove(list.get(position));
+                list2.remove(index);
                 notifyDataSetChanged();
             }
         });

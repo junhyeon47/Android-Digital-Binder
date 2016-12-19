@@ -5,9 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -51,6 +49,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
                     explorerActivity.layout_selected.setVisibility(View.VISIBLE);
                     explorerActivity.imageSelectedRecyclerAdapter.list.add(list.get(index));
                     explorerActivity.imageSelectedRecyclerAdapter.notifyDataSetChanged();
+                    explorerActivity.imageSelectedRecyclerAdapter.list2.add(holder);
                 }else{
                     explorerActivity.imageSelectedRecyclerAdapter.list.remove(list.get(index));
                     explorerActivity.imageSelectedRecyclerAdapter.notifyDataSetChanged();
@@ -61,6 +60,11 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
             }
         });
     }
+
+    public void unCheck(ImageViewHolder holder){
+        holder.checkBox.setChecked(false);
+    }
+
 
     @Override
     public int getItemCount() {
