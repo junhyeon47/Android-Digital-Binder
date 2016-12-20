@@ -95,7 +95,7 @@ public class PreviewActivity extends AppCompatActivity {
                         recycler_view.setAdapter(previewRecyclerAdapter);
 
                         view_pager.setCurrentItem(0);
-                        view_pager.setOffscreenPageLimit(10);
+                        view_pager.setOffscreenPageLimit(CACHE_SIZE);
                     }
                 }, 1000);
             }
@@ -124,7 +124,6 @@ public class PreviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //MediaStorageHelper.delete(this, MediaStorageHelper.WHERE);
         finish();
     }
 

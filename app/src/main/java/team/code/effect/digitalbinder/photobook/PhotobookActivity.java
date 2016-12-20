@@ -1,24 +1,18 @@
 package team.code.effect.digitalbinder.photobook;
 
-import android.content.Intent;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ImageButton;
-import android.view.View;
-import android.widget.Toast;
-
 import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ImageFile;
+import team.code.effect.digitalbinder.common.MediaStorageHelper;
 
 public class PhotobookActivity extends AppCompatActivity {
     String TAG;
@@ -61,18 +55,12 @@ public class PhotobookActivity extends AppCompatActivity {
                 if(!files[i].isDirectory()){
                     if(files[i].delete()){
                         Log.d(TAG, "파일 삭제 성공: "+ Uri.fromFile(files[i]));
-                        //sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(files[i])));
                     }else{
                         Log.d(TAG, "파일 삭제 실패: "+files[i].getAbsolutePath());
                     }
                 }
             }
-            String where = "bucket_display_name='DigitalBinder'";
-            getContentResolver().delete(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    where,
-                    null
-            );
+            MediaStorageHelper.deleteAll(this, MediaStorageHelper.WHERE_DIGITAL_BINDER);
         }
     }
 

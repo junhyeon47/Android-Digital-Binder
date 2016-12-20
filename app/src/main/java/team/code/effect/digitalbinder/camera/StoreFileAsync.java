@@ -25,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.DeviceHelper;
+import team.code.effect.digitalbinder.common.MediaStorageHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
 import team.code.effect.digitalbinder.photobook.Photobook;
 
@@ -50,95 +51,62 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
 
     @Override
     protected Photobook doInBackground(String... params) {
-//        String title = params[0];
-//        int color = Integer.parseInt(params[1]);
-//        String filename = Long.toString(System.currentTimeMillis());
-//        Bitmap bitmap;
-//        FileOutputStream fos;
-//        File tempFile = null;
-//        Preview preview;
-//        ArrayList<File> tempList = new ArrayList<File>();
-//        float rotateRatio = 0f;
-//        File tempDir = new File(AppConstans.APP_PATH_TEMP);
-//        File dataDir = new File(AppConstans.APP_PATH_DATA);
-//
-//
-//        progressDialog.setMax(CameraActivity.list.size()*2);
-//        boolean isCreateDir;
-//
-//        if(!tempDir.exists()) { //temp 폴더가 존재하지 않으면 폴더 생성.
-//            isCreateDir = tempDir.mkdirs();
-//            if(!isCreateDir) {
-//                //폴더 생성 실패로 액티비티를 종료해야한다.
-//                return null;
-//            }
-//        }
-//
-//        if(!dataDir.exists()) { //data 폴더가 존재하지 않으면 폴더 생성.
-//            isCreateDir = dataDir.mkdirs();
-//            if(!isCreateDir) {
-//                //폴더 생성 실패로 액티비티를 종료해야한다.
-//                return null;
-//            }
-//        }
-//
-//        try {
-//            for (int i = 0; i < CameraActivity.list.size(); ++i) {
-//                //bytes 이미지를 회전
-//                preview = CameraActivity.list.get(i);
-//                bitmap = BitmapFactory.decodeByteArray(preview.getBytes(), 0, preview.getBytes().length);
-//                //이미지를 파일로 저장.
-//                tempFile = new File(AppConstans.APP_PATH_TEMP + Integer.toString(i + 1) + EXT_IMAGE);
-//                tempList.add(tempFile);
-//                fos = new FileOutputStream(tempFile.getAbsolutePath());
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY, fos);
-//                fos.flush();
-//                fos.close();
-//                progressCount++;
-//                publishProgress("progress", Integer.toString(progressCount), "디스크로 저장하는 중...");
-//            }
-//            //파일로 저장된 이미지를 하나의 압축파일로 묶음.
-//            byte[] buff = new byte[16 * 1024];
-//
-//            fos = new FileOutputStream(AppConstans.APP_PATH_DATA + filename + EXT_DAT);
-//            BufferedOutputStream bos = new BufferedOutputStream(fos);
-//            ZipOutputStream zos = new ZipOutputStream(bos);
-//            FileInputStream fis = null;
-//            for (int i = 0; i < tempList.size(); ++i) {
-//                fis = new FileInputStream(tempList.get(i).getAbsolutePath());
-//                zos.putNextEntry(new ZipEntry((i + 1) + ".jpg"));
-//                int length;
-//                while ((length = fis.read(buff, 0, 16 * 1024)) > 0) {
-//                    zos.write(buff, 0, length);
-//                    publishProgress("progress", Integer.toString(progressCount), "파일 변환하는 중...");
-//                }
-//                zos.closeEntry();
-//                fis.close();
-//                progressCount++;
-//            }
-//            zos.close();
-//
-//            //temp 폴더에 저장된 파일 모두 삭제.
-//            if (tempDir.isDirectory()){
-//                String[] delteList = tempDir.list();
-//                for (int i = 0; i < delteList.length; i++){
-//                    new File(tempDir, delteList[i]).delete();
-//                    progressCount++;
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        //리스트 비우기
-//        CameraActivity.list.removeAll(CameraActivity.list);
-//
-//        //DB에 저장할 DTO 생성 및 반환
-//        Photobook photobook = new Photobook();
-//        photobook.setFilename(filename + EXT_DAT);
-//        photobook.setTitle(title);
-//        photobook.setColor(color);
-        return null;
+        String title = params[0];
+        int color = Integer.parseInt(params[1]);
+        String filename = Long.toString(System.currentTimeMillis());
+        File[] files = new File(AppConstans.APP_PATH_TEMP).listFiles();
+        File dataDir = new File(AppConstans.APP_PATH_DATA);
+
+
+        progressDialog.setMax(files.length*2);
+        boolean isCreateDir;
+
+        if(!dataDir.exists()) { //data 폴더가 존재하지 않으면 폴더 생성.
+            isCreateDir = dataDir.mkdirs();
+            if(!isCreateDir) {
+                //폴더 생성 실패로 액티비티를 종료해야한다.
+                return null;
+            }
+        }
+
+        try {
+            //파일로 저장된 이미지를 하나의 압축파일로 묶음.
+            byte[] buff = new byte[16 * 1024];
+
+            FileOutputStream fos = new FileOutputStream(AppConstans.APP_PATH_DATA + filename + AppConstans.EXT_DAT);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ZipOutputStream zos = new ZipOutputStream(bos);
+            for (int i = 0; i < files.length; ++i) {
+                FileInputStream fis  = new FileInputStream(files[i]);
+                zos.putNextEntry(new ZipEntry((i + 1) + ".jpg"));
+                int length;
+                while ((length = fis.read(buff, 0, 16 * 1024)) > 0) {
+                    zos.write(buff, 0, length);
+                }
+                publishProgress("progress", Integer.toString(++progressCount), "파일 변환하는 중...");
+                zos.closeEntry();
+                fis.close();
+            }
+            zos.close();
+            fos.close();
+
+            //temp 폴더에 저장된 파일 모두 삭제.
+            for(int i=0; i<files.length; ++i){
+                if(files[i].delete()){
+                    publishProgress("progress", Integer.toString(++progressCount), "임시 파일을 삭제하는 중...");
+                }
+            }
+            MediaStorageHelper.deleteAll(context, MediaStorageHelper.WHERE_TEMP);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //DB에 저장할 DTO 생성 및 반환
+        Photobook photobook = new Photobook();
+        photobook.setFilename(filename);
+        photobook.setTitle(title);
+        photobook.setColor(color);
+        return photobook;
     }
 
     @Override

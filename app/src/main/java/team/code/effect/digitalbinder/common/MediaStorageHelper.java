@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class MediaStorageHelper {
     public static String WHERE_TEMP = "bucket_display_name='temp'";
+    public static String WHERE_DIGITAL_BINDER = "bucket_display_name='DigitalBinder'";
     public static String ORDER_BY = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, "+ MediaStore.Images.Media.DATE_TAKEN;
     public static String ASC = " ASC";
     public static String DESC = " DESC";
