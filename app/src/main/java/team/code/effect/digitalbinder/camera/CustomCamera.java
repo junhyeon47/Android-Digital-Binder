@@ -1,5 +1,7 @@
 package team.code.effect.digitalbinder.camera;
 
+import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
@@ -35,27 +37,38 @@ public class CustomCamera extends TextureView implements TextureView.SurfaceText
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         Log.d(TAG, "onSurfaceTextureAvailable() called");
         camera = Camera.open();
         //showPreviewSize();
         Camera.Size preViewSize = camera.getParameters().getSupportedPreviewSizes().get(0);
-        Log.d(TAG, "[preView Size] width: "+preViewSize.width+", height: "+preViewSize.height);
-        Log.d(TAG, "[TextureView Size] width: "+cameraActivity.preview.getWidth()+", height: "+cameraActivity.preview.getHeight());
-        Log.d(TAG, "[Device Size] width: "+ DeviceHelper.width+", height: "+DeviceHelper.height);
-
-        this.setLayoutParams(new FrameLayout.LayoutParams(cameraActivity.preview.getWidth(), cameraActivity.preview.getHeight(), Gravity.CENTER));
+        List<Camera.Size> pictureSizeList = camera.getParameters().getSupportedPictureSizes();
+        int idxPictureSize = 0;
+        for(int i=0; i<pictureSizeList.size(); ++i){
+            Camera.Size size = pictureSizeList.get(i);
+            if(size.width <= preViewSize.width && size.height <= preViewSize.height){
+                idxPictureSize = i;
+                break;
+            }
+        }
+        Camera.Size pictureSize = pictureSizeList.get(idxPictureSize);
+        Camera.Parameters params = camera.getParameters();
+        params.setRotation(0);
+        params.setPictureFormat(ImageFormat.JPEG);
+        params.setJpegQuality(80);
+        params.setPictureSize(pictureSize.width, pictureSize.height);
+        camera.setParameters(params);
         try {
             camera.setPreviewTexture(surfaceTexture);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Camera.Parameters params = camera.getParameters();
-        params.setRotation(0);
-        camera.setParameters(params);
-
         camera.setDisplayOrientation(90);
         camera.startPreview();
+
+        Log.d(TAG, "[param Size] width: "+width+", height: "+height);
+        Log.d(TAG, "[picture Size] width: "+camera.getParameters().getPictureSize().width+", height: "+camera.getParameters().getPictureSize().height);
+        Log.d(TAG, "[Device Size] width: "+ DeviceHelper.width+", height: "+DeviceHelper.height);
     }
 
     @Override

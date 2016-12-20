@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.common;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -10,7 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class MediaStorageHelper {
-    public static String WHERE = "bucket_display_name='temp'";
+    public static String WHERE_TEMP = "bucket_display_name='temp'";
     public static String ORDER_BY = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, "+ MediaStore.Images.Media.DATE_TAKEN;
     public static String ASC = " ASC";
     public static String DESC = " DESC";
@@ -73,11 +74,30 @@ public class MediaStorageHelper {
         return list;
     }
 
-    public static void delete(Context context, String where){
+    public static void deleteAll(Context context, String where){
         context.getContentResolver().delete(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 where,
                 null
         );
+    }
+
+    public static void deleteOne(Context context, String image_id){
+        String where = MediaStore.Images.Media._ID+"="+image_id;
+        context.getContentResolver().delete(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                where,
+                null
+        );
+    }
+
+    public static Bitmap getThumbnail(Context context, int image_id, int orientation){
+        Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                context.getContentResolver(),
+                image_id,
+                MediaStore.Images.Thumbnails.MICRO_KIND,
+                null
+        );
+        return  BitmapHelper.changeOrientation(thumbnail, orientation);
     }
 }

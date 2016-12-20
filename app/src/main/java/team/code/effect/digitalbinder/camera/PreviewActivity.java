@@ -6,10 +6,14 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +32,10 @@ public class PreviewActivity extends AppCompatActivity {
     ArrayList<ImageFile> list;
     File[] files;
 
+    ViewPager view_pager;
+    PreviewPagerAdapter previewPagerAdapter;
+    LinearLayout layout_bottom;
+    ImageButton ib_back, ib_show_list, ib_hide_list;
     RecyclerView recycler_view;
     PreviewRecyclerAdapter previewRecyclerAdapter;
 
@@ -40,12 +48,19 @@ public class PreviewActivity extends AppCompatActivity {
 
         files = new File(AppConstans.APP_PATH_TEMP).listFiles();
 
-        recycler_view = (RecyclerView) findViewById(R.id.recycler_view);
+        view_pager = (ViewPager)findViewById(R.id.view_pager);
+        layout_bottom = (LinearLayout)findViewById(R.id.layout_bottom);
+        ib_back = (ImageButton)findViewById(R.id.ib_back);
+        ib_show_list = (ImageButton)findViewById(R.id.ib_show_list);
+        ib_hide_list = (ImageButton)findViewById(R.id.ib_hide_list);
+        recycler_view = (RecyclerView)findViewById(R.id.recycler_view);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayout.HORIZONTAL);
         recycler_view.setLayoutManager(layoutManager);
         recycler_view.setHasFixedSize(true);
         recycler_view.setItemViewCacheSize(CACHE_SIZE);
+        recycler_view.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
 
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -71,17 +86,61 @@ public class PreviewActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        list = MediaStorageHelper.getImageFiles(PreviewActivity.this, MediaStorageHelper.WHERE, MediaStorageHelper.ASC);
+                        list = MediaStorageHelper.getImageFiles(PreviewActivity.this, MediaStorageHelper.WHERE_TEMP, MediaStorageHelper.ASC);
+
+                        previewPagerAdapter = new PreviewPagerAdapter(PreviewActivity.this);
+                        view_pager.setAdapter(previewPagerAdapter);
+
                         previewRecyclerAdapter = new PreviewRecyclerAdapter(PreviewActivity.this);
                         recycler_view.setAdapter(previewRecyclerAdapter);
+
+                        view_pager.setCurrentItem(0);
+                        view_pager.setOffscreenPageLimit(10);
                     }
                 }, 1000);
             }
         }.execute();
+
+        view_pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(previewRecyclerAdapter != null) {
+                    previewRecyclerAdapter.selectedPositon = position;
+                    previewRecyclerAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
+        //MediaStorageHelper.delete(this, MediaStorageHelper.WHERE);
         finish();
+    }
+
+    public void btnClick(View view){
+        switch (view.getId()){
+            case R.id.ib_show_list:
+                layout_bottom.setVisibility(View.VISIBLE);
+                ib_show_list.setVisibility(View.GONE);
+                break;
+            case R.id.ib_hide_list:
+                layout_bottom.setVisibility(View.GONE);
+                ib_show_list.setVisibility(View.VISIBLE);
+                break;
+            case R.id.ib_back:
+                onBackPressed();
+                break;
+        }
     }
 }

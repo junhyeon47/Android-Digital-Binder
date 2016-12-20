@@ -443,6 +443,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
                 Log.d(TAG, "파일 삭제: "+files[i].getAbsolutePath());
             }
         }
-        MediaStorageHelper.delete(this, MediaStorageHelper.WHERE);
+        MediaStorageHelper.deleteAll(this, MediaStorageHelper.WHERE_TEMP);
     }
 }
