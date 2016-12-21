@@ -48,29 +48,16 @@
             android:layout_height="match_parent" />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/layout_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_image_detial"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <LinearLayout
         android:id="@+id/layout_selected"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:layout_height="100dp"
+        android:background="#000000"
         android:orientation="vertical">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/divider_gradient_reverse"/>
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_selected"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:padding="1dp"/>
     </LinearLayout>
 
 </LinearLayout>

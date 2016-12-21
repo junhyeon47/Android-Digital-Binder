@@ -34,6 +34,7 @@ import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.ImageFile;
+import team.code.effect.digitalbinder.common.ZipCode;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 public class ExplorerActivity extends AppCompatActivity {
@@ -52,6 +53,7 @@ public class ExplorerActivity extends AppCompatActivity {
     ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
     static ExplorerActivity explorerActivity;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +67,6 @@ public class ExplorerActivity extends AppCompatActivity {
 
         layout_folders = (LinearLayout) findViewById(R.id.layout_folders);
         layout_images = (LinearLayout) findViewById(R.id.layout_images);
-        layout_detail = (LinearLayout) findViewById(R.id.layout_detail);
         layout_selected = (LinearLayout) findViewById(R.id.layout_selected);
 
         txt_folder_name = (TextView) findViewById(R.id.txt_folder_name);
@@ -95,9 +96,10 @@ public class ExplorerActivity extends AppCompatActivity {
         LinearLayoutManager selectedManager = new LinearLayoutManager(getApplicationContext());
         selectedManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recycler_view_selected.setLayoutManager(selectedManager);
-        imageSelectedRecyclerAdapter = new ImageSelectedRecyclerAdapter();
+        imageSelectedRecyclerAdapter = new ImageSelectedRecyclerAdapter(this);
         recycler_view_selected.setAdapter(imageSelectedRecyclerAdapter);
         recycler_view_selected.setItemViewCacheSize(CACHE_SIZE);
+        recycler_view_selected.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
         layout_selected.setVisibility(View.GONE);
 
         colorPaletteRecyclerAdapter = new ColorPaletteRecyclerAdapter();
@@ -120,11 +122,11 @@ public class ExplorerActivity extends AppCompatActivity {
                 Toast.makeText(this, "모두 선택", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.make_book:
-                if (imageSelectedRecyclerAdapter.list.size() == 0) {
+                if (imageSelectedRecyclerAdapter.checkedList.size() == 0) {
                     Toast.makeText(this, "한개 이상의 파일을 선택하셔야 합니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     makeBook();
-                    this.finish();
+                    //this.finish();
                 }
                 break;
         }
@@ -133,12 +135,12 @@ public class ExplorerActivity extends AppCompatActivity {
 
     public void makeBook() {
         ArrayList<File> bookList = new ArrayList<File>();
-        for (int i = 0; i < imageSelectedRecyclerAdapter.list.size(); i++) {
-            File file = new File(imageSelectedRecyclerAdapter.list.get(i).path.toString());
+        /*for (int i = 0; i < imageSelectedRecyclerAdapter.checkedList.size(); i++) {
+            File file = new File(imageSelectedRecyclerAdapter.checkedList.get(i).path.toString());
             bookList.add(file);
-        }
+        }*/
         btnSaveClick(bookList);
-    }
+}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -272,6 +274,7 @@ public class ExplorerActivity extends AppCompatActivity {
             Toast.makeText(this, "선택된 사진이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+        final ArrayList<File> fileList=list;
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "선택한 사진을 하나로 묶습니다.");
         builder.setView(R.layout.layout_alert_txt);
         builder.setPositiveButton("저장", null);
@@ -296,6 +299,12 @@ public class ExplorerActivity extends AppCompatActivity {
                         int colorValue;
                         //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
                         if ((colorValue = checkValidity(txt_file_name, txt_color)) != -1) {
+                            ZipCode zipCode=new ZipCode();
+                            try {
+                                zipCode.zip(fileList ,txt_file_name.getText().toString());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
                             async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
                         }
@@ -303,7 +312,6 @@ public class ExplorerActivity extends AppCompatActivity {
                 });
             }
         });
-
         alertDialog.show();
     }
 

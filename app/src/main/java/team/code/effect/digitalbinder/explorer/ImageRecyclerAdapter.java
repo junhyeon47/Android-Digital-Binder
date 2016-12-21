@@ -28,10 +28,12 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final ImageViewHolder holder, final int position) {
+    public void onBindViewHolder(final ImageViewHolder holder, int position) {
         final int index = position;
-        final int orientation= list.get(index).orientation;
+        holder.path = list.get(position).path.getPath();
+
         new FileAsync(explorerActivity, holder).execute(list.get(index).image_id, list.get(index).orientation);
+
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,15 +49,13 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageViewHolder> 
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
                     explorerActivity.layout_selected.setVisibility(View.VISIBLE);
-                    explorerActivity.imageSelectedRecyclerAdapter.list.add(list.get(index));
+                    explorerActivity.imageSelectedRecyclerAdapter.checkedList.add(holder);
                     explorerActivity.imageSelectedRecyclerAdapter.notifyDataSetChanged();
-                    explorerActivity.imageSelectedRecyclerAdapter.list2.add(holder);
                 }else{
-                    explorerActivity.imageSelectedRecyclerAdapter.list.remove(list.get(index));
+                    explorerActivity.imageSelectedRecyclerAdapter.checkedList.remove(holder);
                     explorerActivity.imageSelectedRecyclerAdapter.notifyDataSetChanged();
-                    if(explorerActivity.imageSelectedRecyclerAdapter.list.size()==0){
+                    if( explorerActivity.imageSelectedRecyclerAdapter.checkedList.size() == 0)
                         explorerActivity.layout_selected.setVisibility(View.GONE);
-                    }
                 }
             }
         });

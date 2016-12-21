@@ -13,6 +13,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     RelativeLayout relativeLayout;
     ImageView imageView;
     CheckBox checkBox;
+    String path;
 
     public ImageViewHolder(View itemView) {
         super(itemView);
