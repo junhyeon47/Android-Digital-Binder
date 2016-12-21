@@ -135,10 +135,10 @@ public class ExplorerActivity extends AppCompatActivity {
 
     public void makeBook() {
         ArrayList<File> bookList = new ArrayList<File>();
-        /*for (int i = 0; i < imageSelectedRecyclerAdapter.checkedList.size(); i++) {
+        for (int i = 0; i < imageSelectedRecyclerAdapter.checkedList.size(); i++) {
             File file = new File(imageSelectedRecyclerAdapter.checkedList.get(i).path.toString());
             bookList.add(file);
-        }*/
+        }
         btnSaveClick(bookList);
 }
 
@@ -299,14 +299,10 @@ public class ExplorerActivity extends AppCompatActivity {
                         int colorValue;
                         //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
                         if ((colorValue = checkValidity(txt_file_name, txt_color)) != -1) {
-                            ZipCode zipCode=new ZipCode();
-                            try {
-                                zipCode.zip(fileList ,txt_file_name.getText().toString());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
-                            async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
+                            /*StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
+                            async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));*/
+                            BookMaker bookMaker=new BookMaker(getApplicationContext(), dialog, fileList);
+                            bookMaker.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
                         }
                     }
                 });
