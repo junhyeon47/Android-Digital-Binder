@@ -75,8 +75,11 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
             @Override
             public void onClick(View view) {
                 photobook.setBookmark(0); //false;
+                MainActivity.db.beginTransaction();
                 MainActivity.dao.update(photobook);
                 photobookListActivity.list = (ArrayList)MainActivity.dao.selectAll();
+                MainActivity.db.setTransactionSuccessful();
+                MainActivity.db.endTransaction();
                 notifyDataSetChanged();
             }
         });
@@ -84,8 +87,11 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
             @Override
             public void onClick(View view) {
                 photobook.setBookmark(1); //true;
+                MainActivity.db.beginTransaction();
                 MainActivity.dao.update(photobook);
                 photobookListActivity.list = (ArrayList)MainActivity.dao.selectAll();
+                MainActivity.db.setTransactionSuccessful();
+                MainActivity.db.endTransaction();
                 notifyDataSetChanged();
             }
         });

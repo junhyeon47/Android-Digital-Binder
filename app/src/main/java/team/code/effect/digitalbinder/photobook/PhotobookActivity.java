@@ -44,7 +44,6 @@ public class PhotobookActivity extends AppCompatActivity {
     RecyclerView recycler_view;
     PhotobookPagerAdapter photobookPagerAdapter;
     PhotobookRecyclerAdapter photobookRecyclerAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

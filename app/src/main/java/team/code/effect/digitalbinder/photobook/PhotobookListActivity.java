@@ -1,8 +1,10 @@
 package team.code.effect.digitalbinder.photobook;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.DatabaseHelper;
 import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.main.MainActivity;
 
@@ -59,7 +62,14 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                list = (ArrayList) MainActivity.dao.selectAll();
+                while (true) {
+                    MainActivity.db.beginTransaction();
+                    list = (ArrayList) MainActivity.dao.selectAll();
+                    MainActivity.db.setTransactionSuccessful();
+                    MainActivity.db.endTransaction();
+                    if(list != null)
+                        break;
+                }
                 return null;
             }
 
@@ -91,6 +101,9 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         item_cancel = menu.findItem(R.id.item_cancel);
         item_confirm_delete = menu.findItem(R.id.item_confirm_delete);
         item_confirm_send = menu.findItem(R.id.item_confirm_send);
+
+        checkSupportBluetooth();
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -104,7 +117,8 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 clickMenuDelete();
                 break;
             case R.id.item_send_bluetooth:
-                clickMenuSendBluetooth();
+                //clickMenuSendBluetooth();
+                checkActiveBluetooth();
                 break;
             case R.id.item_cancel:
                 clickMenuCancel();
@@ -190,9 +204,15 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             @Override
             public void onClick(DialogInterface dialogInterface, int arg) {
                 for(int i=0; i<checkedList.size(); ++i){
+                    MainActivity.db.beginTransaction();
                     MainActivity.dao.delete(checkedList.get(i).getPhotobook_id());
+                    MainActivity.db.setTransactionSuccessful();
+                    MainActivity.db.endTransaction();
                 }
+                MainActivity.db.beginTransaction();
                 list = (ArrayList)MainActivity.dao.selectAll();
+                MainActivity.db.setTransactionSuccessful();
+                MainActivity.db.endTransaction();
                 photobookListRecyclerAdapter.notifyDataSetChanged();
                 clickMenuCancel();
             }
@@ -203,5 +223,38 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
 
     private void clickMenuConfirmSend() {
         Toast.makeText(this, "보내기 버튼 클릭", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            Toast.makeText(this, "블루투스 활성화.", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "블루투스를 활성화 시키지 않으면 내보내기를 할 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //블루투스를 지원하는지 체크
+    public void checkSupportBluetooth(){
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(bluetoothAdapter == null)
+            item_send_bluetooth.setEnabled(false);
+        else
+            item_send_bluetooth.setEnabled(true);
+    }
+
+    //블루투스가 활성화 되어 있는지 체크
+    public void checkActiveBluetooth(){
+        if(bluetoothAdapter.isEnabled()){
+            Toast.makeText(this, "블루투스 활성화.", Toast.LENGTH_SHORT).show();
+        }else{
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, REQUEST_BLUETOOTH_ENABLE);
+        }
+    }
+
+    //주변의 블루투스가 활성화된 기기들을 찾아 리스트로 뿌려준다.
+    public void showBluetoothDeviceList(){
+
     }
 }

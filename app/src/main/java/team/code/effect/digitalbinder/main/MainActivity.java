@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.main;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -31,7 +32,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static final int PERMISSION_USING_PHOTOBOOK = 3;
     private Intent intent;
     private long lastTimeBackPressed; //마지막으로 뒤로가기 버튼이 터치된 시간
-    public  static PhotobookDAO dao; //DAO 선언
+    public static SQLiteDatabase db;
+    public static PhotobookDAO dao; //DAO 선언
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         //데이터베이스 얻어오기
-        dao = new PhotobookDAO(DatabaseHelper.initialize(getApplicationContext()));
+        db = DatabaseHelper.initialize(this);
+        dao = new PhotobookDAO(MainActivity.db);
     }
 
     public void btnClick(View view) {
