@@ -17,11 +17,11 @@ import team.code.effect.digitalbinder.common.MediaStorageHelper;
 
 public class PreviewRecyclerAdapter extends RecyclerView.Adapter<PreviewViewHolder>{
     PreviewActivity previewActivity;
-    int selectedPositon;
+    int selectedPosition;
 
     public PreviewRecyclerAdapter(PreviewActivity previewActivity) {
         this.previewActivity = previewActivity;
-        this.selectedPositon = 0;
+        this.selectedPosition = 0;
     }
 
     //새로운 뷰 생성
@@ -34,26 +34,27 @@ public class PreviewRecyclerAdapter extends RecyclerView.Adapter<PreviewViewHold
     //리스트뷰에서 getView 메서드와 동일.
     @Override
     public void onBindViewHolder(final PreviewViewHolder holder, int position) {
-        final int image_id = previewActivity.list.get(position).image_id;
-        final int orientation = previewActivity.list.get(position).orientation;
+        int image_id = previewActivity.list.get(position).image_id;
+        int orientation = previewActivity.list.get(position).orientation;
 
         new AsyncTask<Integer, Void, Bitmap>(){
             @Override
             protected Bitmap doInBackground(Integer... params) {
                 if(previewActivity.isFinishing())
                     cancel(true);
-                return MediaStorageHelper.getThumbnail(previewActivity, image_id, orientation);
+                return MediaStorageHelper.getThumbnail(previewActivity, params[0], params[1]);
             }
 
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 holder.iv_thumbnail.setImageBitmap(bitmap);
+                holder.ib_remove.setVisibility(View.VISIBLE);
                 holder.layout_outline.setBackgroundResource(R.color.colorAccent);
                 super.onPostExecute(bitmap);
             }
         }.execute(image_id, orientation);
 
-        if(position == selectedPositon)
+        if(position == selectedPosition)
             holder.isSelected = true;
         else
             holder.isSelected = false;
@@ -67,7 +68,9 @@ public class PreviewRecyclerAdapter extends RecyclerView.Adapter<PreviewViewHold
         holder.iv_thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedPositon = holder.getAdapterPosition();
+                if(selectedPosition == holder.getAdapterPosition())
+                    return;
+                selectedPosition = holder.getAdapterPosition();
                 previewActivity.view_pager.setCurrentItem(holder.getAdapterPosition(),true);
                 notifyDataSetChanged();
             }

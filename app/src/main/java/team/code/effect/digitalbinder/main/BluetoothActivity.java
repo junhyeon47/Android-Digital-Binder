@@ -22,7 +22,7 @@ import java.util.List;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.photobook.Photobook;
+import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.photobook.PhotobookCheckboxItem;
 import team.code.effect.digitalbinder.photobook.PhotobookListAdapter;
 

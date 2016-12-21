@@ -1,14 +1,15 @@
 package team.code.effect.digitalbinder.photobook;
 
-import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.BitmapHelper;
+import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.common.ImageFile;
 import uk.co.senab.photoview.PhotoView;
 
@@ -31,9 +32,23 @@ public class PhotobookPagerAdapter extends PagerAdapter{
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = inflater.inflate(R.layout.layout_photo_view, container, false);
-        PhotoView photo_view = (PhotoView)view.findViewById(R.id.photo_view);
+        final PhotoView photo_view = (PhotoView)view.findViewById(R.id.photo_view);
         ImageFile imageFile = photobookActivity.list.get(position);
-        new PhotobookAsync(photo_view).execute(imageFile.path.toString(), Integer.toString(imageFile.orientation));
+
+        new AsyncTask<String, Void, Bitmap>(){
+            @Override
+            protected Bitmap doInBackground(String... params) {
+                Bitmap bitmap = BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
+                return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(params[1]));
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                photo_view.setImageBitmap(bitmap);
+                super.onPostExecute(bitmap);
+            }
+        }.execute(imageFile.path.toString(), Integer.toString(imageFile.orientation));
+
         container.addView(view);
         return view;
     }

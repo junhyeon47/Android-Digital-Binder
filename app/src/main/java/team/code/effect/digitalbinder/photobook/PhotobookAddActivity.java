@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.common.PhotobookDAO;
 import team.code.effect.digitalbinder.main.MainActivity;
 

@@ -40,10 +40,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         StringBuffer sql = new StringBuffer();
         sql.append("create table photobook(");
         sql.append("photobook_id integer primary key autoincrement");
-        sql.append(",title varchar(100)");
-        sql.append(",filename varchar(100)");
-        sql.append(",color int");
-        sql.append(",regdate timestamp DEFAULT CURRENT_TIMESTAMP");
+        sql.append(", title varchar(100)");
+        sql.append(", filename varchar(100)");
+        sql.append(", color int");
+        sql.append(", bookmark boolean default 0");
+        sql.append(", regdate timestamp DEFAULT CURRENT_TIMESTAMP");
         sql.append(");");
         db.execSQL(sql.toString());
     }

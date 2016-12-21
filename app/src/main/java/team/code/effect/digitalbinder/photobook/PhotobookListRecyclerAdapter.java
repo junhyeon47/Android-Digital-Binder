@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +14,12 @@ import java.util.zip.ZipFile;
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
+import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<PhotobookListViewHolder> {
     PhotobookListActivity photobookListActivity;
-    ArrayList<Photobook> list = (ArrayList)MainActivity.dao.selectAll();
+
     boolean isDeleteMemuClicked = false;
 
     public PhotobookListRecyclerAdapter(PhotobookListActivity photobookListActivity) {
@@ -32,7 +34,7 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
 
     @Override
     public void onBindViewHolder(final PhotobookListViewHolder holder, int position) {
-        final Photobook photobook = list.get(position);
+        final Photobook photobook = photobookListActivity.list.get(position);
         String title = photobook.getTitle();
         StringBuffer sb = new StringBuffer();
         int count = 0;
@@ -48,7 +50,7 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
 
         //파일 개수 세기
         try {
-            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH_DATA+"/"+photobook.getFilename());
+            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH_DATA+photobook.getFilename()+AppConstans.EXT_DAT);
             count = zipFile.size();
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,37 +62,78 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
         holder.layout_photobook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(photobookListActivity, PhotobookActivity.class);
-                intent.putExtra("photobook_id", photobook.getPhotobook_id());
-                photobookListActivity.startActivity(intent);
+                if(!isDeleteMemuClicked) {
+                    Intent intent = new Intent(photobookListActivity, PhotobookActivity.class);
+                    intent.putExtra("photobook_id", photobook.getPhotobook_id());
+                    photobookListActivity.startActivity(intent);
+                }else{
+                    holder.checkBox.setChecked(!holder.checkBox.isChecked());
+                }
             }
         });
         holder.ib_bookmark_false.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.ib_bookmark_false.setVisibility(View.GONE);
-                holder.ib_bookmark_true.setVisibility(View.VISIBLE);
+                photobook.setBookmark(0); //false;
+                MainActivity.dao.update(photobook);
+                photobookListActivity.list = (ArrayList)MainActivity.dao.selectAll();
+                notifyDataSetChanged();
             }
         });
         holder.ib_bookmark_true.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                photobook.setBookmark(1); //true;
+                MainActivity.dao.update(photobook);
+                photobookListActivity.list = (ArrayList)MainActivity.dao.selectAll();
+                notifyDataSetChanged();
+            }
+        });
+
+        if(photobook.getBookmark() == 0){
+            holder.ib_bookmark_false.setVisibility(View.GONE);
+            holder.ib_bookmark_true.setVisibility(View.VISIBLE);
+        }else{
+            holder.ib_bookmark_false.setVisibility(View.VISIBLE);
+            holder.ib_bookmark_true.setVisibility(View.GONE);
+        }
+
+        if(!isDeleteMemuClicked) {
+            holder.checkBox.setChecked(false);
+            holder.checkBox.setVisibility(View.GONE);
+            if(photobook.getBookmark() == 0){
+                holder.ib_bookmark_false.setVisibility(View.GONE);
+                holder.ib_bookmark_true.setVisibility(View.VISIBLE);
+            }else{
                 holder.ib_bookmark_false.setVisibility(View.VISIBLE);
                 holder.ib_bookmark_true.setVisibility(View.GONE);
             }
-        });
-        if(!isDeleteMemuClicked)
-            holder.checkBox.setVisibility(View.GONE);
-        else
+        }else {
+            photobookListActivity.checkedList.removeAll(photobookListActivity.checkedList);
+            holder.checkBox.setChecked(false);
             holder.checkBox.setVisibility(View.VISIBLE);
+            holder.ib_bookmark_false.setVisibility(View.GONE);
+            holder.ib_bookmark_true.setVisibility(View.GONE);
+        }
+
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    if(!photobookListActivity.checkedList.contains(photobook)){
+                        photobookListActivity.checkedList.add(photobook);
+                    }
+                }else{
+                    if(photobookListActivity.checkedList.contains(photobook)){
+                        photobookListActivity.checkedList.remove(photobook);
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
-    }
-
-    public void setList(ArrayList<Photobook> list) {
-        this.list = list;
+        return photobookListActivity.list.size();
     }
 }

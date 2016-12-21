@@ -66,16 +66,8 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... voids) {
                 while (true){
-                    boolean isComplete = true;
-                    for(int i=0; i<CameraActivity.listAsync.size(); ++i){
-                        StoreTempFileAsync async = CameraActivity.listAsync.get(i);
-                        Log.d(TAG, "AsyncTask "+i+": Status: "+async.getStatus());
-                        if(async.getStatus() != Status.FINISHED){
-                            isComplete = false;
-                            break;
-                        }
-                    }
-                    if(isComplete)
+                    list = MediaStorageHelper.getImageFiles(PreviewActivity.this, MediaStorageHelper.WHERE_TEMP, MediaStorageHelper.ASC);
+                    if(files.length == list.size())
                         break;
                 }
                 return null;
@@ -83,21 +75,14 @@ public class PreviewActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        list = MediaStorageHelper.getImageFiles(PreviewActivity.this, MediaStorageHelper.WHERE_TEMP, MediaStorageHelper.ASC);
+                previewPagerAdapter = new PreviewPagerAdapter(PreviewActivity.this);
+                view_pager.setAdapter(previewPagerAdapter);
 
-                        previewPagerAdapter = new PreviewPagerAdapter(PreviewActivity.this);
-                        view_pager.setAdapter(previewPagerAdapter);
+                previewRecyclerAdapter = new PreviewRecyclerAdapter(PreviewActivity.this);
+                recycler_view.setAdapter(previewRecyclerAdapter);
 
-                        previewRecyclerAdapter = new PreviewRecyclerAdapter(PreviewActivity.this);
-                        recycler_view.setAdapter(previewRecyclerAdapter);
-
-                        view_pager.setCurrentItem(0);
-                        view_pager.setOffscreenPageLimit(CACHE_SIZE);
-                    }
-                }, 1000);
+                view_pager.setCurrentItem(0);
+                view_pager.setOffscreenPageLimit(CACHE_SIZE);
             }
         }.execute();
 
@@ -110,7 +95,7 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 if(previewRecyclerAdapter != null) {
-                    previewRecyclerAdapter.selectedPositon = position;
+                    previewRecyclerAdapter.selectedPosition = position;
                     previewRecyclerAdapter.notifyDataSetChanged();
                 }
             }

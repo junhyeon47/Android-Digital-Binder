@@ -88,7 +88,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
 
     //파일 저장관련 멤버 변수 정의
     File[] files;
-    public static ArrayList<StoreTempFileAsync> listAsync = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +135,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
         //폴더 관련 초기화
         checkDirectory();
         checkPreviousFiles();
-        CameraActivity.listAsync.removeAll(CameraActivity.listAsync);
     }
 
     @Override
@@ -161,7 +159,6 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             return;
         }
         Intent intent=new Intent(this, PreviewActivity.class);
-        intent.putParcelableArrayListExtra("listAsync", listAsync);
         startActivity(intent);
     }
 
@@ -289,9 +286,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
     }
 
     public void takePicture(byte[] bytes, int orientation){
-        StoreTempFileAsync async = new StoreTempFileAsync(this, orientation);
-        async.execute(bytes);
-        CameraActivity.listAsync.add(async);
+        new StoreTempFileAsync(this, orientation).execute(bytes);
     }
 
     /*

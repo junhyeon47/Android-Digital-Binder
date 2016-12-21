@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.Photobook;
 
 /**
  * Created by student on 2016-11-28.

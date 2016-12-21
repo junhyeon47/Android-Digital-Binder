@@ -1,10 +1,8 @@
 package team.code.effect.digitalbinder.photobook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.common.ZipCode;
 import uk.co.senab.photoview.PhotoViewAttacher;
 

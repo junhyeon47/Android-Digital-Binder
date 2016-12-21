@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class MediaStorageHelper {
     public static String WHERE_TEMP = "bucket_display_name='temp'";
-    public static String WHERE_DIGITAL_BINDER = "bucket_display_name='DigitalBinder'";
+    public static String WHERE_PHOTOBOOK = "bucket_display_name='photobook'";
     public static String ORDER_BY = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, "+ MediaStore.Images.Media.DATE_TAKEN;
     public static String ASC = " ASC";
     public static String DESC = " DESC";
@@ -54,8 +54,6 @@ public class MediaStorageHelper {
                 String filePath = imageCursor.getString(dataColumnIndex);
                 String orientation = imageCursor.getString(orientationColumnIndex);
                 String dateTaken = imageCursor.getString(dateTakenColumnIndex);
-
-                Log.d("MediaStorageHelper", "orientation: "+orientation);
 
                 ImageFile imageFile = new ImageFile(
                         Integer.parseInt(bucketId),

@@ -3,31 +3,20 @@ package team.code.effect.digitalbinder.camera;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.common.DeviceHelper;
 import team.code.effect.digitalbinder.common.MediaStorageHelper;
 import team.code.effect.digitalbinder.main.MainActivity;
-import team.code.effect.digitalbinder.photobook.Photobook;
+import team.code.effect.digitalbinder.common.Photobook;
 
 public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
     private Context context;

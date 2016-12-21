@@ -2,25 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/insert"
+        android:id="@+id/item_add"
         android:icon="@drawable/ic_add_white_24dp"
-        android:title="추가 하기"
+        android:title="추가하기"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/delete"
+        android:id="@+id/item_delete"
         android:icon="@drawable/ic_delete_white_24dp"
-        android:title="삭제 하기"
+        android:title="삭제하기"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/share"
+        android:id="@+id/item_send_bluetooth"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="공유 하기"
+        android:title="블루투스로 내보내기"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/cancel"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:id="@+id/item_cancel"
         android:title="취소"
-        app:showAsAction="never"/>
-
-
+        android:visible="false"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/item_confirm_delete"
+        android:title="삭제"
+        android:visible="false"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/item_confirm_send"
+        android:title="보내기"
+        android:visible="false"
+        app:showAsAction="always"/>
 </menu>

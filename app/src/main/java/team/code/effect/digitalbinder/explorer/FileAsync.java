@@ -1,20 +1,12 @@
 package team.code.effect.digitalbinder.explorer;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import team.code.effect.digitalbinder.common.BitmapHelper;
 import team.code.effect.digitalbinder.common.DeviceHelper;
-import team.code.effect.digitalbinder.common.FileHelper;
 
 public class FileAsync extends AsyncTask<Integer, Void, Bitmap> {
     String TAG;

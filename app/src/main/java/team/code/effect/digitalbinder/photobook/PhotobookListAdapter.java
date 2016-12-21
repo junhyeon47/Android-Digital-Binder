@@ -1,7 +1,6 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.content.Context;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.common.Photobook;
 
 public class PhotobookListAdapter extends BaseAdapter{
     ArrayList<Photobook> list;

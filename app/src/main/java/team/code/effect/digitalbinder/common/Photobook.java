@@ -1,12 +1,10 @@
-package team.code.effect.digitalbinder.photobook;
-
-import android.os.Parcel;
-import android.os.Parcelable;
+package team.code.effect.digitalbinder.common;
 
 public class Photobook{
     private int photobook_id;
     private String title;
     private String filename;
+    private int bookmark;
     private int color;
     private String regdate;
 
@@ -33,6 +31,12 @@ public class Photobook{
     }
     public void setColor(int color) {
         this.color = color;
+    }
+    public int getBookmark() {
+        return bookmark;
+    }
+    public void setBookmark(int bookmark) {
+        this.bookmark = bookmark;
     }
     public String getRegdate() {
         return regdate;

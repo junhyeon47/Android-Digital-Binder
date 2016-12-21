@@ -7,12 +7,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import team.code.effect.digitalbinder.photobook.Photobook;
-
-/**
- * Created by student on 2016-11-25.
- */
-
 public class PhotobookDAO {
     String TAG;
     SQLiteDatabase db;
@@ -40,12 +34,13 @@ public class PhotobookDAO {
         photobook.setTitle(rs.getString(rs.getColumnIndex("title")));
         photobook.setFilename(rs.getString(rs.getColumnIndex("filename")));
         photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
+        photobook.setBookmark(rs.getInt(rs.getColumnIndex("bookmark")));
         photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
         return photobook;
     }
     //Photobook 모두 가져오기
     public List selectAll(){
-        String sql="select * from photobook order by photobook_id asc";
+        String sql="select * from photobook order by bookmark desc, photobook_id asc";
         Cursor rs=db.rawQuery(sql,null);
         List list = new ArrayList();
         while(rs.moveToNext()){
@@ -54,6 +49,7 @@ public class PhotobookDAO {
             photobook.setTitle(rs.getString(rs.getColumnIndex("title")));
             photobook.setFilename(rs.getString(rs.getColumnIndex("filename")));
             photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
+            photobook.setBookmark(rs.getInt(rs.getColumnIndex("bookmark")));
             photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
             list.add(photobook);
         }
@@ -68,11 +64,12 @@ public class PhotobookDAO {
     }
     //Photobook 1건 수정
     public void update(Photobook photobook){
-        String sql="update photobook set title=?,filename=?,icon=? where photobook_id=?";
+        String sql="update photobook set title=?,filename=?,color=?, bookmark=? where photobook_id=?";
         db.execSQL(sql,new Object[]{
                 photobook.getTitle(),
                 photobook.getFilename(),
                 photobook.getColor(),
+                photobook.getBookmark(),
                 photobook.getPhotobook_id()
         });
         Log.d(TAG,"update");
