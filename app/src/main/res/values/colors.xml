@@ -25,4 +25,5 @@
     <color name="colorGrey">#BDBDBD</color>
     <color name="colorBlueGrey">#78909C</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorTextGrey">#9f9f9f</color>
 </resources>

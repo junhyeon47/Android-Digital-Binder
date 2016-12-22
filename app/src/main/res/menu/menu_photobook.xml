@@ -31,4 +31,10 @@
         android:title="보내기"
         android:visible="false"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/item_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="새로고침"
+        android:visible="false"
+        app:showAsAction="always"/>
 </menu>

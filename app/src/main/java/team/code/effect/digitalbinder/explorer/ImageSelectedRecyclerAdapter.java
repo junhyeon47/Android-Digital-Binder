@@ -31,6 +31,7 @@ public class ImageSelectedRecyclerAdapter extends RecyclerView.Adapter<ImageFile
     public void onBindViewHolder(final ImageFileSelected holder, int position) {
         ImageViewHolder imageViewHolder = checkedList.get(position);
         BitmapDrawable drawable = (BitmapDrawable) imageViewHolder.imageView.getDrawable();
+
         holder.imageView.setImageBitmap(drawable.getBitmap());
 
         holder.ib_remove.setOnClickListener(new View.OnClickListener() {

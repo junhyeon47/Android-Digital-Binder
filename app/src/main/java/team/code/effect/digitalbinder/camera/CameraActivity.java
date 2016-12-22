@@ -7,17 +7,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
@@ -26,17 +22,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
@@ -45,9 +36,7 @@ import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.DeviceHelper;
-import team.code.effect.digitalbinder.common.ImageFile;
 import team.code.effect.digitalbinder.common.MediaStorageHelper;
-import team.code.effect.digitalbinder.explorer.ImageViewpagerActivity;
 import team.code.effect.digitalbinder.main.MainActivity;
 
 public class CameraActivity extends AppCompatActivity implements SensorEventListener{
@@ -304,7 +293,7 @@ public class CameraActivity extends AppCompatActivity implements SensorEventList
             return;
         }
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "지금까지 촬영한 모든 사진을 하나로 묶습니다.");
-        builder.setView(R.layout.layout_alert_txt);
+        builder.setView(R.layout.layout_alert_save);
         builder.setPositiveButton("저장", null);
         builder.setNegativeButton("취소", null);
         final AlertDialog alertDialog = builder.create();
