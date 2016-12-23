@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,6 +31,7 @@ public class BookMaker extends AsyncTask<String, String, Photobook> {
     private ProgressDialog progressDialog;
     private int progressCount = 0;
     ArrayList<File> files;
+    String title;
 
     public BookMaker(Context context, Dialog dialog, ArrayList<File> files) {
         this.context = context;
@@ -48,7 +50,7 @@ public class BookMaker extends AsyncTask<String, String, Photobook> {
 
     @Override
     protected Photobook doInBackground(String... params) {
-        String title = params[0];
+        title = params[0];
         int color = Integer.parseInt(params[1]);
         String filename = Long.toString(System.currentTimeMillis());
         File dataDir = new File(AppConstans.APP_PATH_DATA);
@@ -110,6 +112,7 @@ public class BookMaker extends AsyncTask<String, String, Photobook> {
         MainActivity.dao.insert(photobook);
         progressDialog.dismiss();
         dialog.dismiss();
+        Toast.makeText(context, title+" 만들어졌습니다.", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -31,13 +31,16 @@ public class ImageSelectedRecyclerAdapter extends RecyclerView.Adapter<ImageFile
     public void onBindViewHolder(final ImageFileSelected holder, int position) {
         ImageViewHolder imageViewHolder = checkedList.get(position);
         BitmapDrawable drawable = (BitmapDrawable) imageViewHolder.imageView.getDrawable();
-
         holder.imageView.setImageBitmap(drawable.getBitmap());
-
         holder.ib_remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkedList.get(holder.getAdapterPosition()).checkBox.setChecked(false);
+                checkedList.remove(holder.getAdapterPosition());
+                if(checkedList.size()==0){
+                    explorerActivity.layout_selected.setVisibility(View.GONE);
+                }
+                notifyDataSetChanged();
             }
         });
     }

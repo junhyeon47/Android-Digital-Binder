@@ -28,12 +28,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.R;
+import team.code.effect.digitalbinder.camera.StoreFileAsync;
 import team.code.effect.digitalbinder.common.AlertHelper;
 import team.code.effect.digitalbinder.common.ColorPalette;
 import team.code.effect.digitalbinder.common.ColorPaletteHelper;
 import team.code.effect.digitalbinder.common.ColorPaletteRecyclerAdapter;
 import team.code.effect.digitalbinder.common.ImageFile;
+import team.code.effect.digitalbinder.common.ZipCode;
 import team.code.effect.digitalbinder.main.MainActivity;
+
+import static android.R.drawable.arrow_up_float;
 
 public class ExplorerActivity extends AppCompatActivity {
     static final int CACHE_SIZE = 200;
@@ -50,6 +54,7 @@ public class ExplorerActivity extends AppCompatActivity {
     RecyclerView recycler_view_color;
     ColorPaletteRecyclerAdapter colorPaletteRecyclerAdapter;
     static ExplorerActivity explorerActivity;
+    boolean flag=true;
 
 
     @Override
@@ -116,15 +121,11 @@ public class ExplorerActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.ex_select:
-                Toast.makeText(this, "모두 선택", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.make_book:
                 if (imageSelectedRecyclerAdapter.checkedList.size() == 0) {
                     Toast.makeText(this, "한개 이상의 파일을 선택하셔야 합니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     makeBook();
-                    //this.finish();
                 }
                 break;
         }
@@ -138,7 +139,7 @@ public class ExplorerActivity extends AppCompatActivity {
             bookList.add(file);
         }
         btnSaveClick(bookList);
-}
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -274,7 +275,7 @@ public class ExplorerActivity extends AppCompatActivity {
         }
         final ArrayList<File> fileList=list;
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "선택한 사진을 하나로 묶습니다.");
-        builder.setView(R.layout.layout_alert_save);
+        builder.setView(R.layout.layout_alert_txt);
         builder.setPositiveButton("저장", null);
         builder.setNegativeButton("취소", null);
         final AlertDialog alertDialog = builder.create();
@@ -297,8 +298,6 @@ public class ExplorerActivity extends AppCompatActivity {
                         int colorValue;
                         //유효성 체크가 되면 AsyncTask 이용해 파일로 저장.
                         if ((colorValue = checkValidity(txt_file_name, txt_color)) != -1) {
-                            /*StoreFileAsync async = new StoreFileAsync(getApplicationContext(), dialog);
-                            async.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));*/
                             BookMaker bookMaker=new BookMaker(getApplicationContext(), dialog, fileList);
                             bookMaker.execute(txt_file_name.getText().toString(), Integer.toString(colorValue));
                         }

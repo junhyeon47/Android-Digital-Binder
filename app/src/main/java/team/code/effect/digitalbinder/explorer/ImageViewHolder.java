@@ -14,6 +14,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     ImageView imageView;
     CheckBox checkBox;
     String path;
+    boolean flag=false;
 
     public ImageViewHolder(View itemView) {
         super(itemView);
