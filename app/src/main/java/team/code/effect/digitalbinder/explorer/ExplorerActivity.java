@@ -275,7 +275,7 @@ public class ExplorerActivity extends AppCompatActivity {
         }
         final ArrayList<File> fileList=list;
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "선택한 사진을 하나로 묶습니다.");
-        builder.setView(R.layout.layout_alert_txt);
+        builder.setView(R.layout.layout_alert_save);
         builder.setPositiveButton("저장", null);
         builder.setNegativeButton("취소", null);
         final AlertDialog alertDialog = builder.create();
