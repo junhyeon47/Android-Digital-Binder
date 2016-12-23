@@ -14,7 +14,7 @@
     <item
         android:id="@+id/item_send_bluetooth"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="블루투스로 내보내기"
+        android:title="블루투스로 보내기/받기"
         app:showAsAction="never"/>
     <item
         android:id="@+id/item_cancel"

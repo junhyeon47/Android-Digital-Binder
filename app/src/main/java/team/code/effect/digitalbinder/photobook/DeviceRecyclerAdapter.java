@@ -72,7 +72,7 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceViewHolder
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                photobookListActivity.connectDevice(device.getBluetoothDevice());
+                                photobookListActivity.connectDevice(device.getAddress());
                                 dialogInterface.dismiss();
                             }
                         });
