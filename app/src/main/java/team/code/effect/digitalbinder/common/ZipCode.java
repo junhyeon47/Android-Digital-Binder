@@ -1,15 +1,19 @@
 package team.code.effect.digitalbinder.common;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +21,8 @@ import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import team.code.effect.digitalbinder.photobook.PhotobookActivity;
 
 /**
  * Created by huho on 2016-11-26.
@@ -215,31 +221,61 @@ public class ZipCode {
         return targetFile;
     }
 
-    //file생성후 비트맴 뽑기
-    protected static Bitmap unzipBitmap(ZipInputStream zis, File targetFile) throws Exception {
-        Bitmap bitmap = null;
-        FileOutputStream fos = null;
+    public static void unzip(String zipFileName){
         InputStream is = null;
+        ZipInputStream zis = null;
         try {
-            fos = new FileOutputStream(targetFile);
-
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int len = 0;
-            while ((len = zis.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-            }
-            is = new FileInputStream(targetFile);
-            bitmap = BitmapFactory.decodeStream(is);
-        } finally {
-            if (fos != null) {
+            is = new FileInputStream(zipFileName);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                FileOutputStream fos = new FileOutputStream(AppConstans.APP_PATH_PHOTOBOOK + entry.getName());
+                Bitmap bitmap = BitmapFactory.decodeStream(zis);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
+                zis.closeEntry();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             if (is != null) {
-                is.close();
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            targetFile.delete();
+            if (zis != null) {
+                try {
+                    zis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+    }
 
-        return bitmap;
+    public static void zip(File[] files, String fileName){
+        try {
+
+            FileOutputStream fos = new FileOutputStream(AppConstans.APP_PATH_DATA + fileName + AppConstans.EXT_DAT);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ZipOutputStream zos = new ZipOutputStream(bos);
+            byte[] buff = new byte[16 * 1024];
+            for (int i = 0; i < files.length; ++i) {
+                FileInputStream fis = new FileInputStream(files[i]);
+                zos.putNextEntry(new ZipEntry((i + 1) + ".jpg"));
+                int length;
+                while ((length = fis.read(buff, 0, 16 * 1024)) > 0) {
+                    zos.write(buff, 0, length);
+                }
+                zos.closeEntry();
+                fis.close();
+            }
+            zos.close();
+            fos.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

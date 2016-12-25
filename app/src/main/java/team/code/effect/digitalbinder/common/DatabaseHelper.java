@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sql.append(", filename varchar(100)");
         sql.append(", color int");
         sql.append(", bookmark boolean default 0");
+        sql.append(", number int default 0");
         sql.append(", regdate timestamp DEFAULT CURRENT_TIMESTAMP");
         sql.append(");");
         db.execSQL(sql.toString());

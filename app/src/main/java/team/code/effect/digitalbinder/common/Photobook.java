@@ -1,12 +1,15 @@
 package team.code.effect.digitalbinder.common;
 
-public class Photobook{
+import java.io.Serializable;
+
+public class Photobook implements Serializable {
     private int photobook_id;
     private String title;
     private String filename;
     private int bookmark;
     private int color;
     private String regdate;
+    private int number;
 
     public int getPhotobook_id() {
         return photobook_id;
@@ -43,5 +46,13 @@ public class Photobook{
     }
     public void setRegdate(String regdate) {
         this.regdate = regdate;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

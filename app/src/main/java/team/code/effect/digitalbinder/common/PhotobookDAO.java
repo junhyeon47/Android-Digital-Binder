@@ -16,12 +16,13 @@ public class PhotobookDAO {
         TAG=getClass().getName();
     }
     //Photobook 1건 추가
-    public void insert(Photobook photobook){
-        String sql="insert into photobook(title, filename, color) values(?,?,?)";
-       db.execSQL(sql,new Object[]{
+    public void insert(Photobook photobook) {
+        String sql = "insert into photobook(title, filename, color, number) values(?,?,?,?)";
+        db.execSQL(sql, new Object[]{
                 photobook.getTitle(),
                 photobook.getFilename(),
-                photobook.getColor()
+                photobook.getColor(),
+                photobook.getNumber()
         });
     }
     //Photobook 1건 가져오기
@@ -36,6 +37,7 @@ public class PhotobookDAO {
         photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
         photobook.setBookmark(rs.getInt(rs.getColumnIndex("bookmark")));
         photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
+        photobook.setNumber(rs.getInt(rs.getColumnIndex("number")));
         return photobook;
     }
     //Photobook 모두 가져오기
@@ -51,6 +53,7 @@ public class PhotobookDAO {
             photobook.setColor(rs.getInt(rs.getColumnIndex("color")));
             photobook.setBookmark(rs.getInt(rs.getColumnIndex("bookmark")));
             photobook.setRegdate(rs.getString(rs.getColumnIndex("regdate")));
+            photobook.setNumber(rs.getInt(rs.getColumnIndex("number")));
             list.add(photobook);
         }
         Log.d(TAG,"selectAll"+list.size());

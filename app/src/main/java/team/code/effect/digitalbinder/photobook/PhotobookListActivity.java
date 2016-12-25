@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,12 +35,15 @@ import android.widget.LinearLayout;
 
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import team.code.effect.digitalbinder.R;
 import team.code.effect.digitalbinder.common.AlertHelper;
+import team.code.effect.digitalbinder.common.AppConstans;
+import team.code.effect.digitalbinder.common.MediaStorageHelper;
 import team.code.effect.digitalbinder.common.Photobook;
 import team.code.effect.digitalbinder.main.MainActivity;
 
@@ -50,6 +54,9 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     static final UUID SERVER_UUID = UUID.fromString("de5d6b03-f23b-43e5-a773-ddd20097d4da");
     static final String MESSAGE_KEY = "MESSAGE_KEY";
     static final int MESSAGE_CONNECTED = 1;
+    static final int DIALOG_PROGRESS = 1;
+    static final int DIALOG_ACCEPTED = 2;
+    static final int DIALOG_SELECTED = 3;
 
     String TAG;
     Toolbar toolbar;
@@ -69,6 +76,10 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     Thread acceptThread, connectThread;
     ProgressDialog progressDialog;
     boolean isAccepted = false;
+    boolean isSelected = false;
+    boolean isReceived = false;
+    ServerThread serverThread;
+    ClientThread clientThread;
 
     MenuItem item_add, item_delete, item_send_receive_bluetooth, item_cancel, item_confirm_delete, item_confirm_send, item_refresh;
 
@@ -174,6 +185,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 }
             }
         };
+        checkDirectory();
     }
 
     public void initToolbar(){
@@ -213,7 +225,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 break;
             case R.id.item_send_bluetooth:
                 clickMenuSendReceiveBluetooth();
-                //checkActiveBluetooth();
                 break;
             case R.id.item_cancel:
                 clickMenuCancel();
@@ -244,7 +255,10 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     @Override
     public void onBackPressed() {
         if(recycler_view_device.getVisibility() == View.VISIBLE) {
-            bluetoothAdapter.cancelDiscovery();
+            if(bluetoothAdapter.isDiscovering()) {
+                bluetoothAdapter.cancelDiscovery();
+                unregisterReceiver(receiver);
+            }
             deviceList.removeAll(deviceList);
             item_add.setVisible(true);
             item_delete.setVisible(true);
@@ -293,14 +307,14 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     }
 
     public void clickMenuSendReceiveBluetooth(){
-        if(list.size() == 0){
-            Toast.makeText(this, "포토북이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
         AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "블루투스로 포토북을 보내기 또는 받기를 진행합니다. 계속하시겠습니까?.");
         builder.setPositiveButton("보내기", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                if(list.size() == 0){
+                    Toast.makeText(PhotobookListActivity.this, "포토북이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 recycler_view.setVisibility(View.GONE);
                 recycler_view_device.setVisibility(View.VISIBLE);
                 item_add.setVisible(false);
@@ -352,7 +366,12 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     }
 
     private void clickMenuConfirmSend() {
-        Toast.makeText(this, "보내기 버튼 클릭", Toast.LENGTH_SHORT).show();
+        if(checkedList.size() == 0){
+            Toast.makeText(this, "선택된 포토북이 없습니다. 포토북을 선택하세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        isSelected = true;
+        clientThread.start();
     }
 
     private void clickMenuRefresh(){
@@ -441,6 +460,8 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     Message message = new Message();
                     message.setData(bundle);
                     handler.sendMessage(message);
+                    //클라이언트 쓰레드 생성 후 start.
+                    clientThread = new ClientThread(PhotobookListActivity.this);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -471,7 +492,9 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     isAccepted = true;
                     Log.d(TAG, "접속자 감지");
 
-                    acceptSocket.close();
+                    //서버 스레드 생성 후 start.
+                    serverThread = new ServerThread(PhotobookListActivity.this);
+                    serverThread.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -487,7 +510,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             protected void onPreExecute() {
                 progressDialog = new ProgressDialog(PhotobookListActivity.this);
                 progressDialog.setMessage("사용자 접속 대기 중...");
-                progressDialog.setMax(BLUETOOTH_SEARCH_TIME);
                 progressDialog.setCancelable(false);
                 progressDialog.show();
                 super.onPreExecute();
@@ -505,19 +527,44 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                         e.printStackTrace();
                     }
                     second++;
-                    publishProgress(second);
+                    publishProgress(DIALOG_PROGRESS, second);
+                }
+                if(isAccepted){
+                    publishProgress(DIALOG_ACCEPTED);
+                    while (true){
+                        if(isSelected)
+                            break;
+                    }
+                }
+                if(isSelected){
+                    publishProgress(DIALOG_SELECTED);
+                    while (true){
+                        if(isReceived)
+                            break;
+                    }
                 }
                 return null;
             }
             @Override
             protected void onPostExecute(Void aVoid) {
                 progressDialog.dismiss();
+                photobookListRecyclerAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
 
             @Override
             protected void onProgressUpdate(Integer... values) {
-                progressDialog.setProgress(values[0]);
+                switch (values[0]){
+                    case DIALOG_PROGRESS:
+                        progressDialog.setProgress(values[1]);
+                        break;
+                    case DIALOG_ACCEPTED:
+                        progressDialog.setMessage("포토북 다운로드 준비 중...");
+                        break;
+                    case DIALOG_SELECTED:
+                        progressDialog.setMessage("포토북 다운로드 중...");
+                        break;
+                }
                 super.onProgressUpdate(values);
             }
         }.execute();
@@ -530,5 +577,27 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         item_confirm_send.setVisible(true);
         item_cancel.setVisible(true);
         showCheckBox();
+    }
+    public void checkDirectory() {
+        File dir = new File(AppConstans.APP_PATH_PHOTOBOOK);
+        if (!dir.isDirectory()) {
+            if (dir.mkdirs()) {
+
+            }
+        } else {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].getName().equals("temp") || files[i].getName().equals("data"))
+                    continue;
+                if (!files[i].isDirectory()) {
+                    if (files[i].delete()) {
+                        Log.d(TAG, "파일 삭제 성공: " + Uri.fromFile(files[i]));
+                    } else {
+                        Log.d(TAG, "파일 삭제 실패: " + files[i].getAbsolutePath());
+                    }
+                }
+            }
+            MediaStorageHelper.deleteAll(this, MediaStorageHelper.WHERE_PHOTOBOOK);
+        }
     }
 }

@@ -42,11 +42,12 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
     protected Photobook doInBackground(String... params) {
         String title = params[0];
         int color = Integer.parseInt(params[1]);
+        int numOfFiles = 0;
         String filename = Long.toString(System.currentTimeMillis());
         File[] files = new File(AppConstans.APP_PATH_TEMP).listFiles();
         File dataDir = new File(AppConstans.APP_PATH_DATA);
 
-
+        numOfFiles = files.length;
         progressDialog.setMax(files.length*2);
         boolean isCreateDir;
 
@@ -95,6 +96,7 @@ public class StoreFileAsync extends AsyncTask<String, String, Photobook> {
         photobook.setFilename(filename);
         photobook.setTitle(title);
         photobook.setColor(color);
+        photobook.setNumber(numOfFiles);
         return photobook;
     }
 

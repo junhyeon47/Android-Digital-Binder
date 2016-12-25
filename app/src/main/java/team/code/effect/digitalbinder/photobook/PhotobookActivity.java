@@ -108,7 +108,6 @@ public class PhotobookActivity extends AppCompatActivity {
 
             }
         } else {
-            //DigitalBinder폴더에 사진이 존재하면 모두 삭제
             File[] files = dir.listFiles();
             for (int i = 0; i < files.length; i++) {
                 if (files[i].getName().equals("temp") || files[i].getName().equals("data"))

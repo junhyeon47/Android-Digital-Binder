@@ -37,7 +37,6 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
         final Photobook photobook = photobookListActivity.list.get(position);
         String title = photobook.getTitle();
         StringBuffer sb = new StringBuffer();
-        int count = 0;
         String regdate = photobook.getRegdate().substring(0, 11);
 
         //포토북 제목 세로로 출력.
@@ -48,15 +47,9 @@ public class PhotobookListRecyclerAdapter extends RecyclerView.Adapter<Photobook
             }
         }
 
-        //파일 개수 세기
-        try {
-            ZipFile zipFile = new ZipFile(AppConstans.APP_PATH_DATA+photobook.getFilename()+AppConstans.EXT_DAT);
-            count = zipFile.size();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         holder.txt_title.setText(sb.toString());
-        holder.txt_count.setText(Integer.toString(count));
+        holder.txt_count.setText(Integer.toString(photobook.getNumber()));
         holder.txt_regdate.setText(regdate.replaceFirst("-", "\n").replaceFirst("-", "."));
         holder.layout_photobook.setBackgroundResource(ColorPaletteHelper.VALUE[photobook.getColor()]);
         holder.layout_photobook.setOnClickListener(new View.OnClickListener() {
