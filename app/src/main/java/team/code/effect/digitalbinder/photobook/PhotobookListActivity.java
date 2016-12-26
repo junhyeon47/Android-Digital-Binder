@@ -66,7 +66,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     PhotobookListRecyclerAdapter photobookListRecyclerAdapter;
 
     BluetoothAdapter bluetoothAdapter;
-    BluetoothSocket acceptSocket, connectSocket;
+    BluetoothSocket connectSocket;
     BluetoothServerSocket serverSocket;
     BroadcastReceiver receiver;
     ArrayList<Device> deviceList = new ArrayList<>();
@@ -78,6 +78,8 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     boolean isAccepted = false;
     boolean isSelected = false;
     boolean isReceived = false;
+    boolean clientFlag = true;
+    boolean serverFlag = true;
     ServerThread serverThread;
     ClientThread clientThread;
 
@@ -371,7 +373,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             return;
         }
         isSelected = true;
-        clientThread.start();
     }
 
     private void clickMenuRefresh(){
@@ -461,7 +462,8 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     message.setData(bundle);
                     handler.sendMessage(message);
                     //클라이언트 쓰레드 생성 후 start.
-                    clientThread = new ClientThread(PhotobookListActivity.this);
+                    clientThread = new ClientThread(PhotobookListActivity.this, connectSocket);
+                    clientThread.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -488,13 +490,16 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             @Override
             public void run() {
                 try {
-                    acceptSocket = serverSocket.accept();
+                    BluetoothSocket socket = serverSocket.accept();
                     isAccepted = true;
                     Log.d(TAG, "접속자 감지");
 
                     //서버 스레드 생성 후 start.
-                    serverThread = new ServerThread(PhotobookListActivity.this);
+                    serverThread = new ServerThread(PhotobookListActivity.this, socket);
+                    Log.d(TAG, "서버 스레드생성");
                     serverThread.start();
+                    Log.d(TAG, "서버 스레드 실행");
+                    serverSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

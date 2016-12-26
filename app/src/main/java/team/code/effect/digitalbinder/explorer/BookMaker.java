@@ -55,7 +55,6 @@ public class BookMaker extends AsyncTask<String, String, Photobook> {
         String filename = Long.toString(System.currentTimeMillis());
         File dataDir = new File(AppConstans.APP_PATH_DATA);
 
-
         progressDialog.setMax(files.size()*2);
         boolean isCreateDir;
 
@@ -104,6 +103,7 @@ public class BookMaker extends AsyncTask<String, String, Photobook> {
         photobook.setFilename(filename);
         photobook.setTitle(title);
         photobook.setColor(color);
+        photobook.setNumber(files.size());
         return photobook;
     }
 

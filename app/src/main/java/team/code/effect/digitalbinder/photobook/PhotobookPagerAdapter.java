@@ -38,6 +38,8 @@ public class PhotobookPagerAdapter extends PagerAdapter{
         new AsyncTask<String, Void, Bitmap>(){
             @Override
             protected Bitmap doInBackground(String... params) {
+                if(photobookActivity.isFinishing())
+                    cancel(true);
                 Bitmap bitmap = BitmapHelper.decodeFile(params[0], DeviceHelper.width, DeviceHelper.height);
                 return BitmapHelper.changeOrientation(bitmap, Integer.parseInt(params[1]));
             }

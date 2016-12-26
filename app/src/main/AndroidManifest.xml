@@ -72,8 +72,9 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".explorer.ImageViewpagerActivity"
+            android:hardwareAccelerated="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".photobook.PhotobookActivity"
             android:hardwareAccelerated="false"

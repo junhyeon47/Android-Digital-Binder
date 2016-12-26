@@ -3,6 +3,7 @@ package team.code.effect.digitalbinder.common;
 import java.io.Serializable;
 
 public class Photobook implements Serializable {
+    private static final long serialVersionUID = 6859561738239030887L;
     private int photobook_id;
     private String title;
     private String filename;

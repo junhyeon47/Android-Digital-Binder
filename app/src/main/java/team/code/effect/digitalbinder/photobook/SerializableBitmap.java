@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.Serializable;
 
 public class SerializableBitmap implements Serializable {
+    private static final long serialVersionUID = 7386900858139546823L;
     public Bitmap bitmap;
+
     public SerializableBitmap(String fileName){
         bitmap = BitmapFactory.decodeFile(fileName);
     }
