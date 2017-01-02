@@ -50,10 +50,11 @@ import team.code.effect.digitalbinder.main.MainActivity;
 public class PhotobookListActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
     static final int REQUEST_BLUETOOTH_ENABLE = 1;
     static final int REQUEST_DISCOVERABLE = 2;
-    static final int BLUETOOTH_SEARCH_TIME = 60*3;
+    static final int BLUETOOTH_SEARCH_TIME = 60;
     static final UUID SERVER_UUID = UUID.fromString("de5d6b03-f23b-43e5-a773-ddd20097d4da");
     static final String MESSAGE_KEY = "MESSAGE_KEY";
     static final int MESSAGE_CONNECTED = 1;
+    static final int MESSAGE_CONNECT_ERROR = 2;
     static final int DIALOG_PROGRESS = 1;
     static final int DIALOG_ACCEPTED = 2;
     static final int DIALOG_SELECTED = 3;
@@ -184,6 +185,9 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     case MESSAGE_CONNECTED:
                         showPhotoBooks();
                         break;
+                    case MESSAGE_CONNECT_ERROR:
+                        Toast.makeText(PhotobookListActivity.this, "연결할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             }
         };
@@ -306,10 +310,15 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         item_confirm_delete.setVisible(false);
         item_confirm_send.setVisible(false);
         hideCheckBox();
+        try {
+            connectSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void clickMenuSendReceiveBluetooth(){
-        AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "블루투스로 포토북을 보내기 또는 받기를 진행합니다. 계속하시겠습니까?.");
+        AlertDialog.Builder builder = AlertHelper.getAlertDialog(this, "알림", "블루투스로 포토북을 전송 받아옵니다. 계속하시겠습니까?");
         builder.setPositiveButton("보내기", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -394,7 +403,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             case REQUEST_DISCOVERABLE:
                 if(resultCode != Activity.RESULT_CANCELED){
                     acceptDevice();
-                    receivePhotobooks();
+                    checkAcceptUser();
                 }else
                     Toast.makeText(this, "블루투스를 찾을수 있게 하지 않으면 받기를 할 수 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
@@ -466,6 +475,11 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     clientThread.start();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(MESSAGE_KEY, MESSAGE_CONNECT_ERROR);
+                    Message message = new Message();
+                    message.setData(bundle);
+                    handler.sendMessage(message);
                 }
             }
         };
@@ -507,21 +521,27 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         };
         acceptThread.start();
     }
-
-    public void receivePhotobooks(){
+    public void checkAcceptUser(){
         new AsyncTask<Void, Integer, Void>(){
-
             @Override
             protected void onPreExecute() {
                 progressDialog = new ProgressDialog(PhotobookListActivity.this);
                 progressDialog.setMessage("사용자 접속 대기 중...");
                 progressDialog.setCancelable(false);
+                progressDialog.setMax(BLUETOOTH_SEARCH_TIME);
+                progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //블루투스 찾는 것 종료.
+                        progressDialog.dismiss();
+                    }
+                });
                 progressDialog.show();
                 super.onPreExecute();
             }
 
             @Override
-            protected Void doInBackground(Void... voids) {
+            protected Void doInBackground(Void... params) {
                 int second = 0;
                 while (true){
                     if(isAccepted || second > BLUETOOTH_SEARCH_TIME)
@@ -534,26 +554,14 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     second++;
                     publishProgress(DIALOG_PROGRESS, second);
                 }
-                if(isAccepted){
-                    publishProgress(DIALOG_ACCEPTED);
-                    while (true){
-                        if(isSelected)
-                            break;
-                    }
-                }
-                if(isSelected){
-                    publishProgress(DIALOG_SELECTED);
-                    while (true){
-                        if(isReceived)
-                            break;
-                    }
-                }
                 return null;
             }
+
             @Override
             protected void onPostExecute(Void aVoid) {
                 progressDialog.dismiss();
-                photobookListRecyclerAdapter.notifyDataSetChanged();
+                if(isAccepted)
+                    waitSelectPhotobooks();
                 super.onPostExecute(aVoid);
             }
 
@@ -562,16 +570,82 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 switch (values[0]){
                     case DIALOG_PROGRESS:
                         progressDialog.setProgress(values[1]);
-                        break;
-                    case DIALOG_ACCEPTED:
-                        progressDialog.setMessage("포토북 다운로드 준비 중...");
-                        break;
-                    case DIALOG_SELECTED:
-                        progressDialog.setMessage("포토북 다운로드 중...");
+                        progressDialog.setMessage("사용자 접속 대기 중...("+values[1]+"초)");
                         break;
                 }
                 super.onProgressUpdate(values);
             }
+        }.execute();
+    }
+    public void waitSelectPhotobooks(){
+        new AsyncTask<Void, Integer, Void>(){
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(PhotobookListActivity.this);
+                progressDialog.setMessage("포토북 다운로드 준비 중...");
+                progressDialog.setCancelable(false);
+                progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //여기는 클라이언트 측에서 누를 수 있는 버튼
+                        //클라이언트 소켓 연결 끊어
+
+                        //서버 소켓 연결 끊어
+                        progressDialog.dismiss();
+
+                    }
+                });
+                progressDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                while (true){
+                    if(isSelected)
+                        break;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                progressDialog.dismiss();
+                receivePhotobooks();
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
+    }
+    public void receivePhotobooks(){
+        new AsyncTask<Void, Integer, Void>(){
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(PhotobookListActivity.this);
+                progressDialog.setMessage("포토북 다운로드 중...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                while (true){
+                    if(isReceived)
+                        break;
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                progressDialog.dismiss();
+                MainActivity.db.beginTransaction();
+                list = (ArrayList)MainActivity.dao.selectAll();
+                MainActivity.db.setTransactionSuccessful();
+                MainActivity.db.endTransaction();
+                photobookListRecyclerAdapter.notifyDataSetChanged();
+                super.onPostExecute(aVoid);
+            }
+
         }.execute();
     }
     public void showPhotoBooks(){
@@ -584,16 +658,14 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         showCheckBox();
     }
     public void checkDirectory() {
-        File dir = new File(AppConstans.APP_PATH_PHOTOBOOK);
-        if (!dir.isDirectory()) {
-            if (dir.mkdirs()) {
+        File dirPhotobook = new File(AppConstans.APP_PATH_PHOTOBOOK);
+        if (!dirPhotobook.isDirectory()) {
+            if (dirPhotobook.mkdirs()) {
 
             }
         } else {
-            File[] files = dir.listFiles();
+            File[] files = dirPhotobook.listFiles();
             for (int i = 0; i < files.length; i++) {
-                if (files[i].getName().equals("temp") || files[i].getName().equals("data"))
-                    continue;
                 if (!files[i].isDirectory()) {
                     if (files[i].delete()) {
                         Log.d(TAG, "파일 삭제 성공: " + Uri.fromFile(files[i]));
@@ -603,6 +675,12 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 }
             }
             MediaStorageHelper.deleteAll(this, MediaStorageHelper.WHERE_PHOTOBOOK);
+        }
+        File dirData = new File(AppConstans.APP_PATH_DATA);
+        if (!dirData.isDirectory()) {
+            if (dirData.mkdirs()) {
+
+            }
         }
     }
 }

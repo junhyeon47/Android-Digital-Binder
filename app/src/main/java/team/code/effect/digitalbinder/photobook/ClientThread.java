@@ -1,31 +1,22 @@
 package team.code.effect.digitalbinder.photobook;
 
 import android.bluetooth.BluetoothSocket;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.zip.ZipFile;
+import java.io.OutputStream;
 
 import team.code.effect.digitalbinder.common.AppConstans;
-import team.code.effect.digitalbinder.common.BitmapHelper;
-import team.code.effect.digitalbinder.common.DeviceHelper;
-import team.code.effect.digitalbinder.common.Photobook;
-import team.code.effect.digitalbinder.common.ZipCode;
 
 public class ClientThread extends Thread {
+    private static int BUFFER_SIZE = 1024;
     PhotobookListActivity photobookListActivity;
     BluetoothSocket socket;
-    ObjectOutputStream oos;
+    OutputStream out;
 
     public ClientThread(PhotobookListActivity photobookListActivity, BluetoothSocket socket) {
         this.photobookListActivity = photobookListActivity;
@@ -39,41 +30,40 @@ public class ClientThread extends Thread {
 
     public void send() {
         try {
-            oos = new ObjectOutputStream(socket.getOutputStream());
-//            for (int i = 0; i < photobookListActivity.checkedList.size(); ++i) {
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ObjectOutput out = new ObjectOutputStream(baos);
-//                out.writeObject(photobookListActivity.checkedList.get(i));
-//                byte[] data = baos.toByteArray();
-//                oos.write(data);
-//                oos.reset();
-//                baos.close();
-//            }
-//            oos.flush();
+            out = socket.getOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(out);
             while (photobookListActivity.clientFlag) {
                 if(photobookListActivity.isSelected) {
+                    oos.writeBoolean(true);
+                    oos.writeInt(photobookListActivity.checkedList.size());
                     for (int i = 0; i < photobookListActivity.checkedList.size(); ++i) {
-                        //객체를 byte[]로 변환
-                        String zipFileName = AppConstans.APP_PATH_DATA + photobookListActivity.checkedList.get(i).getFilename() + AppConstans.EXT_DAT;
-                        SerializableZipFile zipFile = new SerializableZipFile(zipFileName);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        ObjectOutput out = new ObjectOutputStream(bos);
-                        out.writeObject(zipFile);
-                        out.flush();
-                        byte[] data = bos.toByteArray();
-
-                        oos.write(data);
+                        oos.writeObject(photobookListActivity.checkedList.get(i));
                         oos.flush();
-                        out.close();
-                        bos.close();
                     }
-                    oos.writeObject("EOF");
-                    oos.flush();
+                    DataOutputStream dos = new DataOutputStream(out);
+                    for(int i=0; i<photobookListActivity.checkedList.size(); ++i){
+                        String zipFileName = AppConstans.APP_PATH_DATA + photobookListActivity.checkedList.get(i).getFilename() + AppConstans.EXT_DAT;
+                        File file = new File(zipFileName);
+                        Log.d("ClientThread", "file length: "+file.length());
+                        FileInputStream fis = new FileInputStream(zipFileName);
+                        byte[] buffer = new byte[BUFFER_SIZE];
+                        int length;
+                        long dataLength = file.length();
+                        dos.writeUTF(photobookListActivity.checkedList.get(i).getFilename() + AppConstans.EXT_DAT);
+                        dos.writeLong(dataLength);
+                        while (dataLength > 0){
+                            length = fis.read(buffer);
+                            dos.write(buffer, 0, length);
+                            dataLength -= length;
+                        }
+
+                        dos.flush();
+                    }
                     oos.close();
-                    break;
+                    dos.close();
+                    photobookListActivity.clientFlag = false;
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
