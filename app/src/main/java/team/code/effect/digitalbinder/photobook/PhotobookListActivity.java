@@ -56,8 +56,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     static final int MESSAGE_CONNECTED = 1;
     static final int MESSAGE_CONNECT_ERROR = 2;
     static final int DIALOG_PROGRESS = 1;
-    static final int DIALOG_ACCEPTED = 2;
-    static final int DIALOG_SELECTED = 3;
 
     String TAG;
     Toolbar toolbar;
@@ -80,11 +78,11 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     boolean isSelected = false;
     boolean isReceived = false;
     boolean clientFlag = true;
-    boolean serverFlag = true;
+    boolean isCanceled = false;
     ServerThread serverThread;
     ClientThread clientThread;
 
-    MenuItem item_add, item_delete, item_send_receive_bluetooth, item_cancel, item_confirm_delete, item_confirm_send, item_refresh;
+    MenuItem item_delete, item_send_receive_bluetooth, item_cancel, item_confirm_delete, item_confirm_send, item_refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +181,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             public void handleMessage(Message message) {
                 switch (message.getData().getInt(MESSAGE_KEY)){
                     case MESSAGE_CONNECTED:
-                        showPhotoBooks();
+                        showPhotobooks();
                         break;
                     case MESSAGE_CONNECT_ERROR:
                         Toast.makeText(PhotobookListActivity.this, "연결할 수 없습니다.", Toast.LENGTH_SHORT).show();
@@ -207,7 +205,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_photobook, menu);
-        item_add = menu.findItem(R.id.item_add);
         item_delete = menu.findItem(R.id.item_delete);
         item_send_receive_bluetooth = menu.findItem(R.id.item_send_bluetooth);
         item_cancel = menu.findItem(R.id.item_cancel);
@@ -223,9 +220,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.item_add:
-                clickMenuAdd();
-                break;
             case R.id.item_delete:
                 clickMenuDelete();
                 break;
@@ -266,7 +260,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 unregisterReceiver(receiver);
             }
             deviceList.removeAll(deviceList);
-            item_add.setVisible(true);
             item_delete.setVisible(true);
             item_send_receive_bluetooth.setVisible(true);
             item_refresh.setVisible(false);
@@ -293,7 +286,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             Toast.makeText(this, "포토북이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        item_add.setVisible(false);
         item_delete.setVisible(false);
         item_send_receive_bluetooth.setVisible(false);
         item_cancel.setVisible(true);
@@ -303,17 +295,14 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
     }
 
     public void clickMenuCancel(){
-        item_add.setVisible(true);
         item_delete.setVisible(true);
         item_send_receive_bluetooth.setVisible(true);
         item_cancel.setVisible(false);
         item_confirm_delete.setVisible(false);
         item_confirm_send.setVisible(false);
         hideCheckBox();
-        try {
-            connectSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(clientThread != null){
+            isCanceled = true;
         }
     }
 
@@ -326,9 +315,12 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     Toast.makeText(PhotobookListActivity.this, "포토북이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                isSelected = false;
+                isCanceled = false;
+                isReceived = false;
+                clientFlag = true;
                 recycler_view.setVisibility(View.GONE);
                 recycler_view_device.setVisibility(View.VISIBLE);
-                item_add.setVisible(false);
                 item_delete.setVisible(false);
                 item_send_receive_bluetooth.setVisible(false);
                 item_refresh.setVisible(true);
@@ -338,15 +330,16 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         builder.setNegativeButton("받기", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                isCanceled = false;
+                isSelected = false;
+                isReceived = false;
+                isAccepted = false;
                 requestDiscoverable();
             }
         });
         builder.setNeutralButton("취소", null);
         builder.setCancelable(false);
         builder.show();
-    }
-    private void clickMenuAdd() {
-        Toast.makeText(this, "더하기 버튼 클릭", Toast.LENGTH_SHORT).show();
     }
 
     private void clickMenuConfirmDelete() {
@@ -363,6 +356,12 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                     MainActivity.dao.delete(checkedList.get(i).getPhotobook_id());
                     MainActivity.db.setTransactionSuccessful();
                     MainActivity.db.endTransaction();
+                    //파일삭제.
+                    String filePath = AppConstans.APP_PATH_DATA+checkedList.get(i).getFilename()+AppConstans.EXT_DAT;
+                    File file = new File(filePath);
+                    if(!file.delete()){
+                        Toast.makeText(PhotobookListActivity.this, "파일 삭제 실패: "+filePath, Toast.LENGTH_SHORT).show();
+                    }
                 }
                 MainActivity.db.beginTransaction();
                 list = (ArrayList)MainActivity.dao.selectAll();
@@ -382,6 +381,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             return;
         }
         isSelected = true;
+        sendPhotobooks();
     }
 
     private void clickMenuRefresh(){
@@ -436,7 +436,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         getSupportActionBar().setTitle("기기 검색");
         recycler_view.setVisibility(View.GONE);
         recycler_view_device.setVisibility(View.VISIBLE);
-        item_add.setVisible(false);
         item_delete.setVisible(false);
         item_send_receive_bluetooth.setVisible(false);
         item_refresh.setVisible(true);
@@ -584,17 +583,6 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
                 progressDialog = new ProgressDialog(PhotobookListActivity.this);
                 progressDialog.setMessage("포토북 다운로드 준비 중...");
                 progressDialog.setCancelable(false);
-                progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //여기는 클라이언트 측에서 누를 수 있는 버튼
-                        //클라이언트 소켓 연결 끊어
-
-                        //서버 소켓 연결 끊어
-                        progressDialog.dismiss();
-
-                    }
-                });
                 progressDialog.show();
                 super.onPreExecute();
             }
@@ -602,7 +590,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             @Override
             protected Void doInBackground(Void... params) {
                 while (true){
-                    if(isSelected)
+                    if(isSelected || isCanceled)
                         break;
                 }
                 return null;
@@ -611,7 +599,10 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
             @Override
             protected void onPostExecute(Void aVoid) {
                 progressDialog.dismiss();
-                receivePhotobooks();
+                if(isSelected)
+                    receivePhotobooks();
+                else if(isCanceled)
+                    Toast.makeText(PhotobookListActivity.this, "블루투스 다운로드가 취소되었습니다.", Toast.LENGTH_SHORT).show();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -648,7 +639,35 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
 
         }.execute();
     }
-    public void showPhotoBooks(){
+    public void sendPhotobooks(){
+        new AsyncTask<Void, Integer, Void>(){
+            @Override
+            protected void onPreExecute() {
+                progressDialog = new ProgressDialog(PhotobookListActivity.this);
+                progressDialog.setMessage("포토북 전송하는 중...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                while (true){
+                    if(isReceived)
+                        break;
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                progressDialog.dismiss();
+                clickMenuCancel();
+                super.onPostExecute(aVoid);
+            }
+
+        }.execute();
+    }
+    public void showPhotobooks(){
         getSupportActionBar().setTitle("포토북");
         recycler_view.setVisibility(View.VISIBLE);
         recycler_view_device.setVisibility(View.GONE);
@@ -679,7 +698,7 @@ public class PhotobookListActivity extends AppCompatActivity implements Toolbar.
         File dirData = new File(AppConstans.APP_PATH_DATA);
         if (!dirData.isDirectory()) {
             if (dirData.mkdirs()) {
-
+                //앱 종료시켜야 함.
             }
         }
     }

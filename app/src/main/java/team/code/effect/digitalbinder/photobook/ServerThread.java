@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import team.code.effect.digitalbinder.common.AppConstans;
@@ -20,6 +22,7 @@ public class ServerThread extends Thread{
     PhotobookListActivity photobookListActivity;
     BluetoothSocket socket;
     InputStream in;
+    OutputStream out;
 
     ArrayList<Photobook> photobookList = new ArrayList<>();
     ArrayList<File>filesList = new ArrayList<>();
@@ -39,10 +42,14 @@ public class ServerThread extends Thread{
         Log.d("ServerThread", "listen method called");
         try {
             in = socket.getInputStream();
+            out = socket.getOutputStream();
             ObjectInputStream ois = new ObjectInputStream(in);
             boolean isSelected = ois.readBoolean();
             if(!isSelected){
-                socket.close();
+                photobookListActivity.isCanceled = true;
+                in.close();
+                out.close();
+                return;
             }
             Log.d("ServerThread", "isSelected: "+isSelected);
             photobookListActivity.isSelected = isSelected;
@@ -73,8 +80,11 @@ public class ServerThread extends Thread{
                 fos.close();
                 Log.d("ServerThread", "zipFilename: "+zipFilename+" 파일 저장 완료");
             }
-            ois.close();
-            dis.close();
+            ObjectOutputStream oos = new ObjectOutputStream(out);
+            oos.writeBoolean(true);
+            oos.flush();
+            out.close();
+            in.close();
             Log.d("ServerThread", "파일 받기 완료");
             for(int i=0; i<photobookList.size(); ++i){
                 MainActivity.dao.insert(photobookList.get(i));

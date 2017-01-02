@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
@@ -17,6 +19,7 @@ public class ClientThread extends Thread {
     PhotobookListActivity photobookListActivity;
     BluetoothSocket socket;
     OutputStream out;
+    InputStream in;
 
     public ClientThread(PhotobookListActivity photobookListActivity, BluetoothSocket socket) {
         this.photobookListActivity = photobookListActivity;
@@ -31,6 +34,7 @@ public class ClientThread extends Thread {
     public void send() {
         try {
             out = socket.getOutputStream();
+            in = socket.getInputStream();
             ObjectOutputStream oos = new ObjectOutputStream(out);
             while (photobookListActivity.clientFlag) {
                 if(photobookListActivity.isSelected) {
@@ -40,6 +44,7 @@ public class ClientThread extends Thread {
                         oos.writeObject(photobookListActivity.checkedList.get(i));
                         oos.flush();
                     }
+
                     DataOutputStream dos = new DataOutputStream(out);
                     for(int i=0; i<photobookListActivity.checkedList.size(); ++i){
                         String zipFileName = AppConstans.APP_PATH_DATA + photobookListActivity.checkedList.get(i).getFilename() + AppConstans.EXT_DAT;
@@ -56,11 +61,19 @@ public class ClientThread extends Thread {
                             dos.write(buffer, 0, length);
                             dataLength -= length;
                         }
-
                         dos.flush();
                     }
+                    ObjectInputStream ois = new ObjectInputStream(in);
+                    boolean isComplete = ois.readBoolean();
+                    if(isComplete) {
+                        in.close();
+                        out.close();
+                    }
+                    photobookListActivity.clientFlag = false;
+                    photobookListActivity.isReceived = true;
+                } else if(photobookListActivity.isCanceled){
+                    oos.writeBoolean(false);
                     oos.close();
-                    dos.close();
                     photobookListActivity.clientFlag = false;
                 }
             }
