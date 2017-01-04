@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "338136556128",
+    "firebase_url": "https://digital-binder-154608.firebaseio.com",
+    "project_id": "digital-binder-154608",
+    "storage_bucket": "digital-binder-154608.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338136556128:android:ad7c8c4790f68deb",
+        "android_client_info": {
+          "package_name": "team.code.effect.digitalbinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338136556128-vlk9e8umld70l0dm1j5asnnk51lnf84d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "team.code.effect.digitalbinder",
+            "certificate_hash": "E1A9872B7AB08F1224A0CE9F2AF52DB9E084B4F4"
+          }
+        },
+        {
+          "client_id": "338136556128-qoptmdt3gl3uklu6pj1mbsefbhv9so4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [{ "current_key": "AIzaSyCs-GfoI51IlA_wktJfXpyyvew4pp_fIU8" }],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338136556128-qoptmdt3gl3uklu6pj1mbsefbhv9so4e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

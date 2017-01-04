@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_send_black_48dp"
-            android:title="내보내기" />
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="설정" />
         <item
-            android:id="@+id/nav_info"
-            android:icon="@drawable/ic_info_outline_black_48dp"
-            android:title="정보" />
-        <item
-            android:id="@+id/nav_ad"
-            android:icon="@drawable/ic_attach_money_black_48dp"
-            android:title="광고제거" />
+            android:id="@+id/nav_sign_out"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
+            android:title="로그아웃"
+            android:visible="false"/>
     </group>
-
-    <item android:title="">
-        <menu>
-        </menu>
-    </item>
-
 </menu>

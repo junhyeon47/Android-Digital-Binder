@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Digital Binder</string>
+    <string name="login_message"><u><i>백업 기능을 사용하시려면 구글 계정으로 <b>로그인</b> 하세요!</i></u></string>
 </resources>
