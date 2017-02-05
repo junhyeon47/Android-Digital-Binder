@@ -6,26 +6,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import team.code.effect.digitalbinder.R;
 
 
-public class InfoActivity extends AppCompatActivity {
-    Toolbar toolbar;
-    View inc_layout_info, inc_layout_version;
+public class SettingsActivity extends AppCompatActivity {
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info);
+        setContentView(R.layout.activity_settings);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar); //XML 툴바의 주소를 toolbar로 연결.
-        inc_layout_info = findViewById(R.id.inc_layout_info);
-        inc_layout_version = findViewById(R.id.inc_layout_version);
 
         setSupportActionBar(toolbar); //툴바를 현재 액티비티의 액션바로 설정.
         setToolbar(); //툴바의 설정을 변경하는 메소드 호출.
@@ -33,39 +29,27 @@ public class InfoActivity extends AppCompatActivity {
 
     //툴바의 설정을 변경하는 메소드
     public void setToolbar(){
-        getSupportActionBar().setTitle("정보");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF95D8D1)); //툴바색상 변경
+        getSupportActionBar().setTitle("설정");
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF63A69F)); //툴바색상 변경
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바에 뒤로가기 버튼 추가.
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp); //뒤로가기 버튼 아이콘 변경
     }
 
-    public void layoutClick(View view){
+    public void onClick(View view){
         switch (view.getId()){
-            case R.id.infoClick:
-                visibleVersionLayout();
-                break;
-            case R.id.developer:
-                openDeveloper();
+            case R.id.layout_inquire_developer:
+                openMailInquireDeveloper();
                 break;
         }
     }
 
-    public void visibleInfoLayout(){
-        getSupportActionBar().setTitle("정보");
-        inc_layout_info.setVisibility(View.VISIBLE);
-        inc_layout_version.setVisibility(View.GONE);
-    }
 
-    public void visibleVersionLayout(){
-        getSupportActionBar().setTitle("어플리케이션 정보");
-        inc_layout_info.setVisibility(View.GONE);
-        inc_layout_version.setVisibility(View.VISIBLE);
-    }
-
-    public void openDeveloper(){
+    public void openMailInquireDeveloper(){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:team.codeffect@gmail.com"));
-        startActivity(intent);
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -76,13 +60,5 @@ public class InfoActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(inc_layout_version.getVisibility() == View.VISIBLE)
-            visibleInfoLayout();
-        else
-            finish();
     }
 }
